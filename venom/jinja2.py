@@ -5,7 +5,7 @@ import hashlib
 from django.templatetags.static import static
 from django.urls import reverse
 from django.contrib.humanize.templatetags.humanize import apnumber, intcomma, intword, naturalday, naturaltime, ordinal
-from django.template.defaultfilters import time, date
+from django.template.defaultfilters import time, date, timesince, timeuntil
 
 from jinja2 import Environment
 
@@ -37,5 +37,7 @@ def environment(**options):
         'basename': basename,
         'time': time,
         'date': date,
+        'timesince': timesince,
+        'timeuntil': timeuntil
     })
     return env

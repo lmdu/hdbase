@@ -1,0 +1,33 @@
+{% set mainmenu = 'index' %}
+{% extends 'base.html' %}
+
+{% block main %}
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+const ws_scheme = window.location.protocol == "https:" ? "wss": "ws";
+const ws_path = ws_scheme + '://' + window.location.host + '/ws/socketio/';
+
+const ws_socket = new WebSocket(ws_path);
+
+ws_socket.onmessage = function(e) {
+	data = JSON.parse(e.data);
+	console.log(data);
+	document.querySelector('#content').value = data.message;
+};
+
+ws_socket.onopen = function(e) {
+	console.log('ws connected!')
+};
+
+ws_socket.onclose = function(e) {
+	console.log('ws closed!');
+};
+
+ws_socket.onerror = function(e) {
+	console.log('error:' + e);
+};
+</script>
+{% endblock %}

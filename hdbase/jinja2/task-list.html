@@ -1,0 +1,184 @@
+{% set mainmenu = 'tasks' %}
+{% extends 'base.html' %}
+{% block pagetitle %}运行任务{% endblock %}
+{% block main %}
+<div class="card">
+	<div class="card-header">
+		<h3 class="card-title">
+			任务列表
+			<span class="card-subtitle">Tasks List</span>
+		</h3>
+		<div class="card-actions">
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#submit-task-dialog">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-2">
+                    <path d="M12 5l0 14"></path>
+                    <path d="M5 12l14 0"></path>
+                </svg>
+				提交新任务
+			</button>
+		</div>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-selectable card-table table-vcenter text-nowrap datatable">
+			<thead>
+				<tr>
+					<th>任务ID</th>
+					<th>提交者</th>
+					<th>提交时间</th>
+					<th>运行文件</th>
+					<th>运行状态</th>
+					<th>运行进度</th>
+					<th>运行时间</th>
+					<th>运行时长</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for task in tasks %}
+				<tr id="task-{{ task.id }}">
+					<td>{{ task.short_id }}</td>
+					<td>
+						<div class="d-flex align-items-center">
+							<span class="avatar rounded-circle avatar-sm me-1" style="background-image: url(/static/img/avatar.png);"></span>
+							{{ task.submit_user.last_name }}{{ task.submit_user.first_name }}
+						</div>
+					</td>
+					<td>
+						<div>{{ task.submit_time | date("Y-m-d") }}</div>
+						<div>{{ task.submit_time | time("H:i:s") }}</div>
+					</td>
+					<td>
+						<div>
+							<span class="badge bg-red-lt me-1">R1</span>
+							{{ task.read_one }}
+						</div>
+						<div class="mt-2">
+							<span class="badge bg-blue-lt me-1">R2</span>
+							{{ task.read_two }}
+						</div>
+					</td>
+					<td>
+						{% set states = {0: 'danger', 1: 'success', 2: 'blue', 3: 'warning'} %}
+						<span class="status-badge badge bg-{{ states[task.status] }} me-1"></span>
+						<span class="status-text">{{ task.get_status_display() }}</span>
+					</td>
+					<td>
+						<div class="progress progress-xs">
+							<div class="task-progress progress-bar bg-{{ states[task.status] }}" style="width: {{ task.progress }}%"></div>
+						</div>
+					</td>
+					<td>
+						<div>
+							<span class="badge bg-orange-lt me-1">STARTED</span>
+							<span class="task-start">{{ task.start_time | date('Y-m-d') }} {{ task.start_time | time("H:i:s") }}</span>
+						</div>
+						<div class="mt-2">
+							<span class="badge bg-purple-lt me-1">STOPPED</span>
+							<span class="task-stop">{{ task.stop_time | date('Y-m-d') }} {{ task.stop_time | time("H:i:s") }}</span>
+						</div>
+					</td>
+					<td>
+						<span class="task-elapse">
+							{% if task.stop_time %}
+							{{ task.stop_time | timeuntil(task.start_time) }}
+							{% endif %}
+						</span>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="modal modal-blur fade" id="submit-task-dialog" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+		<form action="{{ url('addtask') }}" method="POST" class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">提交新任务</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="mb-3">
+					<label class="form-label required">第1个reads文件</label>
+					<input type="text" name="read_one" class="form-control">
+				</div>
+				<div class="mb-3">
+					<label class="form-label required">第2个reads文件</label>
+					<input type="text" name="read_two" class="form-control">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn me-auto" data-bs-dismiss="modal">关闭</button>
+				<button type="submit" class="btn btn-primary" data-bs-dismiss="modal">提交</button>
+			</div>
+			{{ csrf_input }}
+		</form>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+const ws_scheme = window.location.protocol == "https:" ? "wss": "ws";
+const ws_path = ws_scheme + '://' + window.location.host + '/ws/socketio/';
+const ws_socket = new WebSocket(ws_path);
+
+const STATE_TEXTS = ['FAILURE', 'SUCCESS', 'RUNNING', 'WAITING']
+const STATE_COLORS = ['bg-danger', 'bg-success', 'bg-blue', 'bg-warning']
+
+ws_socket.onmessage = function(e) {
+	let data = JSON.parse(e.data);
+	let item = $('#task-' + data.task_id);
+
+	$.each(data, function(k, v) {
+		switch(k) {
+			case 'status':
+				item.find(".status-badge")
+					.removeClass()
+					.addClass("status-badge badge " + STATE_COLORS[v]);
+
+				item.find(".task-progress")
+					.removeClass()
+					.addClass("task-progress progress-bar " + STATE_COLORS[v]);
+
+				item.find(".status-text")
+					.text(STATE_TEXTS[v]);
+
+				break;
+
+			case 'progress':
+				item.find(".task-progress").width(v+'%');
+				break;
+
+			case 'message':
+				break;
+
+			case 'start_time':
+				item.find(".task-start").text(v);
+
+				break;
+
+			case 'stop_time':
+				item.find(".task-stop").text(v);
+				break;
+			case 'elapse_time':
+				item.find(".task-elapse").text(v);
+				break;
+		}
+	});
+};
+
+ws_socket.onopen = function(e) {
+	console.log('ws connected!')
+};
+
+ws_socket.onclose = function(e) {
+	console.log('ws closed!');
+};
+
+ws_socket.onerror = function(e) {
+	console.log('error:' + e);
+};
+</script>
+{% endblock %}

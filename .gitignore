@@ -3,3 +3,5 @@
 /hdbase/__pycache__
 /hdbase/migrations/__pycache__
 /venom/__pycache__
+/common/migrations
+/hdbase/migrations
