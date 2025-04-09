@@ -6,6 +6,14 @@ from .views import *
 
 urlpatterns = [
 	path('', index, name='index'),
-	path('task/list', TaskListView.as_view(), name='task'),
-	path('task/add', TaskCreateView.as_view(), name='addtask'),
+	path('validate', validate_field, name='valid-field'),
+	path('upload', upload_process, name='upload-file'),
+	path('browser', get_file_browser, name='file-browser'),
+	path('select', fetch_for_select, name='fetch-select'),
+	path('tasks', TaskListView.as_view(), name='list-tasks'),
+	path('task/add', TaskCreateView.as_view(), name='add-task'),
+	path('patients', PatientListView.as_view(), name='list-patients'),
+	path('patient/add', PatientCreateView.as_view(), name='add-patient'),
+	path('datasets', DatasetListView.as_view(), name='list-datasets'),
+	path('dataset/add', DatasetCreateView.as_view(), name='add-dataset'),
 ]

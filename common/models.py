@@ -5,11 +5,17 @@ from django.dispatch import receiver
 
 # Create your models here.
 class Profile(models.Model):
+	ROLE_NONE = 0
+	ROLE_VISITOR = 1
+	ROLE_EDITOR = 2
+	ROLE_ADMINITOR = 10
+
+
 	USER_ROLES = {
-		0: "未设置",
-		1: "访客",
-		2: "编辑",
-		10: "管理员"
+		ROLE_NONE: "未设置",
+		ROLE_VISITOR: "访客",
+		ROLE_EDITOR: "编辑",
+		ROLE_ADMINITOR: "管理员"
 	}
 
 	USER_TITLES = {

@@ -1,0 +1,133 @@
+{% set mainmenu = 'patients' %}
+{% extends 'base.html' %}
+{% block pagetitle %}
+<img src="{{ static('img/patient.svg') }}" width="32" height="32" class="me-2">
+患者信息管理
+{% endblock %}
+{% block style %}
+{% endblock %}
+{% block main %}
+<div class="card">
+	<div class="card-header">
+		<h3 class="card-title">
+			患者列表
+			<span class="card-subtitle">Patients List</span>
+		</h3>
+		<div class="card-actions">
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-patient-dialog">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-2">
+                    <path d="M12 5l0 14"></path>
+                    <path d="M5 12l14 0"></path>
+                </svg>
+				录入新患者
+			</button>
+		</div>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-selectable card-table table-vcenter text-nowrap datatable">
+			<thead>
+				<tr>
+					<th>姓名</th>
+					<th>登记号</th>
+					<th>性别</th>
+					<th>年龄</th>
+					<th>民族</th>
+					<th>身高(cm)</th>
+					<th>体重(kg)</th>
+					<th>电话</th>
+					<th>录入时间</th>
+					{% if user.profile.role >= user.profile.ROLE_ADMINITOR %}
+					<th>录入人员</th>
+					{% endif %}
+				</tr>
+			</thead>
+			<tbody>
+				{% for p in patients %}
+				<tr>
+					<td>{{ p.name }}</td>
+					<td>{{ p.number }}</td>
+					<td>{{ p.get_gender_display() }}</td>
+					<td>{{ p.age }}</td>
+					<td>{{ p.get_ethnicity_display() }}</td>
+					<td>{{ p.height }}</td>
+					<td>{{ p.weight }}</td>
+					<td>{{ p.phone }}</td>
+					<td>{{ p.created | date("Y-m-d") }}</td>
+					{% if user.profile.role >= user.profile.ROLE_ADMINITOR %}
+					<td>{{ user.last_name }}{{ user.first_name }}</td>
+					{% endif %}
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="modal modal-blur fade" id="add-patient-dialog" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+		<form action="{{ url('add-patient') }}" method="post" class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">录入新患者</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="row mb-3">
+					<div class="col-md-3">
+						<label class="form-label">姓名</label>
+						<input type="text" name="name" class="form-control">
+					</div>
+					<div class="col-md-3">
+						<label class="form-label">登记号</label>
+						<input type="text" name="number" class="form-control">
+					</div>
+					<div class="col-md-3">
+						<label class="form-label">性别</label>
+						<select name="gender" class="form-select">
+							{% for k, v in patients.model().GENDERS.items() %}
+							<option value="{{ k }}">{{ v }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="col-md-3">
+						<label class="form-label">民族</label>
+						<select name="ethnicity" class="form-select">
+							{% for k, v in patients.model().ETHNIC_GROUPS.items() %}
+							<option value="{{ k }}">{{ v }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col-md-4">
+						<label class="form-label">年龄(years)</label>
+						<input type="number" name="age" class="form-control">
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">身高(cm)</label>
+						<input type="number" name="height" class="form-control">
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">体重(kg)</label>
+						<input type="number" name="weight" class="form-control">
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col-md-3">
+						<label class="form-label">电话</label>
+						<input type="text" name="phone" class="form-control">
+					</div>
+					<div class="col-md-9">
+						<label class="form-label">地址</label>
+						<input type="text" name="address" class="form-control">
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn me-auto" data-bs-dismiss="modal">关闭</button>
+				<button type="submit" class="btn btn-primary" data-bs-dismiss="modal">录入</button>
+			</div>
+			{{ csrf_input }}
+		</form>
+	</div>
+</div>
+{% endblock %}

@@ -1,6 +1,13 @@
 {% set mainmenu = 'tasks' %}
 {% extends 'base.html' %}
-{% block pagetitle %}运行任务{% endblock %}
+{% block style %}
+<link href="{{ static('css/select2.min.css') }}" rel="stylesheet"/>
+{% endblock %}
+{% block pagetitle %}
+<img src="{{ static('img/tasks.svg') }}" width="32" height="32" class="me-2">
+任务管理
+{% endblock %}
+
 {% block main %}
 <div class="card">
 	<div class="card-header">
@@ -11,9 +18,9 @@
 		<div class="card-actions">
 			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#submit-task-dialog">
 				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-2">
-                    <path d="M12 5l0 14"></path>
-                    <path d="M5 12l14 0"></path>
-                </svg>
+			        <path d="M12 5l0 14"></path>
+			        <path d="M5 12l14 0"></path>
+			    </svg>
 				提交新任务
 			</button>
 		</div>
@@ -22,66 +29,67 @@
 		<table class="table table-selectable card-table table-vcenter text-nowrap datatable">
 			<thead>
 				<tr>
+					<th>任务类型</th>
+					<th>任务名称</th>
 					<th>任务ID</th>
+					<th>运行数据</th>
 					<th>提交者</th>
 					<th>提交时间</th>
-					<th>运行文件</th>
-					<th>运行状态</th>
 					<th>运行进度</th>
+					<th>运行状态</th>
 					<th>运行时间</th>
 					<th>运行时长</th>
 				</tr>
 			</thead>
 			<tbody>
-				{% for task in tasks %}
-				<tr id="task-{{ task.id }}">
-					<td>{{ task.short_id }}</td>
+				{% for t in tasks %}
+				<tr id="task-{{ t.id }}">
 					<td>
-						<div class="d-flex align-items-center">
-							<span class="avatar rounded-circle avatar-sm me-1" style="background-image: url(/static/img/avatar.png);"></span>
-							{{ task.submit_user.last_name }}{{ task.submit_user.first_name }}
-						</div>
+						{% set types = {0: static('img/task.svg'), 1: static('img/snptask.svg')} %}
+						<a class="avatar avatar-sm" style="background-image: url({{ types[t.command] }});" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t.get_command_display() }}"></a>
+					</td>
+					<td>{{ t.name }}</td>
+					<td>{{ t.short_id }}</td>
+					<td>{{ t.dataset.name }}</td>
+					<td>
+						<a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t.author.last_name }}{{ t.author.first_name }}" class="avatar rounded-circle avatar-xs" style="background-image: url(/static/img/avatar.png);"></a>
 					</td>
 					<td>
-						<div>{{ task.submit_time | date("Y-m-d") }}</div>
-						<div>{{ task.submit_time | time("H:i:s") }}</div>
+						<div>{{ t.created | date("Y-m-d") }}</div>
+	                    <div>{{ t.created | time("H:i:s") }}</div>
 					</td>
 					<td>
-						<div>
-							<span class="badge bg-red-lt me-1">R1</span>
-							{{ task.read_one }}
-						</div>
-						<div class="mt-2">
-							<span class="badge bg-blue-lt me-1">R2</span>
-							{{ task.read_two }}
-						</div>
-					</td>
-					<td>
-						{% set states = {0: 'danger', 1: 'success', 2: 'blue', 3: 'warning'} %}
-						<span class="status-badge badge bg-{{ states[task.status] }} me-1"></span>
-						<span class="status-text">{{ task.get_status_display() }}</span>
-					</td>
-					<td>
+						{% set states = {0: 'red', 1: 'green', 2: 'blue', 3: 'yellow', 4: 'purple'} %}
 						<div class="progress progress-xs">
-							<div class="task-progress progress-bar bg-{{ states[task.status] }}" style="width: {{ task.progress }}%"></div>
+							<div class="progress-bar bg-{{ states[t.status] }}" style="width: {{ t.progress }}%"></div>
 						</div>
 					</td>
 					<td>
+						<span class="status-text">{{ t.get_status_display() }}</span>
+						<span class="status-dot {% if t.status in [2,3] %}status-dot-animated{% endif %} status-{{ states[t.status] }} ms-1"></span>
+					</td>
+					<td>
 						<div>
-							<span class="badge bg-orange-lt me-1">STARTED</span>
-							<span class="task-start">{{ task.start_time | date('Y-m-d') }} {{ task.start_time | time("H:i:s") }}</span>
+							<span class="badge bg-purple-lt">开始</span>
+							<span class="task-start">
+	                            {{ t.started | date("Y-m-d") }}
+	                            {{ t.started | time("H:i:s") }}
+	                        </span>
 						</div>
 						<div class="mt-2">
-							<span class="badge bg-purple-lt me-1">STOPPED</span>
-							<span class="task-stop">{{ task.stop_time | date('Y-m-d') }} {{ task.stop_time | time("H:i:s") }}</span>
+							<span class="badge bg-pink-lt">结束</span>
+							<span class="task-stop">
+                          		{{ t.stopped | date("Y-m-d") }}
+                          		{{ t.stopped | time("H:i:s") }}
+                          	</span>
 						</div>
 					</td>
 					<td>
 						<span class="task-elapse">
-							{% if task.stop_time %}
-							{{ task.stop_time | timeuntil(task.start_time) }}
-							{% endif %}
-						</span>
+                      		{% if t.stopped %}
+                      		{{ t.stopped | timeuntil(t.started) }}
+                      		{% endif %}
+                      	</span>
 					</td>
 				</tr>
 				{% endfor %}
@@ -90,21 +98,121 @@
 	</div>
 </div>
 
+<!--<div class="row row-cards">
+	{% for t in tasks %}
+	<div class="space-y">
+		<div class="card" id="task-{{ t.id }}">
+			<div class="row g-0">
+				<div class="col-auto">
+					<div class="card-body">
+						{% if t.command == 1 %}
+						<div class="avatar avatar-md" style="background-image: url({{ static('img/snptask.svg') }});"></div>
+						{% else %}
+						<div class="avatar avatar-md" style="background-image: url({{ static('img/snptask.svg') }});"></div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="col">
+					<div class="card-body ps-0">
+						<div class="row">
+							<div class="col">
+								<h4 class="mb-0">
+									<span class="badge bg-azure text-azure-fg me-2">任务名称</span>
+									<a href="#" class="me-4">{{ t.name }}</a>
+									<span class="badge bg-pink text-pink-fg me-2">任务ID</span>
+									<span class="me-4">{{ t.short_id }}</span>
+									<span class="badge bg-lime text-lime-fg me-2">运行数据</span>
+									<a href="#">{{ t.dataset.name }}</a>
+								</h4>
+							</div>
+							<div class="col-auto">								
+								<a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t.author.last_name }}{{ t.author.first_name }}" class="avatar rounded-circle avatar-xs" style="background-image: url(/static/img/avatar.png);"></a>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<div class="mt-3 list-inline mb-0 d-sm-block d-none">
+	                              <div class="list-inline-item">
+	                              	<span class="badge badge-outline text-secondary badge-pill">提交</span>
+	                              	{{ t.created | date("Y.m.d") }}
+	                              	{{ t.created | time("H:i:s") }}
+	                              </div>
+	                              <div class="list-inline-item">
+	                              	<span class="badge badge-outline text-secondary badge-pill">开始</span>
+	                              	<span class="task-start">
+	                              		{{ t.started | date("Y.m.d") }}
+	                              		{{ t.started | time("H:i:s") }}
+	                              	</span>
+	                              </div>
+	                              <div class="list-inline-item">
+	                              	<span class="badge badge-outline text-secondary badge-pill">结束</span>
+	                              	<span class="task-stop">
+	                              		{{ t.stopped | date("Y.m.d") }}
+	                              		{{ t.stopped | time("H:i:s") }}
+	                              	</span>
+	                              </div>
+	                              <div class="list-inline-item">
+	                              	<span class="badge badge-outline text-secondary badge-pill">耗时</span>
+	                              	<span class="task-elapse">
+	                              		{% if t.stopped %}
+	                              		{{ t.stopped | timeuntil(t.started) }}
+	                              		{% endif %}
+	                              	</span>
+	                              </div>
+	                            </div>
+							</div>
+							{% set states = {0: 'red', 1: 'green', 2: 'blue', 3: 'yellow', 4: 'purple'} %}
+							<div class="col-auto">
+								<div class="mt-3 list-inline mb-0 d-sm-block d-none">
+									<div class="list-inline-item">
+										<span class="badge badge-outline text-secondary badge-pill me-1">进度</span>
+										<div class="d-inline-block" style="width:80px;">
+											<div class="progress progress-xs">
+												<div class="progress-bar bg-{{ states[t.status] }}" style="width: {{ t.progress }}%"></div>
+											</div>
+										</div>
+									</div>
+									<div class="list-inline-item">
+										<span class="badge badge-outline text-secondary badge-pill me-1">状态</span>
+										<span class="status-text">{{ t.get_status_display() }}</span>
+										<span class="status-dot {% if t.status in [2,3] %}status-dot-animated{% endif %} status-{{ states[t.status] }} ms-1"></span>
+										
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>-->
+
 <div class="modal modal-blur fade" id="submit-task-dialog" tabindex="-1" role="dialog" aria-hidden="true">
 	<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-		<form action="{{ url('addtask') }}" method="POST" class="modal-content">
+		<form action="{{ url('add-task') }}" method="POST" class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title">提交新任务</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
 				<div class="mb-3">
-					<label class="form-label required">第1个reads文件</label>
-					<input type="text" name="read_one" class="form-control">
+					<label class="form-label required">任务名称</label>
+					<input type="text" name="name" class="form-control">
 				</div>
 				<div class="mb-3">
-					<label class="form-label required">第2个reads文件</label>
-					<input type="text" name="read_two" class="form-control">
+					<label class="form-label required">选择数据</label>
+					<select class="form-select" name="dataset"></select>
+					<div class="mt-2 form-hint">输入数据名称, 样本编号, 患者姓名或登记号可搜索对应数据</div>
+				</div>
+				<div class="mb-3">
+					<label class="form-label required">任务指令</label>
+					<select class="form-select" name="command">
+						{% for k,v in view.model.COMMAND_CHOICES.items() %}
+						<option value="{{ k }}">{{ v }}</option>
+						{% endfor %}
+					</select>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -119,13 +227,16 @@
 {% endblock %}
 
 {% block script %}
+<script src="{{ static('js/select2.min.js') }}"></script>
+<script src="{{ static('js/jquery.validate.min.js') }}"></script>
 <script type="text/javascript">
+$(document).ready(function(){
 const ws_scheme = window.location.protocol == "https:" ? "wss": "ws";
 const ws_path = ws_scheme + '://' + window.location.host + '/ws/socketio/';
 const ws_socket = new WebSocket(ws_path);
 
-const STATE_TEXTS = ['FAILURE', 'SUCCESS', 'RUNNING', 'WAITING']
-const STATE_COLORS = ['bg-danger', 'bg-success', 'bg-blue', 'bg-warning']
+const STATE_TEXTS = ['FAILURE', 'SUCCESS', 'RUNNING', 'WAITING', 'STOPPED']
+const STATE_COLORS = ['red', 'green', 'blue', 'yellow', 'purple']
 
 ws_socket.onmessage = function(e) {
 	let data = JSON.parse(e.data);
@@ -134,13 +245,17 @@ ws_socket.onmessage = function(e) {
 	$.each(data, function(k, v) {
 		switch(k) {
 			case 'status':
-				item.find(".status-badge")
+				item.find(".status-dot")
 					.removeClass()
-					.addClass("status-badge badge " + STATE_COLORS[v]);
+					.addClass("status-dot status-" + STATE_COLORS[v]);
 
-				item.find(".task-progress")
+				if ((v === 2) || (v === 3)) {
+					item.find(".status-dot").addClass("status-dot-animated");
+				}
+
+				item.find(".progress-bar")
 					.removeClass()
-					.addClass("task-progress progress-bar " + STATE_COLORS[v]);
+					.addClass("progress-bar bg-" + STATE_COLORS[v]);
 
 				item.find(".status-text")
 					.text(STATE_TEXTS[v]);
@@ -148,27 +263,28 @@ ws_socket.onmessage = function(e) {
 				break;
 
 			case 'progress':
-				item.find(".task-progress").width(v+'%');
+				item.find(".progress-bar").width(v+'%');
 				break;
 
 			case 'message':
 				break;
 
-			case 'start_time':
+			case 'started':
 				item.find(".task-start").text(v);
-
 				break;
 
-			case 'stop_time':
+			case 'stopped':
 				item.find(".task-stop").text(v);
 				break;
-			case 'elapse_time':
+
+			case 'elapsed':
 				item.find(".task-elapse").text(v);
 				break;
 		}
 	});
 };
 
+/*
 ws_socket.onopen = function(e) {
 	console.log('ws connected!')
 };
@@ -179,6 +295,27 @@ ws_socket.onclose = function(e) {
 
 ws_socket.onerror = function(e) {
 	console.log('error:' + e);
-};
+};*/
+
+
+
+$('select[name="dataset"]').select2({
+	theme: 'classic',
+	width: '100%',
+	dropdownParent: $('#submit-task-dialog'),
+	ajax: {
+		url: "{{ url('fetch-select') }}",
+		delay: 250,
+		dataType: 'json',
+		data: function(params) {
+			return {
+				model: 'dataset',
+				term: params.term,
+			}
+		},
+	}
+});
+
+});
 </script>
 {% endblock %}

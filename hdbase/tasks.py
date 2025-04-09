@@ -1,4 +1,5 @@
 import time
+import random
 import traceback
 
 from django.db import transaction
@@ -10,7 +11,7 @@ from celery import shared_task, Task
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync, sync_to_async
 
-from .models import TaskModel
+from .models import Task as Job
 
 class SocketTask(Task):
 	task_pk = None
@@ -28,37 +29,40 @@ class SocketTask(Task):
 
 	def update_running(self, **kwargs):
 		#self.update_state(state='PROGRESS', meta=kwargs)
-		TaskModel.objects.filter(pk=self.task_pk).update(**kwargs)
+		Job.objects.filter(pk=self.task_pk).update(**kwargs)
 
-		if 'start_time' in kwargs:
-			kwargs['start_time'] = kwargs['start_time'].strftime("%Y-%m-%d %H:%M:%S")
+		if 'started' in kwargs:
+			kwargs['started'] = kwargs['started'].strftime("%Y-%m-%d %H:%M:%S")
 
-		if 'stop_time' in kwargs:
-			kwargs['elapse_time'] = timeuntil(kwargs['stop_time'], self.start_time)
-			kwargs['stop_time'] = kwargs['stop_time'].strftime("%Y-%m-%d %H:%M:%S")
+		if 'stopped' in kwargs:
+			kwargs['elapsed'] = timeuntil(kwargs['stopped'], self.start_time)
+			kwargs['stopped'] = kwargs['stopped'].strftime("%Y-%m-%d %H:%M:%S")
 
 		self.send_message(kwargs)
 
 @shared_task(base=SocketTask, bind=True)
-def human_snp_pipeline(self, pk, r1, r2):
+def call_snp_from_ges(self, pk):
+	pass
+
+@shared_task(base=SocketTask, bind=True)
+def test_pipeline(self, pk):
 	"""
 	@param pk int, the task primary key in database
-	@param r1 str, the first fastq file
-	@param r2 str, the second fastq file
 	"""
 	time.sleep(2)
 	self.start_time = timezone.now()
 	self.task_pk = pk
 
 	self.update_running(
-		status = TaskModel.RUNNING,
-		start_time = self.start_time
+		status = 2,
+		started = self.start_time
 	)
 
 	try:
-		for i in range(int(r1)):
+		num = random.randint(5, 20)
+		for i in range(num):
 			time.sleep(i)
-			p = int(i/int(r1)*100)
+			p = int(i/num*100)
 
 			self.update_running(
 				progress = p,
@@ -66,11 +70,11 @@ def human_snp_pipeline(self, pk, r1, r2):
 			)
 
 	except:
-		status = TaskModel.FAILURE
+		status = 0
 		message = traceback.format_exc()
 
 	else:
-		status = TaskModel.SUCCESS
+		status = 1
 		message = '任务已成功完成'
 
 	finally:
@@ -78,5 +82,5 @@ def human_snp_pipeline(self, pk, r1, r2):
 			status = status,
 			message = message,
 			progress = 100,
-			stop_time = timezone.now()
+			stopped = timezone.now()
 		)

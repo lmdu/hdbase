@@ -1,0 +1,68 @@
+{% set mainmenu = 'datasets' %}
+{% extends 'base.html' %}
+{% block pagetitle %}
+<img src="{{ static('img/dataset.svg') }}" width="32" height="32" class="me-2">
+数据管理
+{% endblock %}
+{% block style %}
+{% endblock %}
+{% block main %}
+<div class="card">
+	<div class="card-header">
+		<h3 class="card-title">
+			数据列表
+			<span class="card-subtitle">Datasets List</span>
+		</h3>
+		<div class="card-actions">
+			<a type="button" class="btn btn-primary" href="{{ url('add-dataset') }}">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-2">
+                    <path d="M12 5l0 14"></path>
+                    <path d="M5 12l14 0"></path>
+                </svg>
+				添加新数据
+			</a>
+		</div>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-selectable card-table table-vcenter text-nowrap datatable">
+			<thead>
+				<tr>
+					<th>数据名称</th>
+					<th>样本编号</th>
+					<th>来源组织</th>
+					<th>来源患者</th>
+					<th>数据文件</th>
+					<th>数据类型</th>
+					<th>产生平台</th>
+					<th>录入时间</th>
+					{% if user.profile.role >= user.profile.ROLE_ADMINITOR %}
+					<th>录入人员</th>
+					{% endif %}
+				</tr>
+			</thead>
+			<tbody>
+				{% for d in datas %}
+				<tr>
+					<td>{{ d.name }}</td>
+					<td>{{ d.code }}</td>
+					<td>{{ d.tissue }}</td>
+					<td>{{ d.patient.name }}</td>
+					<td>
+						<div>{{ d.first.split('/')[-1] }}</div>
+						{% if d.second %}
+						<div>{{ d.second.split('/')[-1] }}</div>
+						{% endif %}
+					</td>
+					<td>{{ d.get_type_display() }}</td>
+					<td>{{ d.platform }}</td>
+					<td>{{ d.created | date("Y-m-d") }}</td>
+					{% if user.profile.role >= user.profile.ROLE_ADMINITOR %}
+					<td>{{ d.author.last_name }}{{ d.author.first_name }}</td>
+					{% endif %}
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endblock %}

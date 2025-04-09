@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% set mainmenu = 'datasets' %}
+{% block style %}
+<link href="{{ static('css/select2.min.css') }}" rel="stylesheet"/>
+<link href="{{ static('css/dropzone.min.css') }}" rel="stylesheet"/>
+<link rel="stylesheet" href="{{ static('jstree/style.min.css') }}">
+<link href="{{ static('css/tabler-vendors.min.css') }}" rel="stylesheet">
+{% endblock %}
+{% block pagetitle %}
+<img src="{{ static('img/dataset.svg') }}" width="32" height="32" class="me-2">
+数据管理
+{% endblock %}
+{% block main %}
+<div  class="card">
+	<div class="card-header">
+		<h3 class="card-title">
+			添加数据
+			<span class="card-subtitle">Add Dataset</span>
+		</h3>
+	</div>
+	<div class="card-body">
+		<div class="mb-3">
+			<h3 class="card-title">上传数据文件</h3>
+			<div class="dropzone" id="file-uploader">
+				<div class="fallback">
+					<input type="file" multiple>
+				</div>
+			</div>
+		</div>
+	</div>
+	<form action="{{ url('add-dataset') }}" method="post">
+		<div class="card-body">
+			<div class="row row-cards">
+				<div class="col-md-2">
+					<div class="mb-3">
+						<label class="form-label required" >样本编号</label>
+						<input type="text" name="code" class="form-control">
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="mb-3">
+						<label class="form-label">样本组织</label>
+						<input type="text" name="tissue" class="form-control">
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="mb-3">
+						<label class="form-label">数据类型</label>
+						<select class="form-select" name="type">
+							{% for k, v in view.model.DATASET_TYPES.items() %}
+							<option value="{{ k }}">{{ v }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="mb-3">
+						<label class="form-label">产生平台</label>
+						<input type="text" name="platform" class="form-control">
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="mb-3">
+						<label class="form-label">关联病人</label>
+						<select class="form-select" name="patient"></select>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="mb-3">
+						<label class="form-label required">数据文件1</label>
+						<div class="row g-2">
+							<div class="col">
+								<input type="text" name="first" class="form-control">
+							</div>
+							<div class="col-auto">
+								<button type="button" class="btn btn-icon" data-input="first" data-bs-toggle="modal" data-bs-target="#file-browser-dialog">
+									<img src="{{ static('img/browser.svg') }}" width="20" height="20">
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="mb-3">
+						<label class="form-label">数据文件2</label>
+						<div class="row g-2">
+							<div class="col">
+								<input type="text" name="second" class="form-control">
+							</div>
+							<div class="col-auto">
+								<button type="button" class="btn btn-icon" data-input="second" data-bs-toggle="modal" data-bs-target="#file-browser-dialog">
+									<img src="{{ static('img/browser.svg') }}" width="20" height="20">
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="mb-3">
+						<label class="form-label">备注信息</label>
+						<textarea class="form-control" name="comment" rows="5"></textarea>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="card-footer">
+			<div class="d-flex">
+				{{ csrf_input }}
+				<button type="submit" class="btn btn-primary ms-auto">提交</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<div class="modal modal-blur fade" id="file-browser-dialog" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">选择文件</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="file-browser-tree" style="overflow: auto; height: 300px;"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn me-auto" data-bs-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">确定</button>
+			</div>
+		</div>	
+	</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{ static('js/select2.min.js') }}"></script>
+<script src="{{ static('jstree/jstree.min.js') }}"></script>
+<script src="{{ static('js/dropzone.min.js') }}"></script>
+<script src="{{ static('js/jquery.validate.min.js') }}"></script>
+<script type="text/javascript">
+Dropzone.autoDiscover = false;
+
+$(document).ready(function(){
+	$('select[name="patient"]').select2({
+		theme: 'classic',
+		width: '100%',
+		minimumInputLength: 1,
+		ajax: {
+			url: "{{ url('fetch-select') }}",
+			delay: 250,
+			dataType: 'json',
+			data: function(params) {
+				return {
+					model: 'patient',
+					term: params.term,
+				}
+			},
+		}
+	});
+
+	$('.file-browser-tree').jstree({
+		'core': {
+			'data': {
+				'url': "{{ url('file-browser') }}",
+				'data': function (node) {
+					return {'id': node.id};
+				}
+			}
+		}
+	});
+
+	$('.btn-icon').click(function(){
+		$("#file-browser-dialog button.btn-primary").data('input', $(this).data('input'));
+	});
+
+	$("#file-browser-dialog button.btn-primary").click(function(){
+		let file_path = $('.file-browser-tree').jstree('get_selected');
+		$('input[name="'+$(this).data('input')+'"]').val(file_path);
+	});
+
+	$("#file-uploader").dropzone({
+		url: "{{ url('upload-file') }}",
+		headers: {
+			'X-CSRFToken': $('input[name=csrfmiddlewaretoken]').val()
+		},
+		init: function(){
+			this.on('success', function(file, data) {
+				var r1 = $('input[name="first"]');
+				var r2 = $('input[name="second"]');
+
+				if (!r1.val()) {
+					r1.val(data.path);
+				} else if (!r2.val()) {
+					r2.val(data.path);
+				}
+			});
+		},
+		dictDefaultMessage: "拖拽文件到这里上传, 非必须, 大文件建议直接硬盘拷贝到目录"
+	});
+
+	$('#sample-form').validate({
+	    normalizer: function(value) {
+	      return $.trim(value);
+	    },
+    	errorClass: 'is-invalid',
+    	validClass: 'is-valid',
+	    rules: {
+	      sample_code: {
+	        required: true,
+	        remote: {
+	        	url: "{{ url('valid-field') }}",
+	        	type: "post",
+	        	headers: {'X-CSRFToken': $('input[name=csrfmiddlewaretoken]').val()},
+	          data: {
+	            sampleid: function() {
+	              return $('input[name=sample_code]').val();
+	            }
+	          }
+	        }
+	      },
+	      sample_name: {
+	        required: true,
+	      },
+	      species: {
+	      	required: true,
+	      }
+    },
+    messages: {
+    	sample_code: {
+    		remote: "编号已存在"
+    	}
+    }
+  });
+});
+</script>
+{% endblock %}
