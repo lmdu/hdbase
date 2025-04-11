@@ -35,9 +35,7 @@
 					<th>数据类型</th>
 					<th>产生平台</th>
 					<th>录入时间</th>
-					{% if user.profile.role >= user.profile.ROLE_ADMINITOR %}
 					<th>录入人员</th>
-					{% endif %}
 				</tr>
 			</thead>
 			<tbody>
@@ -56,9 +54,9 @@
 					<td>{{ d.get_type_display() }}</td>
 					<td>{{ d.platform }}</td>
 					<td>{{ d.created | date("Y-m-d") }}</td>
-					{% if user.profile.role >= user.profile.ROLE_ADMINITOR %}
-					<td>{{ d.author.last_name }}{{ d.author.first_name }}</td>
-					{% endif %}
+					<td>
+						<a data-bs-toggle="tooltip" data-bs-placement="top" title="{{ d.author.last_name }}{{ d.author.first_name }}" class="avatar rounded-circle avatar-xs" style="background-image: url({{ d.author.profile.get_avatar }});"></a>
+					</td>
 				</tr>
 				{% endfor %}
 			</tbody>

@@ -52,7 +52,7 @@
 					<td>{{ t.short_id }}</td>
 					<td>{{ t.dataset.name }}</td>
 					<td>
-						<a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t.author.last_name }}{{ t.author.first_name }}" class="avatar rounded-circle avatar-xs" style="background-image: url(/static/img/avatar.png);"></a>
+						<a data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t.author.last_name }}{{ t.author.first_name }}" class="avatar rounded-circle avatar-xs" style="background-image: url({{ t.author.profile.get_avatar }});"></a>
 					</td>
 					<td>
 						<div>{{ t.created | date("Y-m-d") }}</div>
