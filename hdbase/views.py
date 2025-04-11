@@ -19,7 +19,7 @@ from .tasks import *
 from .forms import *
 
 # Create your views here.
-#@login_required
+@login_required
 def index(request):
 	#add.delay(1,2)
 	return render(request, 'index.html')

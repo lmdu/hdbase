@@ -1,7 +1,8 @@
 from django.db import models
+from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django.dispatch import receiver
+from django.templatetags.static import static
 
 # Create your models here.
 class Profile(models.Model):
@@ -65,6 +66,13 @@ class Profile(models.Model):
 	degree = models.PositiveSmallIntegerField(choices=USER_DEGREES, default=0)
 	position = models.PositiveSmallIntegerField(choices=USER_POSITIONS, default=0)
 	state = models.PositiveSmallIntegerField(choices=USER_STATES, default=0)
+
+	class Meta:
+		ordering = ['-user__date_joined']
+
+	@property
+	def get_avatar(self):
+		return self.avatar.url if self.avatar else static('img/doctor.svg')
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

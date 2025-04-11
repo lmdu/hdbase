@@ -1,4 +1,4 @@
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
@@ -6,6 +6,11 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+
+from .models import *
+from .forms import *
 
 # Create your views here.
 def sign_in(request):
@@ -27,7 +32,7 @@ def sign_in(request):
 			user = authenticate(username=user_id, password=user_pwd)
 
 		if user:
-			if user.profile.identity == 0:
+			if user.profile.role == 0:
 				messages.error(request, "你的帐号未激活, 请联系管理员审核")
 				return render(request, 'error.html')
 
@@ -107,3 +112,20 @@ def setpass(request, action):
 			else:
 				messages.error(request, "输入的原始密码错误!")
 				return render(request, 'error.html')
+
+class CustomerListView(LoginRequiredMixin, ListView):
+	model = Profile
+	template_name = 'customer-list.html'
+	context_object_name = 'customers'
+	paginate_by = 10
+
+class CustomerUpdateView(LoginRequiredMixin, UpdateView):
+	model = Profile
+	form_class = ProfileForm
+	template_name = 'customer-edit.html'
+	success_url = reverse_lazy('list-customer')
+
+class CustomerDeleteView(LoginRequiredMixin, DeleteView):
+	model = Profile
+	template_name = 'customer-delete.html'
+	success_url = reverse_lazy('list-customer')

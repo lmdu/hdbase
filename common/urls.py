@@ -8,7 +8,10 @@ urlpatterns = [
 	path('signin', views.sign_in, name='signin'),
 	path('signup', views.sign_up, name='signup'),
 	path('signout', views.sign_out, name='signout'),
-	path('signvalid', views.sign_valid, name='signvalid')
+	path('signvalid', views.sign_valid, name='signvalid'),
+	path('customers', views.CustomerListView.as_view(), name='list-customer'),
+	path('customer/edit/<int:pk>', views.CustomerUpdateView.as_view(), name='edit-customer'),
+	path('customer/delete/<int:pk>', views.CustomerDeleteView.as_view(), name='delete-customer'),
 ]
 
 if settings.DEBUG:
