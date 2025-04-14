@@ -1,3 +1,5 @@
+from PIL import Image
+
 from django import forms
 
 from .models import *
@@ -61,4 +63,32 @@ class ProfileForm(TablerModelForm):
 			user.save()
 			profile.save()
 		
+		return profile
+
+class AvatarForm(forms.ModelForm):
+	x = forms.FloatField(widget=forms.HiddenInput())
+	y = forms.FloatField(widget=forms.HiddenInput())
+	w = forms.FloatField(widget=forms.HiddenInput())
+	h = forms.FloatField(widget=forms.HiddenInput())
+
+	class Meta:
+		model = Profile
+		fields = ['avatar', 'x', 'y', 'w', 'h']
+
+	def save(self):
+		profile = super().save()
+
+		x = self.cleaned_data.get('x')
+		y = self.cleaned_data.get('y')
+		w = self.cleaned_data.get('w')
+		h = self.cleaned_data.get('h')
+
+		image = Image.open(profile.avatar)
+		crop_img = image.crop((x, y, x+w, y+h))
+
+		if w > 200:
+			crop_img = crop_img.resize((200, 200), Image.ANTIALIAS)
+
+		crop_img.save(profile.avatar.path)
+
 		return profile

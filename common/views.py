@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import View, ListView, CreateView, UpdateView, DeleteView
 
 from .models import *
 from .forms import *
@@ -112,6 +112,21 @@ def setpass(request, action):
 			else:
 				messages.error(request, "输入的原始密码错误!")
 				return render(request, 'error.html')
+
+class AvatarUploadView(LoginRequiredMixin, View):
+	def post(self, request):
+		profile = self.request.user.profile
+		form = AvatarForm(request.POST, request.FILES, instance=profile)
+
+		if form.is_valid():
+			form.save()
+			return JsonResponse({'path': self.request.user.profile.get_avatar})
+
+		return JsonResponse({'error': 'upload error'})
+
+class AvatarDeleteView(LoginRequiredMixin, View):
+	def post(self, request):
+		pass
 
 class CustomerListView(LoginRequiredMixin, ListView):
 	model = Profile

@@ -14,6 +14,8 @@ urlpatterns = [
 	path('customers', views.CustomerListView.as_view(), name='list-customer'),
 	path('customer/edit/<int:pk>', views.CustomerUpdateView.as_view(), name='edit-customer'),
 	path('customer/delete/<int:pk>', views.CustomerDeleteView.as_view(), name='delete-customer'),
+	path('avatar/upload', views.AvatarUploadView.as_view(), name='upload-avatar'),
+	path('avatar/delete', views.AvatarDeleteView.as_view(), name='delete-avatar'),
 ]
 
 if settings.DEBUG:
