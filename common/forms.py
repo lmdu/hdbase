@@ -47,11 +47,18 @@ class ProfileForm(TablerModelForm):
 		self.fields['last_name'].initial = user.last_name
 		self.fields['first_name'].initial = user.first_name
 		self.fields['email'].initial = user.email
+		self.fields['role'].required = False
+		self.fields['state'].required = False
 
-	def save(self):
+	def save(self, commit=True):
 		profile = super().save(commit=False)
-		profile.user.first_name = self.cleaned_data['first_name']
-		profile.user.last_name = self.cleaned_data['last_name']
-		profile.user.email = self.cleaned_data['email']
-		profile.user.save()
+		user = profile.user
+		user.first_name = self.cleaned_data['first_name']
+		user.last_name = self.cleaned_data['last_name']
+		user.email = self.cleaned_data['email']
+		
+		if commit:
+			user.save()
+			profile.save()
+		
 		return profile

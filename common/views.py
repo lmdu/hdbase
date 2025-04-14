@@ -129,3 +129,17 @@ class CustomerDeleteView(LoginRequiredMixin, DeleteView):
 	model = Profile
 	template_name = 'customer-delete.html'
 	success_url = reverse_lazy('list-customer')
+
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+	model = Profile
+	form_class = ProfileForm
+	template_name = 'profile-edit.html'
+	success_url = reverse_lazy('profile')
+
+	def get_object(self):
+		return self.request.user.profile
+
+class PasswordUpdateView(LoginRequiredMixin, UpdateView):
+	model = Profile
+	template_name = 'setpass.html'
+	success_url = reverse_lazy('setpass')

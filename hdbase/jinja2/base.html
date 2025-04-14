@@ -19,7 +19,7 @@
           </button>
           <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
             <a href="{{ url('index') }}">
-              <img src="{{ static('img/logo.svg') }}" width="64" height="64" alt="GuoLab">
+              <img src="{{ static('img/logo.svg') }}" width="64" height="64" alt="LiLab">
               心脏疾病数据库
             </a>
           </h1>
@@ -33,7 +33,7 @@
                 </div>
               </a>
               <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <a href="{ url('profile', kwargs={'action': 'view'}) }" class="dropdown-item">个人资料</a>
+                <a href="{{ url('profile') }}" class="dropdown-item">个人资料</a>
                 <div class="dropdown-divider"></div>
                 <a href="{{ url('signout') }}" class="dropdown-item">退出</a>
               </div>

@@ -46,16 +46,22 @@
 					<td>{{ d.tissue }}</td>
 					<td>{{ d.patient.name }}</td>
 					<td>
-						<div>{{ d.first.split('/')[-1] }}</div>
+						<div>
+							<span class="badge bg-red-lt">F1</span>
+							{{ d.first.split('/')[-1] }}
+						</div>
 						{% if d.second %}
-						<div>{{ d.second.split('/')[-1] }}</div>
+						<div class="mt-2">
+							<span class="badge bg-blue-lt">F2</span>
+							{{ d.second.split('/')[-1] }}
+						</div>
 						{% endif %}
 					</td>
 					<td>{{ d.get_type_display() }}</td>
 					<td>{{ d.platform }}</td>
 					<td>{{ d.created | date("Y-m-d") }}</td>
 					<td>
-						<a data-bs-toggle="tooltip" data-bs-placement="top" title="{{ d.author.last_name }}{{ d.author.first_name }}" class="avatar rounded-circle avatar-xs" style="background-image: url({{ d.author.profile.get_avatar }});"></a>
+						<a data-bs-toggle="tooltip" data-bs-placement="top" title="{{ d.author.last_name }}{{ d.author.first_name }}" class="avatar rounded-circle avatar-sm" style="background-image: url({{ d.author.profile.get_avatar }});"></a>
 					</td>
 				</tr>
 				{% endfor %}

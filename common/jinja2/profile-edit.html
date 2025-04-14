@@ -1,0 +1,101 @@
+{% extends 'profile.html' %}
+{% set submenu = 'account' %}
+{% block pagetitle %}
+个人资料
+{% endblock %}
+{% block form %}
+{% if form.errors %}
+<div>{{ form.errors }}</div>
+{% endif %}
+<form method="post">
+    <div class="card-body">
+      <h2 class="mb-4">我的帐号</h2>
+      <h3 class="card-title"><strong>头像</strong></h3>
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <span class="avatar avatar-xl" style="background-image: url({{ user.profile.get_avatar }})"></span>
+        </div>
+        <div class="col-auto">
+          <a href="https://cravatar.cn/avatars" class="btn" target="_blank">
+            修改头像
+          </a>
+        </div>
+      </div>
+      <h3 class="card-title mt-4"><strong>基本信息</strong></h3>
+      <div class="row g-3">
+        <div class="col-md-4 col-sm-6">
+          {{ form.username.as_field_group() }}
+        </div>
+        <div class="col-md-4 col-sm-6">
+          {{ form.last_name.as_field_group() }}
+        </div>
+        <div class="col-md-4 col-sm-6">
+          {{ form.first_name.as_field_group() }}
+        </div>
+        <div class="col-md-4 col-sm-6">
+          {{ form.email.as_field_group() }}
+        </div>
+        <div class="col-md-4 col-sm-6">
+          {{ form.phone.as_field_group() }}
+        </div>
+        <div class="col-md-4 col-sm-6">
+          {{ form.major.as_field_group() }}
+        </div>
+      </div>
+      <h3 class="card-title mt-4"><strong>状态信息</strong></h3>
+      <div class="row g-3">
+        <div class="col-md-4 col-sm-6">
+          {{ form.title.as_field_group() }}
+        </div>
+        <div class="col-md-4 col-sm-6">
+          {{ form.degree.as_field_group() }}
+        </div>
+        <div class="col-md-4 col-sm-6">
+          {{ form.position.as_field_group() }}
+        </div>
+      </div>
+      <h3 class="card-title mt-4"><strong>个人介绍</strong></h3>
+      <p class="card-subtitle">这里可以编写长段的个人简介信息</p>
+      <div class="row">
+        <div class="col-12">
+          {{ form.resume.as_field_group() }}
+        </div>
+      </div>
+    </div>
+    <div class="card-footer bg-transparent mt-auto">
+      <div class="btn-list justify-content-end">
+        <button type="Submit" class="btn btn-primary">修改</button>
+      </div>
+    </div>
+    {{ csrf_input }}
+</form>
+{% endblock %}
+
+{% block script %}
+<script src="{{ static('js/jquery.validate.min.js') }}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('label').addClass('form-label');
+
+  $('form').validate({
+    normalizer: function(value) {
+      return $.trim(value);
+    },
+    errorClass: 'is-invalid',
+    validClass: 'is-valid',
+    rules: {
+      last_name: {
+        required: true
+      },
+      first_name: {
+        required: true
+      },
+      email: {
+        required: true,
+        email: true
+      }
+    }
+  });
+});
+</script>
+{% endblock %}
