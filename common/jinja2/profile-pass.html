@@ -1,0 +1,71 @@
+{% extends "profile.html" %}
+{% set submenu = 'password' %}
+{% block pagetitle %}
+个人资料
+{% endblock %}
+{% block form %}
+<form action="{{ url('setpass') }}" method="post" id="password-form">
+  <div class="card-body">
+    <h2 class="mb-4">修改密码</h2>
+    <div class="row g-3">
+      <div class="col-md-6 col-sm-12">
+        <div class="form-label">原始密码</div>
+        <input type="password" class="form-control" name="old_passwd">
+        <div class="form-hint">输入原始登录密码</div>
+      </div>
+    </div>
+    <div class="row g-3 mt-3">
+      <div class="col-md-6 col-sm-12">
+        <div class="form-label">新密码</div>
+        <input type="password" class="form-control" name="new_passwd" id="new-passwd">
+        <div class="form-hint">输入新密码, 至少输入6个字符</div>
+      </div>
+    </div>
+    <div class="row g-3 mt-3">
+      <div class="col-md-6 col-sm-12">
+        <div class="form-label">重复新密码</div>
+        <input type="password" class="form-control" name="new_passwd2">
+        <div class="form-hint">重复输入新密码, 必须输入上面一样的密码</div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer bg-transparent mt-auto">
+    <div class="btn-list justify-content-end">
+      <button type="Submit" class="btn btn-primary">
+        确认修改
+      </button>
+    </div>
+  </div>
+  <input type="hidden" name="uid" value="{{ request.user.id }}">
+  {{ csrf_input }}
+</form>
+{% endblock %}
+{% block script %}
+<script src="{{ static('js/jquery.validate.min.js') }}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#password-form').validate({
+    normalizer: function(value) {
+      return $.trim(value);
+    },
+    errorClass: 'is-invalid',
+    validClass: 'is-valid',
+    rules: {
+      old_passwd: {
+        required: true,
+        minlength: 6,
+      },
+      new_passwd: {
+        required: true,
+        minlength: 6,
+      },
+      new_passwd2: {
+        required: true,
+        minlength: 6,
+        equalTo: "#new-passwd",
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

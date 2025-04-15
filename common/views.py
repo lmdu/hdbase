@@ -116,17 +116,20 @@ def setpass(request, action):
 class AvatarUploadView(LoginRequiredMixin, View):
 	def post(self, request):
 		profile = self.request.user.profile
+		profile.avatar.delete()
 		form = AvatarForm(request.POST, request.FILES, instance=profile)
 
 		if form.is_valid():
 			form.save()
-			return JsonResponse({'path': self.request.user.profile.get_avatar})
+			return JsonResponse({'path': profile.get_avatar})
 
 		return JsonResponse({'error': 'upload error'})
 
 class AvatarDeleteView(LoginRequiredMixin, View):
 	def post(self, request):
-		pass
+		profile = self.request.user.profile
+		profile.avatar.delete()
+		return JsonResponse({'path': profile.get_avatar})
 
 class CustomerListView(LoginRequiredMixin, ListView):
 	model = Profile
@@ -154,7 +157,19 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 	def get_object(self):
 		return self.request.user.profile
 
-class PasswordUpdateView(LoginRequiredMixin, UpdateView):
-	model = Profile
-	template_name = 'setpass.html'
-	success_url = reverse_lazy('setpass')
+class PasswordUpdateView(LoginRequiredMixin, View):
+	def get(self, request):
+		return render(request, 'profile-pass.html')
+
+	def post(self, request):
+		old = request.POST.get('old_passwd')
+		new = request.POST.get('new_passwd')
+
+		if self.request.user.check_password(old):
+			self.request.user.set_password(new)
+			self.request.user.save()
+			logout(request)
+			return redirect('signin')
+		else:
+			messages.error(request, "原始密码验证出错")
+			return redirect('setpass')

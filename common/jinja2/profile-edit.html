@@ -17,7 +17,7 @@
         </div>
         <div class="col-auto">
           <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#avatar-uploader-dialog">修改头像</button>
-          <button type="button" class="btn btn-danger" id="delete-avatar">删除头像</button>
+          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#avatar-delete-dialog">删除头像</button>
         </div>
       </div>
       <h3 class="card-title mt-4"><strong>基本信息</strong></h3>
@@ -71,7 +71,7 @@
 
 <div class="modal modal-blur fade" id="avatar-uploader-dialog" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-    <form action="{{ url('upload-avatar') }}" method="POST" class="modal-content" enctype="multipart/form-data" id="avatar-form">
+    <form method="POST" class="modal-content" enctype="multipart/form-data" id="avatar-form">
       <div class="modal-header">
         <h5 class="modal-title">修改头像</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -91,6 +91,51 @@
       </div>
       {{ csrf_input }}
     </form>
+  </div>
+</div>
+
+<div class="modal modal-blur fade" id="avatar-delete-dialog" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-status bg-danger"></div>
+      <div class="modal-body text-center py-4">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="icon mb-2 text-danger icon-lg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M12 9v2m0 4v.01" />
+          <path
+            d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75"
+          />
+        </svg>
+        <h3>你确定要删除头像吗?</h3>
+        <div class="text-secondary">
+          删除头像不可恢复, 请谨慎操作, 头像删除后将使用默认头像
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="w-100">
+          <div class="row">
+            <div class="col">
+              <button type="button" class="btn w-100" data-bs-dismiss="modal">取消</a>
+            </div>
+            <div class="col">
+              <button type="button" class="btn btn-danger w-100" data-bs-dismiss="modal" id="avatar-delete">确定</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
@@ -155,7 +200,7 @@ $(document).ready(function(){
     form_data.append('h', crop_data.height);
 
     $.ajax({
-      url: $('#avatar-form').attr('action'),
+      url: "{{ url('upload-avatar') }}",
       type: 'POST',
       data: form_data,
       async: false,
@@ -168,6 +213,14 @@ $(document).ready(function(){
       error: function(data) {
         alert('upload error');
       }
+    });
+  });
+
+  $('#avatar-delete').click(function() {
+    $.post("{{ url('delete-avatar') }}", {
+      csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+    }, function(data){
+      $('#avatar-show').css('background-image', "url("+data.path+")");
     });
   });
 

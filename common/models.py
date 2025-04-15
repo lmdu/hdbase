@@ -71,6 +71,10 @@ class Profile(models.Model):
 		ordering = ['-user__date_joined']
 
 	@property
+	def full_name(self):
+		return "{}{}".format(self.user.last_name, self.user.first_name)
+
+	@property
 	def get_avatar(self):
 		return self.avatar.url if self.avatar else static('img/doctor.svg')
 

@@ -25,6 +25,14 @@ def index(request):
 	return render(request, 'index.html')
 
 @login_required
+def aboutus(request):
+	return render(request, 'about.html')
+
+@login_required
+def changelog(request):
+	return render(request, 'changelog.html')
+
+@login_required
 def upload_process(request):
 	if request.method == 'POST':
 		file = request.FILES.get('file')

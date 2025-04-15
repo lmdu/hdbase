@@ -6,6 +6,8 @@ from .views import *
 
 urlpatterns = [
 	path('', index, name='index'),
+	path('aboutus', aboutus, name='aboutus'),
+	path('changelog', changelog, name='changelog'),
 	path('validate', validate_field, name='valid-field'),
 	path('upload', upload_process, name='upload-file'),
 	path('browser', get_file_browser, name='file-browser'),
