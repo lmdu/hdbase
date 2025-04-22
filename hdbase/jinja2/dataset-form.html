@@ -31,19 +31,25 @@
 	<form action="{{ url('add-dataset') }}" method="post">
 		<div class="card-body">
 			<div class="row row-cards">
-				<div class="col-md-2">
+				<div class="col-md-3">
 					<div class="mb-3">
 						<label class="form-label required" >样本编号</label>
 						<input type="text" name="code" class="form-control">
 					</div>
 				</div>
-				<div class="col-md-2">
+				<div class="col-md-3">
 					<div class="mb-3">
 						<label class="form-label">样本组织</label>
 						<input type="text" name="tissue" class="form-control">
 					</div>
 				</div>
-				<div class="col-md-2">
+				<div class="col-md-3">
+					<div class="mb-3">
+						<label class="form-label">数据名称</label>
+						<input type="text" name="name" class="form-control">
+					</div>
+				</div>
+				<div class="col-md-3">
 					<div class="mb-3">
 						<label class="form-label">数据类型</label>
 						<select class="form-select" name="type">
@@ -53,13 +59,13 @@
 						</select>
 					</div>
 				</div>
-				<div class="col-md-3">
+				<div class="col-md-6">
 					<div class="mb-3">
 						<label class="form-label">产生平台</label>
 						<input type="text" name="platform" class="form-control">
 					</div>
 				</div>
-				<div class="col-md-3">
+				<div class="col-md-6">
 					<div class="mb-3">
 						<label class="form-label">关联病人</label>
 						<select class="form-select" name="patient"></select>

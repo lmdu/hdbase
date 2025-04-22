@@ -163,7 +163,7 @@ class DatasetCreateView(LoginRequiredMixin, CreateView):
 	template_name = 'dataset-form.html'
 	success_url = reverse_lazy('list-datasets')
 	http_method_names = ['get', 'post']
-	fields = ['code', 'tissue', 'first', 'second', 'type', 'platform', 'comment', 'patient']
+	fields = ['name', 'code', 'tissue', 'first', 'second', 'type', 'platform', 'comment', 'patient']
 
 	def form_valid(self, form):
 		form.instance.author = self.request.user

@@ -16,13 +16,13 @@
   // raw DICOM instances). Backslashes must be either escaped by
   // doubling them, or replaced by forward slashes "/".
   // "StorageDirectory" : "OrthancStorage",
-  "StorageDirectory" : "/mnt/d/coding/hdbase/dicoms",
+  "StorageDirectory" : "/mnt/d/adu123/Coding/hdbase/dicoms",
 
   // Path to the directory that holds the SQLite index (if unset, the
   // value of StorageDirectory is used). This index could be stored on
   // a RAM-drive or a SSD device for performance reasons.
   // "IndexDirectory" : "OrthancStorage",
-  "IndexDirectory" : "/mnt/d/coding/hdbase/dicoms",
+  "IndexDirectory" : "/mnt/d/adu123/Coding/hdbase/dicoms",
 
   // Path to the directory where Orthanc stores its large temporary
   // files. The content of this folder can be safely deleted once
@@ -86,7 +86,7 @@
   // folders, in which case they will be scanned non-recursively to
   // find shared libraries. Backslashes must be either escaped by
   // doubling them, or replaced by forward slashes "/".
-  "Plugins" : ["/mnt/d/coding/hdbase/orthanc/libs"
+  "Plugins" : ["/mnt/d/adu123/Coding/hdbase/orthanc/libs"
   ],
 
   // Maximum number of processing jobs that are simultaneously running
