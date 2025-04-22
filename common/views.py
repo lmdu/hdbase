@@ -9,10 +9,15 @@ from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, ListView, CreateView, UpdateView, DeleteView
 
+from django.contrib.auth.views import LoginView
+
 from .models import *
 from .forms import *
 
 # Create your views here.
+class SigninView(LoginView):
+	template_name = 'signin.html'
+
 def sign_in(request):
 	if request.user.is_authenticated:
 		return redirect('index')
@@ -24,17 +29,12 @@ def sign_in(request):
 		user_id = request.POST.get('userid')
 		user_pwd = request.POST.get('userpass')
 
-		user = None
-		if '@' in user_id:
-			user = authenticate(email=user_id, password=user_pwd)
-
-		if not user:
-			user = authenticate(username=user_id, password=user_pwd)
+		user = authenticate(username=user_id, password=user_pwd)
 
 		if user:
 			if user.profile.role == 0:
 				messages.error(request, "你的帐号未激活, 请联系管理员审核")
-				return render(request, 'error.html')
+				return redirect('signin')
 
 			login(request, user)
 			return redirect('index')
@@ -74,18 +74,6 @@ def sign_valid(request):
 		elif 'useremail' in request.POST:
 			user_email = request.POST.get('useremail')
 			query = User.objects.filter(email=user_email)
-
-		elif 'sampleid' in request.POST:
-			sample_id = request.POST.get('sampleid')
-			query = Sample.objects.filter(sample_code=sample_id)
-
-		elif 'specimenid' in request.POST:
-			specimen_id = request.POST.get('specimenid')
-			query = Specimen.objects.filter(specimen_code=specimen_id)
-
-		elif 'speciesid' in request.POST:
-			species_id = request.POST.get('speciesid')
-			query = Species.objects.filter(species_en=species_id)
 
 		return HttpResponse(str(not query.exists()).lower())
 

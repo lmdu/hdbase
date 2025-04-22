@@ -11,18 +11,18 @@
       <div class="col-12 col-lg-6 col-xl-4 border-top-wide border-primary d-flex flex-column justify-content-center">
         <div class="container container-tight my-5 px-lg-5">
           <div class="text-center mb-4">
-            <a href="." class="navbar-brand navbar-brand-autodark"><img src="{{ static('img/logo.png') }}" height="120" alt=""></a>
+            <a href="{{ url('index') }}" class="navbar-brand navbar-brand-autodark"><img src="{{ static('img/logo.svg') }}" height="120" width="120" alt=""></a>
           </div>
           <h2 class="h3 text-center mb-3">
-            动物多样性与生态保育宜宾市重点实验室
+            四川大学华西第二医院心血管疾病实验室
           </h2>
           <h3 class="h3 text-center mb-3">
-            样本管理系统
+            数据库管理系统
           </h3>
           <form id="login-form" action="{{ url('signin') }}" method="post" autocomplete="off" novalidate>
             <div class="mb-3">
               <label class="form-label">帐号</label>
-              <input type="text" class="form-control" name="userid" placeholder="用户名或邮箱" autocomplete="off">
+              <input type="text" class="form-control" name="userid" placeholder="用户名" autocomplete="off">
             </div>
             <div class="mb-2">
               <label class="form-label">
