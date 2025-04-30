@@ -4,8 +4,8 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ static('css/tabler.min.css') }}" />
-    <link rel="stylesheet" href="{{ static('css/tabler-vendors.min.css') }}">
+    <link rel="stylesheet" href="{{ static('tabler/tabler.min.css') }}" />
+    <link rel="stylesheet" href="{{ static('tabler/tabler-vendors.min.css') }}">
     {% block style %}{% endblock %}
     <link rel="stylesheet" href="{{ static('css/style.css') }}">
     {% block head %}{% endblock %}
@@ -153,7 +153,7 @@
         </footer>
       </div>
     </div>
-    <script src="{{ static('js/tabler.min.js') }}"></script>
+    <script src="{{ static('tabler/tabler.min.js') }}"></script>
     <script src="{{ static('js/jquery.min.js') }}"></script>
     {% block script %}{% endblock %}
   </body>
