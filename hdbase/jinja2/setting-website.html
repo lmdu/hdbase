@@ -1,0 +1,70 @@
+{% extends "setting.html" %}
+{% set submenu = 'website' %}
+{% block form %}
+<form action="{{ url('setting-website') }}" method="post" id="parameter-form">
+  <div class="card-body">
+    <div class="row">
+        <label class="col-3 col-form-label">标题</label>
+        <div class="col">
+          <input type="text" class="form-control" name="name">
+        </div>
+    </div>
+    <div class="row mt-3">
+        <label class="col-3 col-form-label">副标题</label>
+        <div class="col">
+          <input type="text" class="form-control" name="description">
+        </div>
+    </div>
+    <div class="row mt-3">
+        <label class="col-3 col-form-label">Logo</label>
+        <div class="col">
+          <input type="file" class="form-control" name="logo">
+        </div>
+    </div>
+    <div class="row mt-3">
+        <label class="col-3 col-form-label">图标</label>
+        <div class="col">
+          <input type="file" class="form-control" name="favicon">
+        </div>
+    </div>
+  </div>
+  <div class="card-footer bg-transparent mt-auto">
+    <div class="btn-list justify-content-end">
+      <button type="Submit" class="btn btn-primary">
+        确认修改
+      </button>
+    </div>
+  </div>
+  <input type="hidden" name="uid" value="{{ request.user.id }}">
+  {{ csrf_input }}
+</form>
+{% endblock %}
+{% block script %}
+<script src="{{ static('js/jquery.validate.min.js') }}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#password-form').validate({
+    normalizer: function(value) {
+      return $.trim(value);
+    },
+    errorClass: 'is-invalid',
+    validClass: 'is-valid',
+    rules: {
+      old_passwd: {
+        required: true,
+        minlength: 6,
+      },
+      new_passwd: {
+        required: true,
+        minlength: 6,
+      },
+      new_passwd2: {
+        required: true,
+        minlength: 6,
+        equalTo: "#new-passwd",
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

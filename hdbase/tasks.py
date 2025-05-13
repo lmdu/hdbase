@@ -1,5 +1,6 @@
 import time
 import random
+import tempfile
 import traceback
 
 from django.db import transaction
@@ -11,7 +12,8 @@ from celery import shared_task, Task
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync, sync_to_async
 
-from .models import Task as Job
+from .models import *
+from .pipeline import *
 
 class SocketTask(Task):
 	task_pk = None
@@ -40,12 +42,55 @@ class SocketTask(Task):
 
 		self.send_message(kwargs)
 
-@shared_task(base=SocketTask, bind=True)
-def call_snp_from_ges(self, pk):
-	pass
+	def do_step(self, step, progress, func):
+		self.update_running(step=step)
+		func()
+		self.update_running(progress=progress)
 
 @shared_task(base=SocketTask, bind=True)
-def test_pipeline(self, pk):
+def call_snp_from_ges(self, task_pk, task_id, params):
+	"""
+	@param task_pk int, the task primary key in database
+	@param task_id str, the short hash id of the task
+	@param params dict, the parameter for this pipeline
+	"""
+	time.sleep(2)
+	self.start_time = timezone.now()
+	self.task_pk = task_pk
+	self.task_id = task_id
+
+	self.update_running(
+		status = 2,
+		started = self.start_time
+	)
+
+	try:
+		pipeline = WESPipeline(task_id, params)
+
+		for step in pipeline.steps:
+			self.do_step(**step)
+
+	except:
+		status = 0
+		message = traceback.format_exc()
+		print(message)
+
+	else:
+		status = 1
+		message = '任务已成功完成'
+
+	finally:
+		self.update_running(
+			status = status,
+			message = message,
+			progress = 100,
+			stopped = timezone.now()
+		)
+		#self.temp_dir.cleanup()
+
+
+@shared_task(base=SocketTask, bind=True)
+def test_pipeline(self, pk, params):
 	"""
 	@param pk int, the task primary key in database
 	"""
@@ -59,6 +104,8 @@ def test_pipeline(self, pk):
 	)
 
 	try:
+		print(params)
+
 		num = random.randint(5, 20)
 		for i in range(num):
 			time.sleep(i)

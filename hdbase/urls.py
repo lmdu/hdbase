@@ -10,7 +10,7 @@ urlpatterns = [
 	path('changelog', changelog, name='changelog'),
 	path('validate', validate_field, name='valid-field'),
 	path('upload', upload_process, name='upload-file'),
-	path('browser', get_file_browser, name='file-browser'),
+	path('browser', FileBrowseView.as_view(), name='file-browser'),
 	path('select', fetch_for_select, name='fetch-select'),
 	path('tasks', TaskListView.as_view(), name='list-tasks'),
 	path('task/add', TaskCreateView.as_view(), name='add-task'),
@@ -18,4 +18,7 @@ urlpatterns = [
 	path('patient/add', PatientCreateView.as_view(), name='add-patient'),
 	path('datasets', DatasetListView.as_view(), name='list-datasets'),
 	path('dataset/add', DatasetCreateView.as_view(), name='add-dataset'),
+	path('setting/website', WebsiteSettingView.as_view(), name='setting-website'),
+	path('setting/global', GlobalSettingView.as_view(), name='setting-global'),
+	path('setting/parameter', ParameterSettingView.as_view(), name='setting-parameter'),
 ]

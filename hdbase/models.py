@@ -4,6 +4,10 @@ from django.contrib.auth.models import User
 from froala_editor.fields import FroalaField
 
 # Create your models here.
+class Option(models.Model):
+	name = models.CharField(max_length=50)
+	values = models.JSONField(blank=True, default=dict)
+
 class Disease(models.Model):
 	name = models.CharField(max_length=50)
 	comment = models.TextField(blank=True, default='')
@@ -121,7 +125,7 @@ class Dataset(models.Model):
 	class Meta:
 		ordering = ['-created']
 
-class Task(models.Model):
+class Job(models.Model):
 	FAILURE = 0
 	SUCCESS = 1
 	RUNNING = 2
@@ -137,8 +141,8 @@ class Task(models.Model):
 	}
 
 	COMMAND_CHOICES = {
-		1: 'Call SNPs for WES',
-		0: 'Run test task',
+		1: '全外显子组分析',
+		0: '模拟任务测试',
 	}
 
 	short_id = models.CharField(max_length=10, blank=True, default='')
@@ -147,6 +151,7 @@ class Task(models.Model):
 	command = models.PositiveSmallIntegerField(choices=COMMAND_CHOICES, default=0)
 	status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=3)
 	progress = models.PositiveSmallIntegerField(default=0)
+	step = models.PositiveSmallIntegerField(default=0)
 	message = models.TextField(blank=True, default='')
 	created = models.DateTimeField(auto_now_add=True)
 	started = models.DateTimeField(blank=True, null=True)

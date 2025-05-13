@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import psutil
+
 from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse, reverse_lazy
@@ -11,7 +13,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.views.generic import ListView, CreateView
+from django.views.generic import View, ListView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import *
@@ -51,26 +53,24 @@ def upload_process(request):
 def validate_field(request):
 	pass
 
-@login_required
-def get_file_browser(request):
-	current_dir = request.GET.get('id')
+class FileBrowseView(LoginRequiredMixin, View):
+	def get(self, request):
+		current_dir = request.GET.get('id')
 
-	if current_dir == '#':
-		current_dir = settings.MEDIA_ROOT
+		if current_dir == '#':
+			opt, _ = Option.objects.get_or_create(name='global')
+			current_dir = opt.values.get('rawdir', '/tmp')
 
-	fpath = Path(current_dir or BASE_DIR)
+		children = []
+		for item in Path(current_dir).iterdir():
+			children.append({
+				'id': str(item),
+				'text': item.name,
+				'icon': '/static/img/folder.svg' if item.is_dir() else '/static/img/file.svg',
+				'children': item.is_dir()
+			})
 
-	children = []
-
-	for item in fpath.iterdir():
-		children.append({
-			'id': str(item),
-			'text': item.name,
-			'icon': '/static/img/folder.svg' if item.is_dir() else '/static/img/file.svg',
-			'children': item.is_dir()
-		})
-
-	return JsonResponse(children, safe=False)
+		return JsonResponse(children, safe=False)
 
 @login_required
 def fetch_for_select(request):
@@ -121,6 +121,44 @@ def fetch_for_select(request):
 		'pagination': {'more': False}
 	})
 
+class WebsiteSettingView(LoginRequiredMixin, View):
+	def get(self, request):
+		return render(request, 'setting-website.html')
+
+	def post(self, request):
+		pass
+
+class GlobalSettingView(LoginRequiredMixin, View):
+	def get(self, request):
+		params, _ = Option.objects.get_or_create(name='global')
+		return render(request, 'setting-global.html', {
+			'cpu_count': psutil.cpu_count(),
+			'params': params.values
+		})
+
+	def post(self, request):
+		params = request.POST.dict()
+		params.pop('csrfmiddlewaretoken')
+		obj = Option.objects.get(name='global')
+		obj.values = params
+		obj.save()
+		return redirect('setting-global')
+
+class ParameterSettingView(LoginRequiredMixin, View):
+	def get(self, request):
+		params, _ = Option.objects.get_or_create(name='parameter')
+		return render(request, 'setting-parameter.html', {
+			'params': params.values
+		})
+
+	def post(self, request):
+		params = request.POST.dict()
+		params.pop('csrfmiddlewaretoken')
+		obj = Option.objects.get(name='parameter')
+		obj.values = params
+		obj.save()
+		return redirect('setting-parameter')
+
 class DiseaseListView(LoginRequiredMixin, ListView):
 	model = Disease
 	template_name = 'disease-list.html'
@@ -169,15 +207,21 @@ class DatasetCreateView(LoginRequiredMixin, CreateView):
 		form.instance.author = self.request.user
 		return super().form_valid(form)
 
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		opt, _ = Option.objects.get_or_create(name='global')
+		context["rawdir"] = opt.values.get('rawdir', '/tmp')
+		return context
+
 #@login_required
 class TaskListView(LoginRequiredMixin, ListView):
-	model = Task
+	model = Job
 	template_name = 'task-list.html'
 	context_object_name = 'tasks'
 	paginate_by = 10
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
-	model = Task
+	model = Job
 	success_url = reverse_lazy('list-tasks')
 	http_method_names = ['post']
 	fields = ['name', 'command', 'dataset']
@@ -185,13 +229,19 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 	def form_valid(self, form):
 		form.instance.author = self.request.user
 		response = super().form_valid(form)
-		tid = self.object.id
+
+		opt = Option.objects.get(name='global')
+		params = opt.values
+		opt = Option.objects.get(name='parameter')
+		params.update(opt.values)
+		params['read1'] = self.object.dataset.first
+		params['read2'] = self.object.dataset.second
 
 		def on_commit():
 			if self.object.command == 1:
-				task = call_snp_from_ges.delay(self.object.id)
+				task = call_snp_from_ges.delay(self.object.id, self.object.short_id, params)
 			else:
-				task = test_pipeline.delay(self.object.id)
+				task = test_pipeline.delay(self.object.id, self.object.short_id, params)
 
 			self.object.long_id = task.id
 			self.object.short_id = task.id[0:8]

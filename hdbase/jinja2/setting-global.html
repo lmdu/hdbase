@@ -1,0 +1,73 @@
+{% extends "setting.html" %}
+{% set submenu = 'global' %}
+{% block form %}
+<form action="{{ url('setting-global') }}" method="post" id="parameter-form">
+  <div class="card-body">
+    <h3 class="mb-3">全局设置</h3>
+    <div class="row g-2">
+      <div class="col-md-6 col-sm-12">
+        <div class="form-label">同时运行最大任务数</div>
+        <input type="number" class="form-control" name="workers" value="{{ params.get('workers', 1) }}" min="1">
+      </div>
+    </div>
+    <div class="row g-2 mt-1">
+      <div class="col-md-6 col-sm-12">
+        <div class="form-label">单个任务能使用的最大线程数</div>
+        <input type="number" class="form-control" name="threads" value="{{ params.get('threads', 8) }}" min="1">
+        <div class="form-hint">注意: 任务数 x 线程数 < {{ cpu_count }}</div>
+      </div>
+    </div>
+    <div class="row g-2 mt-1">
+      <div class="col-md-6 col-sm-12">
+        <div class="form-label">工作目录目录</div>
+        <input type="text" class="form-control" name="workdir" value="{{ params.get('workdir', '/tmp') }}">
+        <div class="form-hint">任务运行过程中产生的临时文件将保存在工作目录</div>
+      </div>
+    </div>
+    <div class="row g-2 mt-1">
+      <div class="col-md-6 col-sm-12">
+        <div class="form-label">原始数据存放目录</div>
+        <input type="text" class="form-control" name="rawdir" value="{{ params.get('rawdir', '/tmp') }}">
+        <div class="form-hint">原始测序文件存放的目录路径</div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer bg-transparent mt-auto">
+    <div class="btn-list justify-content-end">
+      <button type="Submit" class="btn btn-primary">
+        确认修改
+      </button>
+    </div>
+  </div>
+  {{ csrf_input }}
+</form>
+{% endblock %}
+{% block script %}
+<script src="{{ static('js/jquery.validate.min.js') }}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#password-form').validate({
+    normalizer: function(value) {
+      return $.trim(value);
+    },
+    errorClass: 'is-invalid',
+    validClass: 'is-valid',
+    rules: {
+      old_passwd: {
+        required: true,
+        minlength: 6,
+      },
+      new_passwd: {
+        required: true,
+        minlength: 6,
+      },
+      new_passwd2: {
+        required: true,
+        minlength: 6,
+        equalTo: "#new-passwd",
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

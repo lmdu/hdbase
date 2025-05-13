@@ -1,0 +1,68 @@
+{% extends "setting.html" %}
+{% set submenu = 'parameter' %}
+{% block form %}
+<form action="{{ url('setting-parameter') }}" method="post" id="parameter-form">
+  <div class="card-body">
+    <h3 class="mb-3 mt-3">质控参数</h3>
+    <div class="row">
+        <label class="col-3 col-form-label">碱基质量合格分数</label>
+        <div class="col">
+          <input type="number" class="form-control" name="fastp_quality_phred" value="{{ params.get('fastp_quality_phred', 30)  }}">
+          <div class="form-hint">质量分数20表示测序准确率99%, 30表示测序99.9%</div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <label class="col-3 col-form-label">不合格碱基比例</label>
+        <div class="col">
+          <input type="number" class="form-control" name="fastp_percent_limit" value="{{ params.get('fastp_quality_phred', 10) }}">
+          <div class="form-hint">当reads的不合格碱基比例大于该值时, 被会过滤掉</div>
+        </div>
+    </div>
+    <h3 class="my-3">Mapping参数</h3>
+    <div class="row">
+        <label class="col-3 col-form-label">参考序列索引文件</label>
+        <div class="col">
+          <input type="text" class="form-control" name="bwa_index" value="{{ params.get('bwa_index', '') }}">
+          <div class="form-hint">参考基因组BWA索引文件路径</div>
+        </div>
+    </div>
+  </div>
+  <div class="card-footer bg-transparent mt-auto">
+    <div class="btn-list justify-content-end">
+      <button type="Submit" class="btn btn-primary">
+        确认修改
+      </button>
+    </div>
+  </div>
+  {{ csrf_input }}
+</form>
+{% endblock %}
+{% block script %}
+<script src="{{ static('js/jquery.validate.min.js') }}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#password-form').validate({
+    normalizer: function(value) {
+      return $.trim(value);
+    },
+    errorClass: 'is-invalid',
+    validClass: 'is-valid',
+    rules: {
+      old_passwd: {
+        required: true,
+        minlength: 6,
+      },
+      new_passwd: {
+        required: true,
+        minlength: 6,
+      },
+      new_passwd2: {
+        required: true,
+        minlength: 6,
+        equalTo: "#new-passwd",
+      }
+    }
+  });
+});
+</script>
+{% endblock %}
