@@ -97,7 +97,6 @@ class WESPipeline(BasePipeline):
 		self.metrics_file = self.work_space / "{}_markup_metrics.txt".fomrat(self.task_id)
 		self.markdup_file = self.work_space / "{}_markup_mapping.bam".fomrat(self.task_id)
 
-
 		cmd = [
 			'/mnt/d/tools/gatk-4.6.2.0/gatk',
 			'MarkDuplicates',
@@ -108,3 +107,29 @@ class WESPipeline(BasePipeline):
 			'--REMOVE_DUPLICATES', 'true',
 			'--CREATE_INDEX', 'true'
 		]
+		self.run_command(cmd)
+
+		#self.mapping_file.unlink(missing_ok=True)
+
+	def add_read_groups(self):
+		assert self.markdup_file.exists(), "PCR去重后的结果文件不存在"
+
+		self.final_bam = self.work_space / "{}_final.bam".fomrat(self.task_id)
+
+		cmd = [
+			'/mnt/d/tools/gatk-4.6.2.0/gatk',
+			'AddOrReplaceReadGroups',
+			'--INPUT', str(self.markdup_file),
+			'--OUTPUT', str(self.final_bam),
+			'--RGID', 'lane1'
+			'--RGLB', 'lib1',
+			'--RGPL', self.params.sample_platform,
+			'--RGPU', 'barcode1',
+			'--RGSM', self.params.sample_code,
+		]
+		self.run_command(cmd)
+
+
+
+
+

@@ -109,13 +109,29 @@ class Dataset(models.Model):
 		0: '其他',
 	}
 
+	PLATFORMS = {
+		1: 'ILLUMINA',
+		2: 'DNBSEQ',
+		3: 'PACBIO',
+		4: 'ONT',
+		5: 'CAPILLARY',
+		6: 'ELEMENT',
+		7: 'HELICOS',
+		8: 'IONTORRENT',
+		9: 'LS454',
+		10: 'SINGULAR',
+		11: 'SOLID',
+		12: 'ULTIMA',
+		0: 'UNKNOWN'
+	}
+
 	name = models.CharField(max_length=100)
 	code = models.CharField(max_length=50, blank=True, default='')
 	tissue = models.CharField(max_length=30, blank=True, default='')
 	first = models.CharField(max_length=200, help_text="file one")
 	second = models.CharField(max_length=200, blank=True, default='', help_text="file two")
 	type = models.PositiveSmallIntegerField(choices=DATASET_TYPES, default=0)
-	platform = models.CharField(max_length=100, blank=True, default='')
+	platform = models.PositiveSmallIntegerField(choices=PLATFORMS, default=0)
 	comment = models.TextField(blank=True, default='')
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
