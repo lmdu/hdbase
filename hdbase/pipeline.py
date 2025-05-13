@@ -126,8 +126,14 @@ class WESPipeline(BasePipeline):
 			'--RGPL', self.params.sample_platform,
 			'--RGPU', 'barcode1',
 			'--RGSM', self.params.sample_code,
+			'--CREATE_INDEX', 'true',
+			'--TMP_DIR', str(self.work_space)
 		]
 		self.run_command(cmd)
+
+		#self.markdup_file.unlink(missing_ok=True)
+
+	def 
 
 
 
