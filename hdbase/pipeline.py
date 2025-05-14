@@ -114,13 +114,13 @@ class WESPipeline(BasePipeline):
 	def add_read_groups(self):
 		assert self.markdup_file.exists(), "PCR去重后的结果文件不存在"
 
-		self.final_bam = self.work_space / "{}_final.bam".fomrat(self.task_id)
+		self.fixed_bam = self.work_space / "{}_fixed.bam".fomrat(self.task_id)
 
 		cmd = [
 			'/mnt/d/tools/gatk-4.6.2.0/gatk',
 			'AddOrReplaceReadGroups',
 			'--INPUT', str(self.markdup_file),
-			'--OUTPUT', str(self.final_bam),
+			'--OUTPUT', str(self.fixed_bam),
 			'--RGID', 'lane1'
 			'--RGLB', 'lib1',
 			'--RGPL', self.params.sample_platform,
@@ -133,7 +133,52 @@ class WESPipeline(BasePipeline):
 
 		#self.markdup_file.unlink(missing_ok=True)
 
-	def 
+	def recalibrate_base_quality(self):
+		assert self.fixed_bam.exists(), "修复后的比对结果文件不存在"
+
+		self.recal_table = self.work_space / "{}_recal.table".fomrat(self.task_id)
+
+		cmd = [
+			'/mnt/d/tools/gatk-4.6.2.0/gatk',
+			'BaseRecalibrator',
+			'--input', str(self.fixed_bam),
+			'--output', str(self.recal_table),
+			'--reference', self.params.reference,
+		]
+		self.run_command(cmd)
+
+	def apply_base_recalibrator(self):
+		assert self.recal_table.exists(), "碱基质量分数重校对表格不存在"
+
+		self.final_bam = self.work_space / "{}_final.bam".fomrat(self.task_id)
+
+		cmd = [
+			'/mnt/d/tools/gatk-4.6.2.0/gatk',
+			'ApplyBQSR',
+			'--reference', self.params.reference,
+			'--input', str(final_bam),
+			'--bqsr-recal-file', str(recal_table),
+			'--output', str(self.final_bam)
+		]
+		self.run_command(cmd)
+
+	def call_variants(self):
+		self.vcf_file = self.work_space / "{}.vcf.gz".fomrat(self.task_id)
+
+		cmd = [
+			'/mnt/d/tools/gatk-4.6.2.0/gatk',
+			'HaplotypeCaller',
+			'--reference', self.params.reference,
+			'--input', str(self.final_bam),
+			'--output', str(self.vcf_file)
+		]
+		self.run_command(cmd)
+
+	def select_variants(self):
+		pass
+
+
+
 
 
 
