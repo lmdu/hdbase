@@ -90,13 +90,13 @@ def call_snp_from_ges(self, task_pk, task_id, params):
 
 
 @shared_task(base=SocketTask, bind=True)
-def test_pipeline(self, pk, params):
+def test_pipeline(self, task_pk, task_id, params):
 	"""
 	@param pk int, the task primary key in database
 	"""
 	time.sleep(2)
 	self.start_time = timezone.now()
-	self.task_pk = pk
+	self.task_pk = task_pk
 
 	self.update_running(
 		status = 2,

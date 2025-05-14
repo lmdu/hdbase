@@ -46,7 +46,11 @@ class WESPipeline(BasePipeline):
 		[
 			{'step': 1, 'progress': 10, 'func': self.quality_control},
 			{'step': 2, 'progress': 30, 'func': self.perform_mapping},
-			{'step': 3, 'progress': 10, 'func': self.mark_duplicates},
+			{'step': 3, 'progress': 35, 'func': self.mark_duplicates},
+			{'step': 4, 'progress': 40, 'func': self.add_read_groups},
+			{'step': 5, 'progress': 60, 'func': self.recalibrate_base_quality},
+			{'step': 6, 'progress': 80, 'func': self.apply_base_recalibrator},
+			{'step': 7, 'progress': 100, 'func': self.call_variants},
 		]
 
 	def quality_control(self):

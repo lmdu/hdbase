@@ -20,6 +20,8 @@ from .models import *
 from .tasks import *
 from .forms import *
 
+from venom.celery import app as celery_app
+
 # Create your views here.
 @login_required
 def index(request):
@@ -142,6 +144,20 @@ class GlobalSettingView(LoginRequiredMixin, View):
 		obj = Option.objects.get(name='global')
 		obj.values = params
 		obj.save()
+
+		stats = celery_app.control.inspect().stats()
+
+		inspector = celery_app.control.inspect()
+		active_tasks = inspector.active() or {}
+		total_tasks = sum(len(tasks) for tasks in active_tasks.values())
+
+		set_workers =  int(params['workers'])
+
+		if set_workers > total_tasks:
+			celery_app.control.pool_grow(set_workers - total_tasks)
+		elif set_workers < total_tasks:
+			celery_app.control.pool_shrink(total_tasks - set_workers)
+
 		return redirect('setting-global')
 
 class ParameterSettingView(LoginRequiredMixin, View):
