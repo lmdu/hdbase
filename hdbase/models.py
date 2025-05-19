@@ -141,6 +141,42 @@ class Dataset(models.Model):
 	class Meta:
 		ordering = ['-created']
 
+class CardiomyopathyDisease(models.Model):
+	created = models.DateTimeField(auto_now_add=True)
+	updated = models.DateTimeField(auto_now=True)
+	patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+	class Meta:
+		ordering = ['-created']
+
+class KawasakiDisease(models.Model):
+	created = models.DateTimeField(auto_now_add=True)
+	updated = models.DateTimeField(auto_now=True)
+	patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+	class Meta:
+		ordering = ['-created']
+
+class CongenitalHeartDisease(models.Model):
+	created = models.DateTimeField(auto_now_add=True)
+	updated = models.DateTimeField(auto_now=True)
+	patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+	class Meta:
+		ordering = ['-created']
+
+class RadiofrequencyAblation(models.Model):
+	created = models.DateTimeField(auto_now_add=True)
+	updated = models.DateTimeField(auto_now=True)
+	patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+	class Meta:
+		ordering = ['-created']
+
 class Job(models.Model):
 	FAILURE = 0
 	SUCCESS = 1
