@@ -44,13 +44,13 @@ class WESPipeline(BasePipeline):
 	@property
 	def steps(self):
 		[
-			{'step': 1, 'progress': 10, 'func': self.quality_control},
-			{'step': 2, 'progress': 30, 'func': self.perform_mapping},
-			{'step': 3, 'progress': 35, 'func': self.mark_duplicates},
-			{'step': 4, 'progress': 40, 'func': self.add_read_groups},
-			{'step': 5, 'progress': 60, 'func': self.recalibrate_base_quality},
-			{'step': 6, 'progress': 80, 'func': self.apply_base_recalibrator},
-			{'step': 7, 'progress': 100, 'func': self.call_variants},
+			{'step': 1, 'progress': 10, 'message': "质量控制", 'func': self.quality_control},
+			{'step': 2, 'progress': 30, 'message': "Mapping", 'func': self.perform_mapping},
+			{'step': 3, 'progress': 35, 'message': "去除PCR重复", 'func': self.mark_duplicates},
+			{'step': 4, 'progress': 40, 'message': "添加reads分组信息", 'func': self.add_read_groups},
+			{'step': 5, 'progress': 60, 'message': "重校对碱基质量", 'func': self.recalibrate_base_quality},
+			{'step': 6, 'progress': 80, 'message': "应用重校对碱基", 'func': self.apply_base_recalibrator},
+			{'step': 7, 'progress': 100, 'message': "搜索变异位点", 'func': self.call_variants},
 		]
 
 	def quality_control(self):
@@ -102,7 +102,7 @@ class WESPipeline(BasePipeline):
 		self.markdup_file = self.work_space / "{}_markup_mapping.bam".fomrat(self.task_id)
 
 		cmd = [
-			'/mnt/d/tools/gatk-4.6.2.0/gatk',
+			'gatk',
 			'MarkDuplicates',
 			'--INPUT', str(self.mapping_file),
 			'--METRICS_FILE', str(self.metrics_file),
@@ -121,7 +121,7 @@ class WESPipeline(BasePipeline):
 		self.fixed_bam = self.work_space / "{}_fixed.bam".fomrat(self.task_id)
 
 		cmd = [
-			'/mnt/d/tools/gatk-4.6.2.0/gatk',
+			'gatk',
 			'AddOrReplaceReadGroups',
 			'--INPUT', str(self.markdup_file),
 			'--OUTPUT', str(self.fixed_bam),
@@ -143,7 +143,7 @@ class WESPipeline(BasePipeline):
 		self.recal_table = self.work_space / "{}_recal.table".fomrat(self.task_id)
 
 		cmd = [
-			'/mnt/d/tools/gatk-4.6.2.0/gatk',
+			'gatk',
 			'BaseRecalibrator',
 			'--input', str(self.fixed_bam),
 			'--output', str(self.recal_table),
@@ -157,7 +157,7 @@ class WESPipeline(BasePipeline):
 		self.final_bam = self.work_space / "{}_final.bam".fomrat(self.task_id)
 
 		cmd = [
-			'/mnt/d/tools/gatk-4.6.2.0/gatk',
+			'gatk',
 			'ApplyBQSR',
 			'--reference', self.params.reference,
 			'--input', str(final_bam),
@@ -170,7 +170,7 @@ class WESPipeline(BasePipeline):
 		self.vcf_file = self.work_space / "{}.vcf.gz".fomrat(self.task_id)
 
 		cmd = [
-			'/mnt/d/tools/gatk-4.6.2.0/gatk',
+			'gatk',
 			'HaplotypeCaller',
 			'--reference', self.params.reference,
 			'--input', str(self.final_bam),
