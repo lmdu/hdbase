@@ -77,6 +77,15 @@
 	</div>
 </div>
 
+<div class="row">
+	<div class="col">
+		<form>
+			<input type="file" id="dicom-file" name="dicom" accept=".dcm .dicom">
+			<button type="button" id="dicom-upload" class="btn btn-success">上传</button>
+		</form>
+	</div>
+</div>
+
 {% endblock %}
 
 {% block script %}
@@ -103,5 +112,18 @@ ws_socket.onclose = function(e) {
 ws_socket.onerror = function(e) {
 	console.log('error:' + e);
 };
+
+$('#dicom-upload').click(function(){
+	const file = document.getElementById('dicom-file').files[0];
+
+	fetch('http://localhost:8042/instances', {
+		method: 'POST',
+		body: file,
+	})
+	.then(response => response.json())
+	.then(data => {
+		alert(data.ID);
+	});
+});
 </script>
 {% endblock %}

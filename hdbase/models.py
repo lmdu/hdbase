@@ -141,6 +141,15 @@ class Dataset(models.Model):
 	class Meta:
 		ordering = ['-created']
 
+class DicomMedia(models.Model):
+	filename = models.CharField(max_length=255)
+	fileuuid = models.CharField(max_length=50)
+	patient = models.CharField(max_length=50, blank=True, default='')
+	series = models.CharField(max_length=50, blank=True, default='')
+	study = models.CharField(max_length=50, blank=True, default='')
+	created = models.DateTimeField(auto_now_add=True)
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
 class CardiomyopathyDisease(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
