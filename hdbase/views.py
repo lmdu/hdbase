@@ -74,6 +74,10 @@ class FileBrowseView(LoginRequiredMixin, View):
 
 		return JsonResponse(children, safe=False)
 
+class DicomUploadView(LoginRequiredMixin, View):
+	def post(self, request):
+		dicom_file = request.FILES.get('dicomfile')
+
 @login_required
 def fetch_for_select(request):
 	model = request.GET.get('model')
