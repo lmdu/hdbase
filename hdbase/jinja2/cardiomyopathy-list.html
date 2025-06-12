@@ -1,0 +1,129 @@
+{% set mainmenu = 'cardiomyopathy' %}
+{% extends 'base.html' %}
+{% block style %}
+<link href="{{ static('css/select2.min.css') }}" rel="stylesheet"/>
+{% endblock %}
+{% block pagetitle %}
+<img src="{{ static('img/xjb.svg') }}" width="32" height="32" class="me-2">
+心肌病病例
+{% endblock %}
+
+{% block main %}
+<div class="card">
+	<div class="card-header">
+		<h3 class="card-title">
+			病例列表
+			<span class="card-subtitle">Tasks List</span>
+		</h3>
+		<div class="card-actions">
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#submit-task-dialog">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-2">
+			        <path d="M12 5l0 14"></path>
+			        <path d="M5 12l14 0"></path>
+			    </svg>
+				添加病例
+			</button>
+		</div>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-selectable card-table table-vcenter text-nowrap datatable">
+			<thead>
+				<tr>
+					<th>编号</th>
+					<th>患者</th>
+					<th>体表面积</th>
+					<th>心肌病分型</th>
+					<th>突变基因</th>
+					<th>初诊年龄</th>
+					<th>家族史</th>
+					<th>合并症</th>
+					<th>心衰评分</th>
+					<th>存活</th>
+					<th>心律失常类型</th>
+					<th>特殊治疗</th>
+					<th>随访时间</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for cd in cds %}
+				<tr id="task-{{ t.id }}">
+					<td>{{ cd.disease_code }}</td>
+					<td>{{ cd.patient.name }}</td>
+					<td>{{ cd.body_surface }}</td>
+					<td>{{ cd.disease_type }}</td>
+					<td>{{ cd.mutate_gene }}</td>
+					<td>{{ cd.diagnose_age }}</td>
+					<td>{{ cd.get_has_history_display() }}</td>
+					<td>{{ cd.get_complication_display() }}</td>
+					<td>{{ cd.heart_failure }}</td>
+					<td>{{ cd.get_is_survival_display() }}</td>
+					<td>{{ cd.arrhythmia_type }}</td>
+					<td>{{ cd.get_special_treatment_display() }}</td>
+					<td>{{ cd.follow_time | date("Y-m-d") }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="card-footer d-flex align-items-center">
+		<p class="m-0 text-secondary">
+			第 {{ page_obj.number }} 页, 共 {{ page_obj.paginator.num_pages }} 页
+		</p>
+		<ul class="pagination m-0 ms-auto">
+			
+			<li class="page-item {% if not page_obj.has_previous() %} disabled {% endif %}">
+	            <a class="page-link" href="?page={% if page_obj.has_previous() %}{{ page_obj.previous_page_number() }}{% endif %}">
+	              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+                    <path d="M15 6l-6 6l6 6"></path>
+                  </svg>
+	              上一页
+	            </a>
+	        </li>
+
+	        <li class="page-item {% if page_obj.number == 1 %}active{% endif %}">
+	        	<a href="?page=1" class="page-link">1</a>
+	        </li>
+
+	        {% if page_obj.number - 3 > 2 %}
+	        <li class="page-item">...</li>
+	        {% endif %}
+
+	        {% for i in range(page_obj.number-3, page_obj.number) %}
+	        {% if i >= 2 %}
+	        <li class="page-item {% if page_obj.number == i %}active{% endif %}">
+	        	<a href="?page={{ i }}" class="page-link">{{ i }}</a>
+	        </li>
+	        {% endif %}
+	        {% endfor %}
+
+	        {% for j in range(page_obj.number, page_obj.number + 4) %}
+	        {% if 1 < j < page_obj.paginator.num_pages %}
+	        <li class="page-item {% if page_obj.number == j %}active{% endif %}">
+	        	<a href="?page={{ j }}" class="page-link">{{ j }}</a>
+	        </li>
+	        {% endif %}
+	        {% endfor %}
+
+	        {% if page_obj.number + 4 < page_obj.paginator.num_pages %}
+	        <li class="page-item">...</li>
+	        {% endif %}
+
+	        {% if page_obj.paginator.num_pages > 1 %}
+	        <li class="page-item {% if page_obj.number == page_obj.paginator.num_pages %}active{% endif %}">
+	        	<a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a>
+	        </li>
+	        {% endif %}
+
+			<li class="page-item {% if not page_obj.has_next() %} disabled {% endif %}">
+	            <a class="page-link" href="?page={% if page_obj.has_next() %}{{ page_obj.next_page_number() }}{% endif %}">
+	              下一页
+	              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+	                <path d="M9 6l6 6l-6 6"></path>
+	              </svg>
+	            </a>
+	        </li>
+		</ul>
+	</div>
+
+</div>

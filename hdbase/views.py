@@ -269,3 +269,9 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 
 		transaction.on_commit(on_commit)
 		return response
+
+class CardiomyopathyListView(LoginRequiredMixin, ListView):
+	model = CardiomyopathyDisease
+	template_name = 'cardiomyopathy-list.html'
+	context_object_name = 'cds'
+	paginate_by = 10

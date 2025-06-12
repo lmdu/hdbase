@@ -194,6 +194,7 @@ class CardiomyopathyDisease(models.Model):
 	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="编号或测序编号")
 	body_surface = models.FloatField(blank=True, null=True, help_text="体表面积")
 	disease_type = models.CharField(max_length=100, blank=True, default='', help_text="心肌病分型")
+	mutate_gene = models.CharField(max_length=20, blank=True, default='', help_text="突变基因")
 	diagnose_age = models.FloatField(blank=True, null=True, help_text="初诊年龄")
 	has_history = models.PositiveSmallIntegerField(choices=FAMILY_HISTORIES, default=0, help_text="有无家族史")
 	family_history = models.CharField(max_length=100, blank=True, default='', help_text="家族史情况")

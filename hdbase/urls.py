@@ -21,4 +21,5 @@ urlpatterns = [
 	path('setting/website', WebsiteSettingView.as_view(), name='setting-website'),
 	path('setting/global', GlobalSettingView.as_view(), name='setting-global'),
 	path('setting/parameter', ParameterSettingView.as_view(), name='setting-parameter'),
+	path('cardiomyopathy', CardiomyopathyListView.as_view(), name='list-cardiomyopathy'),
 ]
