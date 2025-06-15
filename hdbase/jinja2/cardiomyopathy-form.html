@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% set mainmenu = 'datasets' %}
+{% block style %}
+<link href="{{ static('css/select2.min.css') }}" rel="stylesheet"/>
+<link href="{{ static('css/dropzone.min.css') }}" rel="stylesheet"/>
+<link rel="stylesheet" href="{{ static('jstree/style.min.css') }}">
+<link href="{{ static('css/tabler-vendors.min.css') }}" rel="stylesheet">
+{% endblock %}
+{% block pagetitle %}
+<img src="{{ static('img/xjb.svg') }}" width="32" height="32" class="me-2">
+心肌病病例
+{% endblock %}
+{% block main %}
+<div  class="card">
+	<div class="card-header">
+		<h3 class="card-title">
+			添加病例
+			<span class="card-subtitle">Add Case</span>
+		</h3>
+	</div>
+	<form method="post">
+		<div class="card-body">
+			<div class="row row-cards">
+				{% for field in form %}
+				<div class="col-md-3">
+					<div class="mb-3">
+						{{ field.as_field_group() }}
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="card-footer">
+			<div class="d-flex">
+				{{ csrf_input }}
+				<button type="submit" class="btn btn-primary ms-auto">提交</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<div class="modal modal-blur fade" id="file-browser-dialog" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">选择文件</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="file-browser-tree" style="overflow: auto; height: 300px;"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn me-auto" data-bs-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">确定</button>
+			</div>
+		</div>	
+	</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{ static('js/select2.min.js') }}"></script>
+<script src="{{ static('jstree/jstree.min.js') }}"></script>
+<script src="{{ static('js/dropzone.min.js') }}"></script>
+<script src="{{ static('js/jquery.validate.min.js') }}"></script>
+<script type="text/javascript">
+Dropzone.autoDiscover = false;
+
+$(document).ready(function(){
+	$('select[name="patient"]').select2({
+		theme: 'classic',
+		width: '100%',
+		minimumInputLength: 1,
+		ajax: {
+			url: "{{ url('fetch-select') }}",
+			delay: 250,
+			dataType: 'json',
+			data: function(params) {
+				return {
+					model: 'patient',
+					term: params.term,
+				}
+			},
+		}
+	});
+});
+</script>
+{% endblock %}

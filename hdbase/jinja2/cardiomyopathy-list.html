@@ -1,4 +1,4 @@
-{% set mainmenu = 'cardiomyopathy' %}
+{% set mainmenu = 'disease' %}
 {% extends 'base.html' %}
 {% block style %}
 <link href="{{ static('css/select2.min.css') }}" rel="stylesheet"/>
@@ -16,13 +16,13 @@
 			<span class="card-subtitle">Tasks List</span>
 		</h3>
 		<div class="card-actions">
-			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#submit-task-dialog">
+			<a href="{{ url('add-cardiomyopathy') }}" class="btn btn-primary">
 				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-2">
 			        <path d="M12 5l0 14"></path>
 			        <path d="M5 12l14 0"></path>
 			    </svg>
 				添加病例
-			</button>
+			</a>
 		</div>
 	</div>
 	<div class="table-responsive">
@@ -125,5 +125,5 @@
 	        </li>
 		</ul>
 	</div>
-
 </div>
+{% endblock %}

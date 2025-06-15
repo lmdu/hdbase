@@ -47,7 +47,7 @@
 					<td>{{ p.name }}</td>
 					<td>{{ p.number }}</td>
 					<td>{{ p.get_gender_display() }}</td>
-					<td>{{ p.age }}</td>
+					<td>{{ p.birthday | date("Y-m-d") }}</td>
 					<td>{{ p.get_ethnicity_display() }}</td>
 					<td>{{ p.height }}</td>
 					<td>{{ p.weight }}</td>

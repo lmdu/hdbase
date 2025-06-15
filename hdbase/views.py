@@ -275,3 +275,13 @@ class CardiomyopathyListView(LoginRequiredMixin, ListView):
 	template_name = 'cardiomyopathy-list.html'
 	context_object_name = 'cds'
 	paginate_by = 10
+
+class CardiomyopathyCreateView(LoginRequiredMixin, CreateView):
+	model = CardiomyopathyDisease
+	form_class = CardiomyopathyDiseaseForm
+	template_name = 'cardiomyopathy-form.html'
+	success_url = reverse_lazy('list-cardiomyopathy')
+
+	def form_valid(self, form):
+		form.instance.author = self.request.user
+		return super().form_valid(form)
