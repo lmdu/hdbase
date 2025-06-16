@@ -109,6 +109,7 @@
 		</div>
 	</div>
 </div>
+{% for b in object.bloods.all() %}
 <div class="card mt-5">
 	<div class="card-header">
 		<h3 class="card-title">
@@ -116,22 +117,30 @@
 			<span>Examination</span>
 		</h3>
 		<div class="card-actions">
+			{% if object.bloods.exists() %}
+			<a href="{{ url('edit-cardiomyopathy-examine', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-warning">编辑</a>
+			<a href="{{ url('delete-cardiomyopathy-examine', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-danger">删除</a>
+			{% else %}
 			<a href="{{ url('add-cardiomyopathy-examine', kwargs={'did': object.id}) }}" class="btn btn-primary">添加</a>
+			{% endif %}
 		</div>
 	</div>
 	<div class="card-body">
-		{% for b in object.bloods.all() %}
 		<div class="datagrid">
 			{% for f in b._meta.fields %}
 			{% if f.help_text %}
 			<div class="datagrid-item">
 				<div class="datagrid-title">{{ f.help_text }}</div>
-				<div class="datagrid-content">{{ b|attr(f.name) }}</div>
+				{% if f.choices %}
+				<div class="datagrid-content">{{ b | attr('get_{}_display'.format(f.name))() }}</div>
+				{% else %}
+				<div class="datagrid-content">{{ b | attr(f.name) }}</div>
+				{% endif %}
 			</div>
 			{% endif %}
 			{% endfor %}
 		</div>
-		{% endfor %}
 	</div>
 </div>
+{% endfor %}
 {% endblock %}

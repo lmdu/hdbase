@@ -13,7 +13,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.views.generic import View, ListView, CreateView, DetailView
+from django.views.generic import View, ListView, CreateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import *
@@ -307,5 +307,22 @@ class CardiomyopathyBloodCreateView(LoginRequiredMixin, CreateView):
 		form.instance.author = self.request.user
 		form.instance.disease =  CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
 		return super().form_valid(form)
+
+class CardiomyopathyBloodUpdateView(LoginRequiredMixin, UpdateView):
+	model = CardiomyopathyBloodRoutine
+	form_class = CardiomyopathyBloodForm
+	template_name = 'cardiomyopathy-blood-form.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+class CardiomyopathyBloodDeleteView(LoginRequiredMixin, DetailView):
+	model = CardiomyopathyBloodRoutine
+	template_name = 'disease-delete.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+
 
 

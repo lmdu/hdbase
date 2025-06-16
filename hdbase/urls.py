@@ -25,4 +25,6 @@ urlpatterns = [
 	path('cardiomyopathy/<int:pk>/', CardiomyopathyDetailView.as_view(), name='view-cardiomyopathy'),
 	path('cardiomyopathy/add', CardiomyopathyCreateView.as_view(), name='add-cardiomyopathy'),
 	path('cardiomyopathy/<int:did>/examine/add', CardiomyopathyBloodCreateView.as_view(), name='add-cardiomyopathy-examine'),
+	path('cardiomyopathy/<int:did>/examine/edit/<int:pk>', CardiomyopathyBloodUpdateView.as_view(), name='edit-cardiomyopathy-examine'),
+	path('cardiomyopathy/<int:did>/examine/delete/<int:pk>', CardiomyopathyBloodDeleteView.as_view(), name='delete-cardiomyopathy-examine'),
 ]
