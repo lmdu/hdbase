@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 from froala_editor.fields import FroalaField
 
+
 # Create your models here.
 class Option(models.Model):
 	name = models.CharField(max_length=50)
@@ -101,6 +102,12 @@ class Patient(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+	def __str__(self):
+		return "{} {}".format(self.number, self.name)
+
+	class Meta:
+		ordering = ['-created']
 
 class Dataset(models.Model):
 	DATASET_TYPES = {
@@ -231,7 +238,7 @@ class CardiomyopathyBloodRoutine(models.Model):
 	mchc = models.FloatField(blank=True, null=True, help_text="MCHC (g/L)")
 	rdw = models.FloatField(blank=True, null=True, help_text="RDW (fl)")
 	crp = models.FloatField(blank=True, null=True, help_text="CRP/hs-CRP (mg/L)")
-	alt = models.CharField(max_length=10, blank=True, default='', help_text="ALT (U/L)")
+	alt = models.FloatField(blank=True, null=True, help_text="ALT (U/L)")
 	ast = models.FloatField(blank=True, null=True, help_text="AST (U/L)")
 	alb = models.FloatField(blank=True, null=True, help_text="ALB (g/L)")
 	cr = models.FloatField(blank=True, null=True, help_text="Cr (umol/L)")
@@ -246,7 +253,7 @@ class CardiomyopathyBloodRoutine(models.Model):
 	autoantibody = models.PositiveSmallIntegerField(choices=POSITIVE_NEGATIVE, default=0, help_text="自身抗体")
 	positive_result = models.CharField(max_length=200, blank=True, default='', help_text="阳性结果")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE)
+	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='bloods')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class CardiomyopathyMarker(models.Model):
@@ -260,14 +267,14 @@ class CardiomyopathyMarker(models.Model):
 	ntbnp = models.FloatField(blank=True, null=True, help_text="NT-BNP (pg/ml)")
 	tested = models.DateField(blank=True, null=True, help_text="检验时间")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE)
+	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='markers')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class CardiomyopathyTreatment(models.Model):
 	drugs = models.JSONField(blank=True, null=True, default=dict, help_text="治疗情况")
 	treated = models.DateField(blank=True, null=True, help_text="治疗时间")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE)
+	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='treatments')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class CardiomyopathyUltrasound(models.Model):
@@ -286,7 +293,7 @@ class CardiomyopathyUltrasound(models.Model):
 	dicom = models.ForeignKey(DicomImage, blank=True, null=True, help_text="图像", on_delete=models.CASCADE)
 	tested = models.DateField(blank=True, null=True, help_text="治疗时间")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE)
+	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='ultrasounds')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class CardiomyopathyMRI(models.Model):
@@ -318,7 +325,7 @@ class CardiomyopathyMRI(models.Model):
 	dicom = models.ForeignKey(DicomImage, blank=True, null=True, help_text="图像", on_delete=models.CASCADE)
 	tested = models.DateField(blank=True, null=True, help_text="检验时间")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE)
+	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='mris')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class CardiomyopathyECG(models.Model):
@@ -342,7 +349,7 @@ class CardiomyopathyECG(models.Model):
 	sxdgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="室性心动过速")
 	tested = models.DateField(blank=True, null=True, help_text="检验时间")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE)
+	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='ecgs')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class CardiomyopathyGeneReport(models.Model):
@@ -350,7 +357,7 @@ class CardiomyopathyGeneReport(models.Model):
 	report = models.FileField(upload_to='report/%Y/%m/', blank=True, null=True, help_text="报告")
 	tested = models.DateField(blank=True, null=True, help_text="检验时间")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE)
+	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='reports')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class CardiomyopathyGeneMutation(models.Model):
@@ -362,7 +369,7 @@ class CardiomyopathyGeneMutation(models.Model):
 	disease = models.CharField(max_length=80, blank=True, default='', help_text="疾病名称")
 	gmode = models.CharField(max_length=10, blank=True, default='', help_text="遗传模式")
 	zygote = models.CharField(max_length=100, blank=True, default='', help_text="合子类型")
-	report = models.ForeignKey(CardiomyopathyGeneReport, on_delete=models.CASCADE)
+	report = models.ForeignKey(CardiomyopathyGeneReport, on_delete=models.CASCADE, related_name='genes')
 	
 
 class KawasakiDisease(models.Model):

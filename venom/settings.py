@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'froala_editor',
+    'django_select2',
+    'bootstrap_datepicker_plus',
     'common',
     'hdbase'
 ]
@@ -100,6 +102,26 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# Select2
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    "select2": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+SELECT2_CACHE_BACKEND = "select2"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

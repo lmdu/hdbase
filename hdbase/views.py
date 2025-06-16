@@ -13,7 +13,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.views.generic import View, ListView, CreateView
+from django.views.generic import View, ListView, CreateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import *
@@ -285,3 +285,27 @@ class CardiomyopathyCreateView(LoginRequiredMixin, CreateView):
 	def form_valid(self, form):
 		form.instance.author = self.request.user
 		return super().form_valid(form)
+
+class CardiomyopathyDetailView(LoginRequiredMixin, DetailView):
+	model = CardiomyopathyDisease
+	template_name = 'cardiomyopathy-detail.html'
+
+class CardiomyopathyBloodCreateView(LoginRequiredMixin, CreateView):
+	model = CardiomyopathyBloodRoutine
+	form_class = CardiomyopathyBloodForm
+	template_name = 'cardiomyopathy-blood-form.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['disease'] = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		return context
+
+	def form_valid(self, form):
+		form.instance.author = self.request.user
+		form.instance.disease =  CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		return super().form_valid(form)
+
+

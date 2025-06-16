@@ -1,4 +1,6 @@
 from django import forms
+from django_select2 import forms as s2forms
+from bootstrap_datepicker_plus.widgets import DatePickerInput
 
 from .models import *
 
@@ -12,16 +14,21 @@ class TablerModelForm(forms.ModelForm):
 			else:
 				field.widget.attrs['class'] = "form-control"
 
-class ChoiceFieldNoValidation(forms.ChoiceField):
-	def validate(self, value):
-		pass
+class PatientSelectWidget(s2forms.ModelSelect2Widget):
+	search_fields = [
+		'name__icontains',
+		'number__icontains'
+	]
 
 class CardiomyopathyDiseaseForm(TablerModelForm):
-	patient = ChoiceFieldNoValidation(choices=(), label="患者")
-
 	class Meta:
 		model = CardiomyopathyDisease
 		exclude = ['created', 'updated', 'author']
+		widgets = {
+			'patient': PatientSelectWidget,
+			'follow_time': DatePickerInput,
+			'death_time': DatePickerInput,
+		}
 		labels = {
 			'disease_code': "编号或测序编号",
 			'body_surface': "体表面积",
@@ -40,7 +47,8 @@ class CardiomyopathyDiseaseForm(TablerModelForm):
 			'follow_time': "随访时间",
 			'sample_collect': "是否采集标本",
 			'test_sample': "已送检标本",
-			'remain_sample': "剩余标本"
+			'remain_sample': "剩余标本",
+			'patient': "患者",
 		}
 		help_texts = {
 			'disease_code': None,
@@ -60,7 +68,59 @@ class CardiomyopathyDiseaseForm(TablerModelForm):
 			'follow_time': None,
 			'sample_collect': None,
 			'test_sample': None,
-			'remain_sample': None
+			'remain_sample': None,
+			'patient': None,
 		}
 
-
+class CardiomyopathyBloodForm(TablerModelForm):
+	class Meta:
+		model = CardiomyopathyBloodRoutine
+		exclude = ['created', 'disease', 'author']
+		labels = {
+			'wbc': "WBC (×10^9/L)",
+			'hgb': "HGB (g/L)",
+			'hct': "HCT (%)",
+			'mcv': "MCV (fl)",
+			'mch': "MCH (pg)",
+			'mchc': "MCHC (g/L)",
+			'rdw': "RDW (fl)",
+			'crp': "CRP/hs-CRP (mg/L)",
+			'alt': "ALT (U/L)",
+			'ast': "AST (U/L)",
+			'alb': "ALB (g/L)",
+			'cr': "Cr (umol/L)",
+			'tc': "TC (mmol/L)",
+			'tg': "TG (mmol/L)",
+			'hdlc': "HDL-C (mmol/L)",
+			'ldlc': "LDL-C (mmol/L)",
+			'apoa': "APO-A1 (g/L)",
+			'apob': "APO-B (g/L)",
+			'glu': "GLU (mmol/L)",
+			'rheumatism': "风湿筛查",
+			'autoantibody': "自身抗体",
+			'positive_result': "阳性结果",
+		}
+		help_texts = {
+			'wbc': None,
+			'hgb': None,
+			'hct': None,
+			'mcv': None,
+			'mch': None,
+			'mchc': None,
+			'rdw': None,
+			'crp': None,
+			'alt': None,
+			'ast': None,
+			'alb': None,
+			'cr': None,
+			'tc': None,
+			'tg': None,
+			'hdlc': None,
+			'ldlc': None,
+			'apoa': None,
+			'apob': None,
+			'glu': None,
+			'rheumatism': None,
+			'autoantibody': None,
+			'positive_result': None,
+		}

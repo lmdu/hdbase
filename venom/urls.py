@@ -22,4 +22,5 @@ urlpatterns = [
     path('', include('hdbase.urls')),
     path('admin/', admin.site.urls),
     path('froala_editor/', include('froala_editor.urls')),
+    path('select2/', include('django_select2.urls')),
 ]
