@@ -323,6 +323,37 @@ class CardiomyopathyBloodDeleteView(LoginRequiredMixin, DetailView):
 	def get_success_url(self):
 		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
 
+class CardiomyopathyMarkerCreateView(LoginRequiredMixin, CreateView):
+	model = CardiomyopathyMarker
+	form_class = CardiomyopathyMarkerForm
+	template_name = 'cardiomyopathy-marker-form.html'
 
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['disease'] = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		return context
+
+	def form_valid(self, form):
+		form.instance.author = self.request.user
+		form.instance.disease =  CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		return super().form_valid(form)
+
+class CardiomyopathyMarkerUpdateView(LoginRequiredMixin, UpdateView):
+	model = CardiomyopathyMarker
+	form_class = CardiomyopathyMarkerForm
+	template_name = 'cardiomyopathy-marker-form.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+class CardiomyopathyMarkerDeleteView(LoginRequiredMixin, DetailView):
+	model = CardiomyopathyMarker
+	template_name = 'disease-delete.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
 
 

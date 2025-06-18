@@ -8,6 +8,21 @@
 心肌病病例
 {% endblock %}
 
+{% block pageaction %}
+<div class="dropdown">
+  <a href="#" class="btn dropdown-toggle" data-bs-toggle="dropdown">添加信息</a>
+  <div class="dropdown-menu dropdown-menu-end">
+    <a class="dropdown-item" href="{{ url('add-cardiomyopathy-examine', kwargs={'did': object.id}) }}">添加检验</a>
+    <a class="dropdown-item" href="#">添加心肌(心衰)标志物</a>
+    <a class="dropdown-item" href="#">添加治疗情况</a>
+	<a class="dropdown-item" href="#">添加心脏超声</a>
+    <a class="dropdown-item" href="#">添加MRI</a>
+    <a class="dropdown-item" href="#">添加心电图</a>
+    <a class="dropdown-item" href="#">添加基因报告</a>
+  </div>
+</div>
+{% endblock%}
+
 {% block main %}
 <div class="card">
 	<div class="card-header">
@@ -109,23 +124,25 @@
 		</div>
 	</div>
 </div>
-{% for b in object.bloods.all() %}
+
 <div class="card mt-5">
 	<div class="card-header">
 		<h3 class="card-title">
 			检验
 			<span>Examination</span>
 		</h3>
-		<div class="card-actions">
-			{% if object.bloods.exists() %}
-			<a href="{{ url('edit-cardiomyopathy-examine', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-warning">编辑</a>
-			<a href="{{ url('delete-cardiomyopathy-examine', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-danger">删除</a>
-			{% else %}
-			<a href="{{ url('add-cardiomyopathy-examine', kwargs={'did': object.id}) }}" class="btn btn-primary">添加</a>
-			{% endif %}
-		</div>
 	</div>
 	<div class="card-body">
+		{% for b in object.bloods.all() %}
+		<div class="row g-2">
+			<div class="col">
+				<strong>检验{{ loop.index }}</strong>
+			</div>
+			<div class="col-auto ms-auto d-print-none">
+				<a href="{{ url('edit-cardiomyopathy-examine', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+				<a href="{{ url('delete-cardiomyopathy-examine', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
+			</div>
+		</div>
 		<div class="datagrid">
 			{% for f in b._meta.fields %}
 			{% if f.help_text %}
@@ -140,7 +157,88 @@
 			{% endif %}
 			{% endfor %}
 		</div>
+		{% endfor %}
 	</div>
 </div>
-{% endfor %}
+
+<div class="card mt-5">
+  <div class="card-header">
+    <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
+      <li class="nav-item">
+        <a href="#tabs-marker" class="nav-link active" data-bs-toggle="tab">心肌(心衰)标志物</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-treatment" class="nav-link" data-bs-toggle="tab">治疗情况</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-ultrasound" class="nav-link" data-bs-toggle="tab">心脏超声</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-mri" class="nav-link" data-bs-toggle="tab">MRI</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-ecg" class="nav-link" data-bs-toggle="tab">心电图</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-gene" class="nav-link" data-bs-toggle="tab">基因报告</a>
+      </li>
+    </ul>
+  </div>
+  <div class="card-body">
+    <div class="tab-content">
+      <div class="tab-pane active show" id="tabs-marker">
+        <div class="table-responsive">
+        	<table class="table table-vcenter">
+        		<thead>
+        			<tr>
+        				<th>CK-MB (ug/L)</th>
+        				<th>CK (ug/L)</th>
+        				<th>cTnI (ug/L)</th>
+        				<th>MYo (ug/L)</th>
+        				<th>LDH (U/L)</th>
+        				<th>AST (U/L)</th>
+        				<th>BNP (pg/ml)</th>
+        				<th>NT-BNP (pg/ml)</th>
+        				<th>检验时间</th>
+        				<th>操作</th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for m in object.markers.all() %}
+        			<tr>
+        				<td>{{ m.ckmb }}</td>
+        				<td>{{ m.ck }}</td>
+        				<td>{{ m.ctni }}</td>
+        				<td>{{ m.myo }}</td>
+        				<td>{{ m.ldh }}</td>
+        				<td>{{ m.ast }}</td>
+        				<td>{{ m.bnp }}</td>
+        				<td>{{ m.ntbnp }}</td>
+        				<td>{{ m.tested | date("Y-m-d") }}</td>
+        				<td class="text-end">
+                            <span class="dropdown">
+                              <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="false">Actions</button>
+                              <div class="dropdown-menu dropdown-menu-end">
+                                <a class="dropdown-item" href="#">编辑</a>
+                                <a class="dropdown-item" href="#">删除</a>
+                              </div>
+                            </span>
+                        </td>
+        			</tr>
+        			{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tabs-treatment">
+        <h4>Profile tab</h4>
+        <div>
+          Fringilla egestas nunc quis tellus diam rhoncus ultricies tristique enim at diam, sem nunc
+          amet, pellentesque id egestas velit sed
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% set mainmenu = 'disease' %}
+{% block style %}
+{{ form.media.css }}
+{% endblock %}
+{% block pagetitle %}
+
+{% endblock %}
+{% block main %}
+<div  class="card">
+	<div class="card-header">
+		<h3 class="card-title">
+			添加疾病信息
+			<span class="card-subtitle">Add disease information</span>
+		</h3>
+	</div>
+	<form method="post">
+		<div class="card-body">
+			<div class="row row-cards">
+				{% for field in form %}
+				<div class="col-md-3">
+					<div class="mb-3">
+						{{ field.as_field_group() }}
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="card-footer">
+			<div class="d-flex">
+				{{ csrf_input }}
+				<button type="submit" class="btn btn-primary ms-auto">提交</button>
+			</div>
+		</div>
+	</form>
+</div>
+{% block script %}
+{{ form.media.js }}
+<script src="{{ static('js/jquery.validate.min.js') }}"></script>
+{% endblock %}
