@@ -1,6 +1,7 @@
 from django import forms
 from django_select2 import forms as s2forms
 from bootstrap_datepicker_plus.widgets import DatePickerInput
+from django_jsonform.widgets import JSONFormWidget
 
 from .models import *
 
@@ -49,6 +50,19 @@ class CardiomyopathyMarkerForm(TablerModelForm):
 class CardiomyopathyTreatmentForm(TablerModelForm):
 	class Meta:
 		model = CardiomyopathyTreatment
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'drugs': JSONFormWidget(schema={
+				'type': 'object',
+				'keys': {},
+				'additionalProperties': True,
+			}),
+			'treated': DatePickerInput,
+		}
+
+class CardiomyopathyUltrasoundForm(TablerModelForm):
+	class Meta:
+		model = CardiomyopathyUltrasound
 		exclude = ['created', 'disease', 'author']
 		widgets = {
 			'tested': DatePickerInput,

@@ -15,7 +15,7 @@
     <a class="dropdown-item" href="{{ url('add-cardiomyopathy-examine', kwargs={'did': object.id}) }}">添加检验</a>
     <a class="dropdown-item" href="{{ url('add-cardiomyopathy-marker', kwargs={'did': object.id}) }}">添加心肌(心衰)标志物</a>
     <a class="dropdown-item" href="{{ url('add-cardiomyopathy-treatment', kwargs={'did': object.id}) }}">添加治疗情况</a>
-	<a class="dropdown-item" href="#">添加心脏超声</a>
+	<a class="dropdown-item" href="{{ url('add-cardiomyopathy-ultrasound', kwargs={'did': object.id}) }}">添加心脏超声</a>
     <a class="dropdown-item" href="#">添加MRI</a>
     <a class="dropdown-item" href="#">添加心电图</a>
     <a class="dropdown-item" href="#">添加基因报告</a>
@@ -227,11 +227,34 @@
         </div>
       </div>
       <div class="tab-pane" id="tabs-treatment">
-        <h4>Profile tab</h4>
-        <div>
-          Fringilla egestas nunc quis tellus diam rhoncus ultricies tristique enim at diam, sem nunc
-          amet, pellentesque id egestas velit sed
+      	 <div class="table-responsive">
+        	<table class="table card-table table-vcenter datatable">
+        		<thead>
+        			<tr>
+        				<th>治疗用药</th>
+        				<th>治疗时间</th>
+        				<th>操作</th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for t in object.treatments.all() %}
+        			<tr>
+	        			<td>
+	        				{% for k,v in t.drugs.items() %}
+	        				{{k}}: {{v}},
+	        				{% endfor %}
+	        			</td>
+	        			<td class="text-nowrap">{{ t.treated | date('Y-m-d') }}</td>
+	        			<td class="text-nowrap">
+	        				<a href="{{ url('edit-cardiomyopathy-treatment', kwargs={'did': object.id, 'pk': t.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-cardiomyopathy-treatment', kwargs={'did': object.id, 'pk': t.id}) }}" class="btn btn-sm btn-danger">删除</a>
+	        			</td>
+        			</tr>
+        			{% endfor %}
+        		</tbody>
+        	</table>
         </div>
+      </div>
       </div>
     </div>
   </div>

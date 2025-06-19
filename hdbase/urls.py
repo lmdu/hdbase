@@ -33,5 +33,8 @@ urlpatterns = [
 	path('cardiomyopathy/<int:did>/treatment/add', CardiomyopathyTreatmentCreateView.as_view(), name='add-cardiomyopathy-treatment'),
 	path('cardiomyopathy/<int:did>/treatment/edit/<int:pk>', CardiomyopathyTreatmentUpdateView.as_view(), name='edit-cardiomyopathy-treatment'),
 	path('cardiomyopathy/<int:did>/treatment/delete/<int:pk>', CardiomyopathyTreatmentDeleteView.as_view(), name='delete-cardiomyopathy-treatment'),
+	path('cardiomyopathy/<int:did>/ultrasound/add', CardiomyopathyUltrasoundCreateView.as_view(), name='add-cardiomyopathy-ultrasound'),
+	path('cardiomyopathy/<int:did>/ultrasound/edit/<int:pk>', CardiomyopathyUltrasoundUpdateView.as_view(), name='edit-cardiomyopathy-ultrasound'),
+	path('cardiomyopathy/<int:did>/ultrasound/delete/<int:pk>', CardiomyopathyUltrasoundDeleteView.as_view(), name='delete-cardiomyopathy-ultrasound')
 
 ]

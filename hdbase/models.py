@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from froala_editor.fields import FroalaField
-from django_jsonform.models.fields import JSONField
 
 
 # Create your models here.
@@ -273,16 +272,7 @@ class CardiomyopathyMarker(models.Model):
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class CardiomyopathyTreatment(models.Model):
-	drugs = JSONField(
-		schema = {
-			'type': 'dict',
-			'anyOf': [
-				{'type': 'number'},
-				{'type': 'string'}
-			]
-		},
-		help_text="治疗情况"
-	)
+	drugs = models.JSONField(blank=True, default=dict, help_text="治疗情况")
 	treated = models.DateField(blank=True, null=True, help_text="治疗时间")
 	created = models.DateTimeField(auto_now_add=True)
 	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='treatments')
@@ -299,7 +289,7 @@ class CardiomyopathyUltrasound(models.Model):
 	rv = models.FloatField(blank=True, null=True, help_text="RV (mm)")
 	lvedd = models.FloatField(blank=True, null=True, help_text="LVEDD (mm)")
 	lvesd = models.FloatField(blank=True, null=True, help_text="LVESD (mm)")
-	diagnosis = models.TextField(blank=True, default='', help_text="超声诊断")
+	diagnosis = models.CharField(max_length=255, blank=True, default='', help_text="超声诊断")
 	report = models.FileField(upload_to='report/%Y/%m/', max_length=200, blank=True, null=True, help_text="报告")
 	dicom = models.ForeignKey(DicomImage, blank=True, null=True, help_text="图像", on_delete=models.CASCADE)
 	tested = models.DateField(blank=True, null=True, help_text="治疗时间")

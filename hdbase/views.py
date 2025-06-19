@@ -421,3 +421,45 @@ class CardiomyopathyTreatmentDeleteView(LoginRequiredMixin, DetailView):
 
 	def get_success_url(self):
 		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+class CardiomyopathyUltrasoundCreateView(LoginRequiredMixin, CreateView):
+	model = CardiomyopathyUltrasound
+	form_class = CardiomyopathyUltrasoundForm
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "添加心脏超声"
+		return context
+
+	def form_valid(self, form):
+		form.instance.author = self.request.user
+		form.instance.disease =  CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		return super().form_valid(form)
+
+class CardiomyopathyUltrasoundUpdateView(LoginRequiredMixin, UpdateView):
+	model = CardiomyopathyUltrasound
+	form_class = CardiomyopathyUltrasoundForm
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "修改心脏超声"
+		return context
+
+class CardiomyopathyUltrasoundDeleteView(LoginRequiredMixin, DetailView):
+	model = CardiomyopathyUltrasound
+	template_name = 'disease-common-delete.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
