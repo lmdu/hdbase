@@ -2,16 +2,18 @@
 {% set mainmenu = 'disease' %}
 {% block style %}
 {{ form.media.css }}
+<style>
+	label {display: none;}
+</style>
 {% endblock %}
 {% block pagetitle %}
-
+{{ title }}
 {% endblock %}
 {% block main %}
 <div  class="card">
 	<div class="card-header">
 		<h3 class="card-title">
-			添加疾病信息
-			<span class="card-subtitle">Add disease information</span>
+			{{ subtitle }}
 		</h3>
 	</div>
 	<form method="post">
@@ -34,6 +36,8 @@
 		</div>
 	</form>
 </div>
+{% endblock %}
+
 {% block script %}
 {{ form.media.js }}
 <script src="{{ static('js/jquery.validate.min.js') }}"></script>

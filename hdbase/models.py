@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from froala_editor.fields import FroalaField
+from django_jsonform.models.fields import JSONField
 
 
 # Create your models here.
@@ -218,7 +219,7 @@ class CardiomyopathyDisease(models.Model):
 	remain_sample = models.PositiveSmallIntegerField(choices=SAMPLE_TYPES, default=0, help_text="剩余标本")
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
-	patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+	patient = models.ForeignKey(Patient, on_delete=models.CASCADE, help_text="患者")
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 	class Meta:
@@ -252,6 +253,7 @@ class CardiomyopathyBloodRoutine(models.Model):
 	rheumatism = models.PositiveSmallIntegerField(choices=POSITIVE_NEGATIVE, default=0, help_text="风湿筛查")
 	autoantibody = models.PositiveSmallIntegerField(choices=POSITIVE_NEGATIVE, default=0, help_text="自身抗体")
 	positive_result = models.CharField(max_length=200, blank=True, default='', help_text="阳性结果")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
 	created = models.DateTimeField(auto_now_add=True)
 	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='bloods')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -271,7 +273,16 @@ class CardiomyopathyMarker(models.Model):
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class CardiomyopathyTreatment(models.Model):
-	drugs = models.JSONField(blank=True, null=True, default=dict, help_text="治疗情况")
+	drugs = JSONField(
+		schema = {
+			'type': 'dict',
+			'anyOf': [
+				{'type': 'number'},
+				{'type': 'string'}
+			]
+		},
+		help_text="治疗情况"
+	)
 	treated = models.DateField(blank=True, null=True, help_text="治疗时间")
 	created = models.DateTimeField(auto_now_add=True)
 	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='treatments')

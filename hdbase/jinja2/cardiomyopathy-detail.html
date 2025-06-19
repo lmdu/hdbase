@@ -10,11 +10,11 @@
 
 {% block pageaction %}
 <div class="dropdown">
-  <a href="#" class="btn dropdown-toggle" data-bs-toggle="dropdown">添加信息</a>
+  <a href="#" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">添加信息</a>
   <div class="dropdown-menu dropdown-menu-end">
     <a class="dropdown-item" href="{{ url('add-cardiomyopathy-examine', kwargs={'did': object.id}) }}">添加检验</a>
-    <a class="dropdown-item" href="#">添加心肌(心衰)标志物</a>
-    <a class="dropdown-item" href="#">添加治疗情况</a>
+    <a class="dropdown-item" href="{{ url('add-cardiomyopathy-marker', kwargs={'did': object.id}) }}">添加心肌(心衰)标志物</a>
+    <a class="dropdown-item" href="{{ url('add-cardiomyopathy-treatment', kwargs={'did': object.id}) }}">添加治疗情况</a>
 	<a class="dropdown-item" href="#">添加心脏超声</a>
     <a class="dropdown-item" href="#">添加MRI</a>
     <a class="dropdown-item" href="#">添加心电图</a>
@@ -28,7 +28,6 @@
 	<div class="card-header">
 		<h3 class="card-title">
 			基本信息
-			<span class="card-subtitle">General information</span>
 		</h3>
 	</div>
 	<div class="card-body">
@@ -129,14 +128,16 @@
 	<div class="card-header">
 		<h3 class="card-title">
 			检验
-			<span>Examination</span>
 		</h3>
 	</div>
 	<div class="card-body">
 		{% for b in object.bloods.all() %}
-		<div class="row g-2">
+		<div class="row mb-3">
 			<div class="col">
 				<strong>检验{{ loop.index }}</strong>
+				{% if b.tested %}
+				<span>{{ b.tested | date('Y-m-d') }}</span>
+				{% endif %}
 			</div>
 			<div class="col-auto ms-auto d-print-none">
 				<a href="{{ url('edit-cardiomyopathy-examine', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
@@ -188,7 +189,7 @@
     <div class="tab-content">
       <div class="tab-pane active show" id="tabs-marker">
         <div class="table-responsive">
-        	<table class="table table-vcenter">
+        	<table class="table card-table table-vcenter text-nowrap datatable">
         		<thead>
         			<tr>
         				<th>CK-MB (ug/L)</th>
@@ -216,14 +217,9 @@
         				<td>{{ m.ntbnp }}</td>
         				<td>{{ m.tested | date("Y-m-d") }}</td>
         				<td class="text-end">
-                            <span class="dropdown">
-                              <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="false">Actions</button>
-                              <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="#">编辑</a>
-                                <a class="dropdown-item" href="#">删除</a>
-                              </div>
-                            </span>
-                        </td>
+	                <a href="{{ url('edit-cardiomyopathy-marker', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-cardiomyopathy-marker', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-danger">删除</a>
+	              </td>
         			</tr>
         			{% endfor %}
         		</tbody>

@@ -279,12 +279,18 @@ class CardiomyopathyListView(LoginRequiredMixin, ListView):
 class CardiomyopathyCreateView(LoginRequiredMixin, CreateView):
 	model = CardiomyopathyDisease
 	form_class = CardiomyopathyDiseaseForm
-	template_name = 'cardiomyopathy-form.html'
+	template_name = 'disease-common-form.html'
 	success_url = reverse_lazy('list-cardiomyopathy')
 
 	def form_valid(self, form):
 		form.instance.author = self.request.user
 		return super().form_valid(form)
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = "添加心肌病病例"
+		context['subtitle'] = "添加病例"
+		return context
 
 class CardiomyopathyDetailView(LoginRequiredMixin, DetailView):
 	model = CardiomyopathyDisease
@@ -293,14 +299,16 @@ class CardiomyopathyDetailView(LoginRequiredMixin, DetailView):
 class CardiomyopathyBloodCreateView(LoginRequiredMixin, CreateView):
 	model = CardiomyopathyBloodRoutine
 	form_class = CardiomyopathyBloodForm
-	template_name = 'cardiomyopathy-blood-form.html'
+	template_name = 'disease-common-form.html'
 
 	def get_success_url(self):
 		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['disease'] = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "添加检验信息"
 		return context
 
 	def form_valid(self, form):
@@ -311,14 +319,21 @@ class CardiomyopathyBloodCreateView(LoginRequiredMixin, CreateView):
 class CardiomyopathyBloodUpdateView(LoginRequiredMixin, UpdateView):
 	model = CardiomyopathyBloodRoutine
 	form_class = CardiomyopathyBloodForm
-	template_name = 'cardiomyopathy-blood-form.html'
+	template_name = 'disease-common-form.html'
 
 	def get_success_url(self):
 		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
 
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "修改检验信息"
+		return context
+
 class CardiomyopathyBloodDeleteView(LoginRequiredMixin, DetailView):
 	model = CardiomyopathyBloodRoutine
-	template_name = 'disease-delete.html'
+	template_name = 'disease-common-delete.html'
 
 	def get_success_url(self):
 		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
@@ -326,14 +341,16 @@ class CardiomyopathyBloodDeleteView(LoginRequiredMixin, DetailView):
 class CardiomyopathyMarkerCreateView(LoginRequiredMixin, CreateView):
 	model = CardiomyopathyMarker
 	form_class = CardiomyopathyMarkerForm
-	template_name = 'cardiomyopathy-marker-form.html'
+	template_name = 'disease-common-form.html'
 
 	def get_success_url(self):
 		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['disease'] = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "添加心肌(心衰)标志物"
 		return context
 
 	def form_valid(self, form):
@@ -344,16 +361,63 @@ class CardiomyopathyMarkerCreateView(LoginRequiredMixin, CreateView):
 class CardiomyopathyMarkerUpdateView(LoginRequiredMixin, UpdateView):
 	model = CardiomyopathyMarker
 	form_class = CardiomyopathyMarkerForm
-	template_name = 'cardiomyopathy-marker-form.html'
+	template_name = 'disease-common-form.html'
 
 	def get_success_url(self):
 		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "修改心肌(心衰)标志物"
+		return context
 
 class CardiomyopathyMarkerDeleteView(LoginRequiredMixin, DetailView):
 	model = CardiomyopathyMarker
-	template_name = 'disease-delete.html'
+	template_name = 'disease-common-delete.html'
 
 	def get_success_url(self):
 		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
 
+class CardiomyopathyTreatmentCreateView(LoginRequiredMixin, CreateView):
+	model = CardiomyopathyTreatment
+	form_class = CardiomyopathyTreatmentForm
+	template_name = 'disease-common-form.html'
 
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "添加治疗情况"
+		return context
+
+	def form_valid(self, form):
+		form.instance.author = self.request.user
+		form.instance.disease =  CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		return super().form_valid(form)
+
+class CardiomyopathyTreatmentUpdateView(LoginRequiredMixin, UpdateView):
+	model = CardiomyopathyTreatment
+	form_class = CardiomyopathyTreatmentForm
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "修改治疗情况"
+		return context
+
+class CardiomyopathyTreatmentDeleteView(LoginRequiredMixin, DetailView):
+	model = CardiomyopathyTreatment
+	template_name = 'disease-common-delete.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})

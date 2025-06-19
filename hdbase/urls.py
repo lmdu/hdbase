@@ -27,4 +27,11 @@ urlpatterns = [
 	path('cardiomyopathy/<int:did>/examine/add', CardiomyopathyBloodCreateView.as_view(), name='add-cardiomyopathy-examine'),
 	path('cardiomyopathy/<int:did>/examine/edit/<int:pk>', CardiomyopathyBloodUpdateView.as_view(), name='edit-cardiomyopathy-examine'),
 	path('cardiomyopathy/<int:did>/examine/delete/<int:pk>', CardiomyopathyBloodDeleteView.as_view(), name='delete-cardiomyopathy-examine'),
+	path('cardiomyopathy/<int:did>/marker/add', CardiomyopathyMarkerCreateView.as_view(), name='add-cardiomyopathy-marker'),
+	path('cardiomyopathy/<int:did>/marker/edit/<int:pk>', CardiomyopathyMarkerUpdateView.as_view(), name='edit-cardiomyopathy-marker'),
+	path('cardiomyopathy/<int:did>/marker/delete/<int:pk>', CardiomyopathyMarkerDeleteView.as_view(), name='delete-cardiomyopathy-marker'),
+	path('cardiomyopathy/<int:did>/treatment/add', CardiomyopathyTreatmentCreateView.as_view(), name='add-cardiomyopathy-treatment'),
+	path('cardiomyopathy/<int:did>/treatment/edit/<int:pk>', CardiomyopathyTreatmentUpdateView.as_view(), name='edit-cardiomyopathy-treatment'),
+	path('cardiomyopathy/<int:did>/treatment/delete/<int:pk>', CardiomyopathyTreatmentDeleteView.as_view(), name='delete-cardiomyopathy-treatment'),
+
 ]

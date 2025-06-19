@@ -12,6 +12,7 @@ dependencies = [
     "django==5.1.7",
     "django-bootstrap-datepicker-plus>=5.0.5",
     "django-froala-editor>=4.5.2",
+    "django-jsonform>=2.23.2",
     "django-redis>=5.4.0",
     "django-select2>=8.4.1",
     "jinja2==3.1.4",
