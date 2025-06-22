@@ -75,6 +75,10 @@ class Profile(models.Model):
 		return "{}{}".format(self.user.last_name, self.user.first_name)
 
 	@property
+	def is_editor(self):
+		return self.role >= self.ROLE_EDITOR
+
+	@property
 	def get_avatar(self):
 		return self.avatar.url if self.avatar else static('img/doctor.svg')
 

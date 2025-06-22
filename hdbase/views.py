@@ -13,12 +13,13 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.views.generic import View, ListView, CreateView, DetailView, UpdateView
+from django.views.generic import View, ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import *
 from .tasks import *
 from .forms import *
+from .utils import *
 
 from venom.celery import app as celery_app
 
@@ -202,13 +203,36 @@ class PatientListView(LoginRequiredMixin, ListView):
 
 class PatientCreateView(LoginRequiredMixin, CreateView):
 	model = Patient
-	http_method_names = ['post']
+	form_class = PatientForm
+	template_name = 'disease-common-form.html'
 	success_url = reverse_lazy('list-patients')
-	fields = ['name', 'number', 'gender', 'ethnicity', 'age', 'weight', 'height', 'phone', 'address']
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = "添加患者"
+		context['subtitle'] = "添加患者信息"
+		return context
 
 	def form_valid(self, form):
 		form.instance.author = self.request.user
 		return super().form_valid(form)
+
+class PatientUpdateView(LoginRequiredMixin, UpdateView):
+	model = Patient
+	form_class = PatientForm
+	template_name = 'disease-common-form.html'
+	success_url = reverse_lazy('list-patients')
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = "修改患者 {}-{}".format(self.object.name, self.object.number)
+		context['subtitle'] = "修改患者信息"
+		return context
+
+class PatientDeleteView(LoginRequiredMixin, DeleteView):
+	model = Patient
+	template_name = 'disease-common-delete.html'
+	success_url = reverse_lazy('list-patients')
 
 class DatasetListView(LoginRequiredMixin, ListView):
 	model = Dataset
@@ -292,6 +316,23 @@ class CardiomyopathyCreateView(LoginRequiredMixin, CreateView):
 		context['subtitle'] = "添加病例"
 		return context
 
+class CardiomyopathyUpdateView(LoginRequiredMixin, UpdateView):
+	model = CardiomyopathyDisease
+	form_class = CardiomyopathyDiseaseForm
+	template_name = 'disease-common-form.html'
+	success_url = reverse_lazy('list-cardiomyopathy')
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = "修改心肌病病例 {}".format(self.object.disease_code)
+		context['subtitle'] = "修改病例信息"
+		return context
+
+class CardiomyopathyDeleteView(LoginRequiredMixin, DeleteView):
+	model = CardiomyopathyDisease
+	template_name = 'disease-common-delete.html'
+	success_url = reverse_lazy('list-cardiomyopathy')
+
 class CardiomyopathyDetailView(LoginRequiredMixin, DetailView):
 	model = CardiomyopathyDisease
 	template_name = 'cardiomyopathy-detail.html'
@@ -331,7 +372,7 @@ class CardiomyopathyBloodUpdateView(LoginRequiredMixin, UpdateView):
 		context['subtitle'] = "修改检验信息"
 		return context
 
-class CardiomyopathyBloodDeleteView(LoginRequiredMixin, DetailView):
+class CardiomyopathyBloodDeleteView(LoginRequiredMixin, DeleteView):
 	model = CardiomyopathyBloodRoutine
 	template_name = 'disease-common-delete.html'
 
@@ -373,7 +414,7 @@ class CardiomyopathyMarkerUpdateView(LoginRequiredMixin, UpdateView):
 		context['subtitle'] = "修改心肌(心衰)标志物"
 		return context
 
-class CardiomyopathyMarkerDeleteView(LoginRequiredMixin, DetailView):
+class CardiomyopathyMarkerDeleteView(LoginRequiredMixin, DeleteView):
 	model = CardiomyopathyMarker
 	template_name = 'disease-common-delete.html'
 
@@ -415,7 +456,7 @@ class CardiomyopathyTreatmentUpdateView(LoginRequiredMixin, UpdateView):
 		context['subtitle'] = "修改治疗情况"
 		return context
 
-class CardiomyopathyTreatmentDeleteView(LoginRequiredMixin, DetailView):
+class CardiomyopathyTreatmentDeleteView(LoginRequiredMixin, DeleteView):
 	model = CardiomyopathyTreatment
 	template_name = 'disease-common-delete.html'
 
@@ -440,7 +481,14 @@ class CardiomyopathyUltrasoundCreateView(LoginRequiredMixin, CreateView):
 	def form_valid(self, form):
 		form.instance.author = self.request.user
 		form.instance.disease =  CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
-		return super().form_valid(form)
+		response = super().form_valid(form)
+
+		if self.object.dicom_file:
+			study_id = upload_dicoms(self.object.dicom_file.path)
+			self.object.dicom_uuid = study_id
+			self.object.save()
+
+		return response
 
 class CardiomyopathyUltrasoundUpdateView(LoginRequiredMixin, UpdateView):
 	model = CardiomyopathyUltrasound
@@ -457,9 +505,199 @@ class CardiomyopathyUltrasoundUpdateView(LoginRequiredMixin, UpdateView):
 		context['subtitle'] = "修改心脏超声"
 		return context
 
-class CardiomyopathyUltrasoundDeleteView(LoginRequiredMixin, DetailView):
+	def form_valid(self, form):
+		response = super().form_valid(form)
+
+		if 'dicom_file' in form.changed_data:
+			study_id = upload_dicoms(self.object.dicom_file.path)
+			self.object.dicom_uuid = study_id
+			self.object.save()
+
+		return response
+
+class CardiomyopathyUltrasoundDeleteView(LoginRequiredMixin, DeleteView):
 	model = CardiomyopathyUltrasound
 	template_name = 'disease-common-delete.html'
 
 	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.kwargs['did']})
+
+class CardiomyopathyMRICreateView(LoginRequiredMixin, CreateView):
+	model = CardiomyopathyMRI
+	form_class = CardiomyopathyMRIForm
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
 		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "添加MRI"
+		return context
+
+	def form_valid(self, form):
+		form.instance.author = self.request.user
+		form.instance.disease =  CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		response = super().form_valid(form)
+
+		if self.object.dicom_file:
+			study_id = upload_dicoms(self.object.dicom_file.path)
+			self.object.dicom_uuid = study_id
+			self.object.save()
+
+		return response
+
+class CardiomyopathyMRIUpdateView(LoginRequiredMixin, UpdateView):
+	model = CardiomyopathyMRI
+	form_class = CardiomyopathyMRIForm
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "修改MRI"
+		return context
+
+	def form_valid(self, form):
+		response = super().form_valid(form)
+
+		if 'dicom_file' in form.changed_data:
+			study_id = upload_dicoms(self.object.dicom_file.path)
+			self.object.dicom_uuid = study_id
+			self.object.save()
+
+		return response
+
+class CardiomyopathyMRIDeleteView(LoginRequiredMixin, DeleteView):
+	model = CardiomyopathyMRI
+	template_name = 'disease-common-delete.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.kwargs['did']})
+
+class CardiomyopathyECGCreateView(LoginRequiredMixin, CreateView):
+	model = CardiomyopathyECG
+	form_class = CardiomyopathyECGForm
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "添加心电图"
+		return context
+
+	def form_valid(self, form):
+		form.instance.author = self.request.user
+		form.instance.disease =  CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		return super().form_valid(form)
+
+class CardiomyopathyECGUpdateView(LoginRequiredMixin, UpdateView):
+	model = CardiomyopathyECG
+	form_class = CardiomyopathyECGForm
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "修改心电图"
+		return context
+
+class CardiomyopathyECGDeleteView(LoginRequiredMixin, DeleteView):
+	model = CardiomyopathyECG
+	template_name = 'disease-common-delete.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.kwargs['did']})
+
+class CardiomyopathyGeneReportCreateView(LoginRequiredMixin, CreateView):
+	model = CardiomyopathyGeneReport
+	form_class = CardiomyopathyGeneReportForm
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "添加基因检测报告"
+		return context
+
+	def form_valid(self, form):
+		form.instance.author = self.request.user
+		form.instance.disease =  CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		return super().form_valid(form)
+
+class CardiomyopathyGeneReportUpdateView(LoginRequiredMixin, UpdateView):
+	model = CardiomyopathyGeneReport
+	form_class = CardiomyopathyGeneReportForm
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.report.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "修改基因检测报告"
+		return context
+
+class CardiomyopathyGeneReportDeleteView(LoginRequiredMixin, DeleteView):
+	model = CardiomyopathyGeneReport
+	template_name = 'disease-common-delete.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.kwargs['did']})
+
+class CardiomyopathyGeneMutationCreateView(LoginRequiredMixin, CreateView):
+	model = CardiomyopathyGeneMutation
+	form_class = CardiomyopathyGeneMutationForm
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.report.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "添加基因检测报告内容"
+		return context
+
+class CardiomyopathyGeneMutationUpdateView(LoginRequiredMixin, UpdateView):
+	model = CardiomyopathyGeneMutation
+	form_class = CardiomyopathyGeneMutationForm
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.object.report.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CardiomyopathyDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = "修改基因检测报告内容"
+		return context
+
+class CardiomyopathyGeneMutationDeleteView(LoginRequiredMixin, DeleteView):
+	model = CardiomyopathyGeneMutation
+	template_name = 'disease-common-delete.html'
+
+	def get_success_url(self):
+		return reverse('view-cardiomyopathy', kwargs={'pk': self.kwargs['did']})

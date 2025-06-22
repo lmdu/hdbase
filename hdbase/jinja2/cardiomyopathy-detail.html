@@ -9,18 +9,21 @@
 {% endblock %}
 
 {% block pageaction %}
+{% if request.user.profile.is_editor %}
 <div class="dropdown">
-  <a href="#" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">添加信息</a>
+  <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">添加信息</button>
   <div class="dropdown-menu dropdown-menu-end">
     <a class="dropdown-item" href="{{ url('add-cardiomyopathy-examine', kwargs={'did': object.id}) }}">添加检验</a>
     <a class="dropdown-item" href="{{ url('add-cardiomyopathy-marker', kwargs={'did': object.id}) }}">添加心肌(心衰)标志物</a>
     <a class="dropdown-item" href="{{ url('add-cardiomyopathy-treatment', kwargs={'did': object.id}) }}">添加治疗情况</a>
-	<a class="dropdown-item" href="{{ url('add-cardiomyopathy-ultrasound', kwargs={'did': object.id}) }}">添加心脏超声</a>
-    <a class="dropdown-item" href="#">添加MRI</a>
-    <a class="dropdown-item" href="#">添加心电图</a>
-    <a class="dropdown-item" href="#">添加基因报告</a>
+		<a class="dropdown-item" href="{{ url('add-cardiomyopathy-ultrasound', kwargs={'did': object.id}) }}">添加心脏超声</a>
+    <a class="dropdown-item" href="{{ url('add-cardiomyopathy-mri', kwargs={'did': object.id}) }}">添加MRI</a>
+    <a class="dropdown-item" href="{{ url('add-cardiomyopathy-ecg', kwargs={'did': object.id}) }}">添加心电图</a>
+    <a class="dropdown-item" href="{{ url('add-cardiomyopathy-greport', kwargs={'did': object.id}) }}">添加基因报告</a>
+    <a class="dropdown-item" href="{{ url('add-cardiomyopathy-gmutation', kwargs={'did': object.id}) }}">添加基因报告内容</a>
   </div>
 </div>
+{% endif %}
 {% endblock%}
 
 {% block main %}
@@ -139,10 +142,12 @@
 				<span>{{ b.tested | date('Y-m-d') }}</span>
 				{% endif %}
 			</div>
+			{% if request.user.profile.is_editor %}
 			<div class="col-auto ms-auto d-print-none">
 				<a href="{{ url('edit-cardiomyopathy-examine', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
 				<a href="{{ url('delete-cardiomyopathy-examine', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
 			</div>
+			{% endif %}
 		</div>
 		<div class="datagrid">
 			{% for f in b._meta.fields %}
@@ -217,8 +222,10 @@
         				<td>{{ m.ntbnp }}</td>
         				<td>{{ m.tested | date("Y-m-d") }}</td>
         				<td class="text-end">
+        					{% if request.user.profile.is_editor %}
 	                <a href="{{ url('edit-cardiomyopathy-marker', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-warning">编辑</a>
 									<a href="{{ url('delete-cardiomyopathy-marker', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
 	              </td>
         			</tr>
         			{% endfor %}
@@ -245,9 +252,11 @@
 	        				{% endfor %}
 	        			</td>
 	        			<td class="text-nowrap">{{ t.treated | date('Y-m-d') }}</td>
-	        			<td class="text-nowrap">
+	        			<td class="text-nowrap text-end">
+	        				{% if request.user.profile.is_editor %}
 	        				<a href="{{ url('edit-cardiomyopathy-treatment', kwargs={'did': object.id, 'pk': t.id}) }}" class="btn btn-sm btn-warning">编辑</a>
 									<a href="{{ url('delete-cardiomyopathy-treatment', kwargs={'did': object.id, 'pk': t.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
 	        			</td>
         			</tr>
         			{% endfor %}
@@ -255,6 +264,244 @@
         	</table>
         </div>
       </div>
+      <div class="tab-pane" id="tabs-ultrasound">
+      	<div class="table-responsive">
+        	<table class="table card-table table-vcenter datatable">
+        		<thead>
+        			<tr>
+        				<th>超声号</th>
+        				<th>年龄</th>
+        				<th>LVEF (%)</th>
+        				<th>LVFS (%)</th>
+        				<th>LA (mm)</th>
+        				<th>LV (mm)</th>
+        				<th>RA (mm)</th>
+        				<th>RV (mm)</th>
+        				<th>LVEDD (mm)</th>
+        				<th>Z值</th>
+        				<th>LVESD (mm)</th>
+        				<th>Z值</th>
+        				<th>超声诊断</th>
+        				<th>报告文件</th>
+        				<th>影像文件</th>
+        				<th>检查时间</th>
+        				<th>操作</th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for u in object.ultrasounds.all() %}
+        			<tr>
+	        			<td>{{ u.code }}</td>
+        				<td>{{ u.age }}</td>
+        				<td>{{ u.lvef }}</td>
+        				<td>{{ u.lvfs }}</td>
+        				<td>{{ u.la }}</td>
+        				<td>{{ u.lv }}</td>
+        				<td>{{ u.ra }}</td>
+        				<td>{{ u.rv }}</td>
+        				<td>{{ u.lvedd }}</td>
+        				<td>{{ u.lvedd_z }}</td>
+        				<td>{{ u.lvesd }}</td>
+        				<td>{{ u.lvesd_z }}</td>
+        				<td>{{ u.diagnosis }}</td>
+        				<td>
+        					{% if u.dicom_file %}
+        					<a href="{{ u.dicom_file.url }}" class="btn btn-sm btn-success">下载</a>
+        					<a href="{{ u.dicom_uuid }}" class="btn btn-sm btn-info">查看</a>
+        					{% endif %}
+        				</td>
+        				<td>
+        					{% if u.report %}
+        					<a href="{{ u.report.url }}" class="btn btn-sm btn-success">下载</a>
+        					{% endif %}
+        				</td>
+	        			<td class="text-nowrap">{{ u.tested | date('Y-m-d') }}</td>
+	        			<td class="text-nowrap text-end">
+	        				{% if request.user.profile.is_editor %}
+	        				<a href="{{ url('edit-cardiomyopathy-ultrasound', kwargs={'did': object.id, 'pk': u.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-cardiomyopathy-ultrasound', kwargs={'did': object.id, 'pk': u.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	        			</td>
+        			</tr>
+        			{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tabs-mri">
+      	<div class="table-responsive">
+        	<table class="table card-table table-vcenter datatable">
+        		<thead>
+        			<tr>
+        				<th>超声号</th>
+        				<th>年龄</th>
+        				<th>LVEF (%)</th>
+        				<th>LVFS (%)</th>
+        				<th>LA (mm)</th>
+        				<th>LV (mm)</th>
+        				<th>RA (mm)</th>
+        				<th>RV (mm)</th>
+        				<th>心室肌质量</th>
+        				<th>LGE</th>
+        				<th>首过灌注</th>
+        				<th>心肌水肿</th>
+        				<th>心肌纤维化</th>
+        				<th>心肌微循环</th>
+        				<th>影像文件</th>
+        				<th>报告文件</th>
+        				<th>检查时间</th>
+        				<th>操作</th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for m in object.mris.all() %}
+        			<tr>
+	        			<td>{{ m.code }}</td>
+        				<td>{{ m.age }}</td>
+        				<td>{{ m.lvef }}</td>
+        				<td>{{ m.lvfs }}</td>
+        				<td>{{ m.la }}</td>
+        				<td>{{ m.lv }}</td>
+        				<td>{{ m.ra }}</td>
+        				<td>{{ m.rv }}</td>
+        				<td>{{ m.mass }}</td>
+        				<td>{{ m.get_lge_display() }}</td>
+        				<td>{{ m.perfusion }}</td>
+        				<td>{{ m.get_dema_display() }}</td>
+        				<td>{{ m.fibrosis }}</td>
+        				<td>{{ m.microcirculation }}</td>
+        				<td>
+        					{% if m.dicom_file %}
+        					<a href="{{ m.dicom_file.url }}" class="btn btn-sm btn-success">下载</a>
+        					<a href="{{ m.dicom_uuid }}" class="btn btn-sm btn-info">查看</a>
+        					{% endif %}
+        				</td>
+        				<td>
+        					{% if m.report %}
+        					<a href="{{ m.report.url }}" class="btn btn-sm btn-success">下载</a>
+        					{% endif %}
+        				</td>
+	        			<td class="text-nowrap">{{ m.tested | date('Y-m-d') }}</td>
+	        			<td class="text-nowrap text-end">
+	        				{% if request.user.profile.is_editor %}
+	        				<a href="{{ url('edit-cardiomyopathy-mri', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-cardiomyopathy-mri', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	        			</td>
+        			</tr>
+        			{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tabs-ecg">
+      	<div class="table-responsive">
+        	<table class="table card-table table-vcenter datatable">
+        		<thead>
+        			<tr>
+        				<th>年龄</th>
+        				<th>ST-T改变</th>
+        				<th>传导阻滞</th>
+        				<th>心房颤动</th>
+        				<th>室性早搏</th>
+        				<th>房性早搏</th>
+        				<th>左室肥大</th>
+        				<th>左房肥大</th>
+        				<th>异常Q波</th>
+        				<th>窦性心动过缓</th>
+        				<th>窦性心动过速</th>
+        				<th>房性心动过速</th>
+        				<th>室性心动过速</th>
+        				<th>检查时间</th>
+        				<th>操作</th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for e in object.ecgs.all() %}
+        			<tr>
+        				<td>{{ e.age }}</td>
+        				<td>{{ e.get_stt_display() }}</td>
+        				<td>{{ e.get_cdzz_display() }}</td>
+        				<td>{{ e.get_xfcd_display() }}</td>
+        				<td>{{ e.get_sxzb_display() }}</td>
+        				<td>{{ e.get_fxzb_display() }}</td>
+        				<td>{{ e.get_zsfd_display() }}</td>
+        				<td>{{ e.get_zffd_display() }}</td>
+        				<td>{{ e.get_ycqb_display() }}</td>
+        				<td>{{ e.get_dxdgh_display() }}</td>
+        				<td>{{ e.get_dxdgs_display() }}</td>
+        				<td>{{ e.get_fxdgs_display() }}</td>
+        				<td>{{ e.get_sxdgs_display() }}</td>
+	        			<td class="text-nowrap">{{ e.tested | date('Y-m-d') }}</td>
+	        			<td class="text-nowrap text-end">
+	        				{% if request.user.profile.is_editor %}
+	        				<a href="{{ url('edit-cardiomyopathy-ecg', kwargs={'did': object.id, 'pk': e.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-cardiomyopathy-ecg', kwargs={'did': object.id, 'pk': e.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	        			</td>
+        			</tr>
+        			{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tabs-gene">
+      	<div class="table-responsive">
+        	<table class="table card-table table-vcenter datatable">
+        		<thead>
+        			<tr>
+        				<th>检测公司</th>
+        				<th>报告文件</th>
+        				<th>检查时间</th>
+        				<th colspan="8">检测内容</th>
+        				<th>操作</th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for r in object.reports.all() %}
+        			<tr>
+        				<td rowspan="{{ r.genes.count()+1 }}">{{ r.company }}</td>
+        				<td rowspan="{{ r.genes.count()+1 }}"><a href="{{ r.report.url }}" class="btn btn-sm btn-success">下载</a></td>
+        				<td rowspan="{{ r.genes.count()+1 }}">{{ r.tested | date("Y-m-d") }}</td>
+        				<td>基因</td>
+        				<td>染色体位置</td>
+        				<td>突变信息</td>
+        				<td>gnomAD MAF</td>
+        				<td>ACAG变异评级</td>
+        				<td>疾病名称</td>
+        				<td>遗传模式</td>
+        				<td>合子类型</td>
+	        			<td class="text-nowrap text-end">
+	        				{% if request.user.profile.is_editor %}
+	        				<a href="{{ url('edit-cardiomyopathy-greport', kwargs={'did': object.id, 'pk': r.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-cardiomyopathy-greport', kwargs={'did': object.id, 'pk': r.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	        			</td>
+        			</tr>
+
+        			{% for g in r.genes.all() %}
+        			<tr>
+        				<td>{{ g.gene }}</td>
+        				<td>{{ g.position }}</td>
+        				<td>{{ g.mutation }}</td>
+        				<td>{{ g.gnomad }}</td>
+        				<td>{{ g.acmg }}</td>
+        				<td>{{ g.disease }}</td>
+        				<td>{{ g.gmode }}</td>
+        				<td>{{ g.zygote }}</td>
+        				<td class="text-nowrap text-end">
+	        				{% if request.user.profile.is_editor %}
+	        				<a href="{{ url('edit-cardiomyopathy-gmutation', kwargs={'did': object.id, 'pk': g.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-cardiomyopathy-gmutation', kwargs={'did': object.id, 'pk': g.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	        			</td>
+        			</tr>
+        			{% endfor %}
+
+        			{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
       </div>
     </div>
   </div>

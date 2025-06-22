@@ -11,16 +11,16 @@
 	<div class="card-header">
 		<h3 class="card-title">
 			患者列表
-			<span class="card-subtitle">Patients List</span>
+			<span class="card-subtitle">Patient List</span>
 		</h3>
 		<div class="card-actions">
-			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-patient-dialog">
+			<a href="{{ url('add-patient') }}" class="btn btn-primary">
 				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-2">
                     <path d="M12 5l0 14"></path>
                     <path d="M5 12l14 0"></path>
                 </svg>
-				录入新患者
-			</button>
+				添加新患者
+			</a>
 		</div>
 	</div>
 	<div class="table-responsive">
@@ -30,15 +30,14 @@
 					<th>姓名</th>
 					<th>登记号</th>
 					<th>性别</th>
-					<th>年龄</th>
+					<th>出生日期</th>
 					<th>民族</th>
 					<th>身高(cm)</th>
 					<th>体重(kg)</th>
 					<th>电话</th>
 					<th>录入时间</th>
-					{% if user.profile.role >= user.profile.ROLE_ADMINITOR %}
 					<th>录入人员</th>
-					{% endif %}
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -53,81 +52,79 @@
 					<td>{{ p.weight }}</td>
 					<td>{{ p.phone }}</td>
 					<td>{{ p.created | date("Y-m-d") }}</td>
-					{% if user.profile.role >= user.profile.ROLE_ADMINITOR %}
 					<td>{{ user.last_name }}{{ user.first_name }}</td>
-					{% endif %}
+					<td class="text-end">
+						<div class="dropdown">
+				            <button class="btn dropdown-toggle align-text-top" data-bs-toggle="dropdown" aria-expanded="false">操作</button>
+				            <div class="dropdown-menu dropdown-menu-end">
+				              <a class="dropdown-item" href="{{ url('edit-patient', kwargs={'pk': p.id}) }}">编辑</a>
+				              <a class="dropdown-item link-danger" href="{{ url('delete-patient', kwargs={'pk': p.id}) }}">删除</a>
+				            </div>
+				        </div>
+					</td>
 				</tr>
 				{% endfor %}
 			</tbody>
 		</table>
 	</div>
-</div>
+	<div class="card-footer d-flex align-items-center">
+		<p class="m-0 text-secondary">
+			第 {{ page_obj.number }} 页, 共 {{ page_obj.paginator.num_pages }} 页
+		</p>
+		<ul class="pagination m-0 ms-auto">
+			
+			<li class="page-item {% if not page_obj.has_previous() %} disabled {% endif %}">
+	            <a class="page-link" href="?page={% if page_obj.has_previous() %}{{ page_obj.previous_page_number() }}{% endif %}">
+	              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+                    <path d="M15 6l-6 6l6 6"></path>
+                  </svg>
+	              上一页
+	            </a>
+	        </li>
 
-<div class="modal modal-blur fade" id="add-patient-dialog" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-		<form action="{{ url('add-patient') }}" method="post" class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">录入新患者</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<div class="row mb-3">
-					<div class="col-md-3">
-						<label class="form-label">姓名</label>
-						<input type="text" name="name" class="form-control">
-					</div>
-					<div class="col-md-3">
-						<label class="form-label">登记号</label>
-						<input type="text" name="number" class="form-control">
-					</div>
-					<div class="col-md-3">
-						<label class="form-label">性别</label>
-						<select name="gender" class="form-select">
-							{% for k, v in patients.model().GENDERS.items() %}
-							<option value="{{ k }}">{{ v }}</option>
-							{% endfor %}
-						</select>
-					</div>
-					<div class="col-md-3">
-						<label class="form-label">民族</label>
-						<select name="ethnicity" class="form-select">
-							{% for k, v in patients.model().ETHNIC_GROUPS.items() %}
-							<option value="{{ k }}">{{ v }}</option>
-							{% endfor %}
-						</select>
-					</div>
-				</div>
-				<div class="row mb-3">
-					<div class="col-md-4">
-						<label class="form-label">年龄(years)</label>
-						<input type="number" name="age" class="form-control">
-					</div>
-					<div class="col-md-4">
-						<label class="form-label">身高(cm)</label>
-						<input type="number" name="height" class="form-control">
-					</div>
-					<div class="col-md-4">
-						<label class="form-label">体重(kg)</label>
-						<input type="number" name="weight" class="form-control">
-					</div>
-				</div>
-				<div class="row mb-3">
-					<div class="col-md-3">
-						<label class="form-label">电话</label>
-						<input type="text" name="phone" class="form-control">
-					</div>
-					<div class="col-md-9">
-						<label class="form-label">地址</label>
-						<input type="text" name="address" class="form-control">
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn me-auto" data-bs-dismiss="modal">关闭</button>
-				<button type="submit" class="btn btn-primary" data-bs-dismiss="modal">录入</button>
-			</div>
-			{{ csrf_input }}
-		</form>
+	        <li class="page-item {% if page_obj.number == 1 %}active{% endif %}">
+	        	<a href="?page=1" class="page-link">1</a>
+	        </li>
+
+	        {% if page_obj.number - 3 > 2 %}
+	        <li class="page-item">...</li>
+	        {% endif %}
+
+	        {% for i in range(page_obj.number-3, page_obj.number) %}
+	        {% if i >= 2 %}
+	        <li class="page-item {% if page_obj.number == i %}active{% endif %}">
+	        	<a href="?page={{ i }}" class="page-link">{{ i }}</a>
+	        </li>
+	        {% endif %}
+	        {% endfor %}
+
+	        {% for j in range(page_obj.number, page_obj.number + 4) %}
+	        {% if 1 < j < page_obj.paginator.num_pages %}
+	        <li class="page-item {% if page_obj.number == j %}active{% endif %}">
+	        	<a href="?page={{ j }}" class="page-link">{{ j }}</a>
+	        </li>
+	        {% endif %}
+	        {% endfor %}
+
+	        {% if page_obj.number + 4 < page_obj.paginator.num_pages %}
+	        <li class="page-item">...</li>
+	        {% endif %}
+
+	        {% if page_obj.paginator.num_pages > 1 %}
+	        <li class="page-item {% if page_obj.number == page_obj.paginator.num_pages %}active{% endif %}">
+	        	<a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a>
+	        </li>
+	        {% endif %}
+
+			<li class="page-item {% if not page_obj.has_next() %} disabled {% endif %}">
+	            <a class="page-link" href="?page={% if page_obj.has_next() %}{{ page_obj.next_page_number() }}{% endif %}">
+	              下一页
+	              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+	                <path d="M9 6l6 6l-6 6"></path>
+	              </svg>
+	            </a>
+	        </li>
+		</ul>
 	</div>
 </div>
 {% endblock %}

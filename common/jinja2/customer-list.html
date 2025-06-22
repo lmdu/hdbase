@@ -15,50 +15,52 @@
 			<span class="card-subtitle">Users List</span>
 		</h3>
 	</div>
-	<table class="table card-table table-vcenter text-nowrap datatable">
-		<thead>
-			<tr>
-				<th>用户名</th>
-				<th>邮箱</th>
-				<th>头像</th>
-				<th>姓名</th>
-				<th>电话</th>
-				<th>专业</th>
-				<th>职称</th>
-				<th>学位</th>
-				<th>职位</th>
-				<th>状态</th>
-				<th>角色</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for u in customers %}
-			<tr>
-				<td>{{ u.user.username }}</td>
-				<td>{{ u.user.email }}</td>
-				<td><span class="avatar rounded-circle avatar-sm" style="background-image: url({{ u.get_avatar }});"></span></td>
-				<td>{{ u.user.last_name }}{{ u.user.first_name }}</td>
-				<td>{{ u.phone }}</td>
-				<td>{{ u.major }}</td>
-				<td>{{ u.get_title_display() }}</td>
-				<td>{{ u.get_position_display() }}</td>
-				<td>{{ u.get_degree_display() }}</td>
-				<td>{{ u.get_state_display() }}</td>
-				<td>{{ u.get_role_display() }}</td>
-				<td class="text-end">
-					<div class="dropdown">
-            <button type="button align-text-top" class="btn dropdown-toggle" data-bs- data-bs-toggle="dropdown" aria-expanded="false">操作</button>
-            <div class="dropdown-menu dropdown-menu-end">
-              <a class="dropdown-item" href="{{ url('edit-customer', kwargs={'pk': u.id}) }}">编辑</a>
-              <a class="dropdown-item link-danger" href="{{ url('delete-customer', kwargs={'pk': u.id}) }}">删除</a>
-            </div>
-          </div>
-				</td>
-			</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+	<div class="table-responsive">
+		<table class="table card-table table-vcenter text-nowrap datatable">
+			<thead>
+				<tr>
+					<th>用户名</th>
+					<th>邮箱</th>
+					<th>头像</th>
+					<th>姓名</th>
+					<th>电话</th>
+					<th>专业</th>
+					<th>职称</th>
+					<th>学位</th>
+					<th>职位</th>
+					<th>状态</th>
+					<th>角色</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for u in customers %}
+				<tr>
+					<td>{{ u.user.username }}</td>
+					<td>{{ u.user.email }}</td>
+					<td><span class="avatar rounded-circle avatar-sm" style="background-image: url({{ u.get_avatar }});"></span></td>
+					<td>{{ u.user.last_name }}{{ u.user.first_name }}</td>
+					<td>{{ u.phone }}</td>
+					<td>{{ u.major }}</td>
+					<td>{{ u.get_title_display() }}</td>
+					<td>{{ u.get_position_display() }}</td>
+					<td>{{ u.get_degree_display() }}</td>
+					<td>{{ u.get_state_display() }}</td>
+					<td>{{ u.get_role_display() }}</td>
+					<td class="text-end">
+						<div class="dropdown">
+	            <button type="button align-text-top" class="btn dropdown-toggle" data-bs- data-bs-toggle="dropdown" aria-expanded="false">操作</button>
+	            <div class="dropdown-menu dropdown-menu-end">
+	              <a class="dropdown-item" href="{{ url('edit-customer', kwargs={'pk': u.id}) }}">编辑</a>
+	              <a class="dropdown-item link-danger" href="{{ url('delete-customer', kwargs={'pk': u.id}) }}">删除</a>
+	            </div>
+	          </div>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
 </div>
 
 <div class="modal modal-blur fade" id="delete-user-dialog" tabindex="-1" role="dialog" aria-hidden="true">

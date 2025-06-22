@@ -13,8 +13,9 @@
 	<div class="card-header">
 		<h3 class="card-title">
 			病例列表
-			<span class="card-subtitle">Tasks List</span>
+			<span class="card-subtitle">Case List</span>
 		</h3>
+		{% if request.user.profile.is_editor %}
 		<div class="card-actions">
 			<a href="{{ url('add-cardiomyopathy') }}" class="btn btn-primary">
 				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-2">
@@ -24,6 +25,7 @@
 				添加病例
 			</a>
 		</div>
+		{% endif %}
 	</div>
 	<div class="table-responsive">
 		<table class="table table-selectable card-table table-vcenter text-nowrap datatable">
@@ -42,6 +44,7 @@
 					<th>心律失常类型</th>
 					<th>特殊治疗</th>
 					<th>随访时间</th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -60,6 +63,18 @@
 					<td>{{ cd.arrhythmia_type }}</td>
 					<td>{{ cd.get_special_treatment_display() }}</td>
 					<td>{{ cd.follow_time | date("Y-m-d") }}</td>
+					<td class="text-end">
+						<div class="dropdown">
+				            <button class="btn dropdown-toggle align-text-top" data-bs-toggle="dropdown" aria-expanded="false">操作</button>
+				            <div class="dropdown-menu dropdown-menu-end">
+				              <a class="dropdown-item" href="{{ url('view-cardiomyopathy', kwargs={'pk': cd.id}) }}">查看</a>
+				              {% if request.user.profile.is_editor %}
+				              <a class="dropdown-item" href="{{ url('edit-cardiomyopathy', kwargs={'pk': cd.id}) }}">编辑</a>
+				              <a class="dropdown-item link-danger" href="{{ url('delete-cardiomyopathy', kwargs={'pk': cd.id}) }}">删除</a>
+				              {% endif %}
+				            </div>
+				        </div>
+					</td>
 				</tr>
 				{% endfor %}
 			</tbody>

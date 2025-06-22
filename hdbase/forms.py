@@ -21,6 +21,14 @@ class PatientSelectWidget(s2forms.ModelSelect2Widget):
 		'number__icontains'
 	]
 
+class PatientForm(TablerModelForm):
+	class Meta:
+		model = Patient
+		exclude = ['created', 'updated', 'author']
+		widgets = {
+			'birthday': DatePickerInput,
+		}
+
 class CardiomyopathyDiseaseForm(TablerModelForm):
 	class Meta:
 		model = CardiomyopathyDisease
@@ -63,7 +71,36 @@ class CardiomyopathyTreatmentForm(TablerModelForm):
 class CardiomyopathyUltrasoundForm(TablerModelForm):
 	class Meta:
 		model = CardiomyopathyUltrasound
+		exclude = ['created', 'disease', 'author', 'dicom_uuid']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CardiomyopathyMRIForm(TablerModelForm):
+	class Meta:
+		model = CardiomyopathyMRI
+		exclude = ['created', 'disease', 'author', 'dicom_uuid']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CardiomyopathyECGForm(TablerModelForm):
+	class Meta:
+		model = CardiomyopathyECG
 		exclude = ['created', 'disease', 'author']
 		widgets = {
 			'tested': DatePickerInput,
 		}
+
+class CardiomyopathyGeneReportForm(TablerModelForm):
+	class Meta:
+		model = CardiomyopathyGeneReport
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CardiomyopathyGeneMutationForm(TablerModelForm):
+	class Meta:
+		model = CardiomyopathyGeneMutation
+		fields = '__all__'
