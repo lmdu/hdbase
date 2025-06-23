@@ -116,12 +116,50 @@
 				<div class="datagrid-content">{{ object.get_remain_sample_display() }}</div>
 			</div>
 			<div class="datagrid-item">
-				<div class="datagrid-title">患者</div>
-				<div class="datagrid-content">{{ object.patient.number }} / {{ object.patient.name }}</div>
-			</div>
-			<div class="datagrid-item">
 				<div class="datagrid-title">录入时间</div>
 				<div class="datagrid-content">{{ object.created | date("Y-m-d") }}</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="card mt-5">
+	<div class="card-header">
+		<h3 class="card-title">患者信息</h3>
+	</div>
+	<div class="card-body">
+		<div class="datagrid">
+			<div class="datagrid-item">
+				<div class="datagrid-title">患者姓名</div>
+				<div class="datagrid-content">{{ object.patient.name }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">登记号</div>
+				<div class="datagrid-content">{{ object.patient.number }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">性别</div>
+				<div class="datagrid-content">{{ object.patient.get_gender_display() }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">民族</div>
+				<div class="datagrid-content">{{ object.patient.get_ethnicity_display() }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">出生日期</div>
+				<div class="datagrid-content">{{ object.patient.birthday | date("Y-m-d") }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">身高(cm)</div>
+				<div class="datagrid-content">{{ object.patient.height }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">体重(Kg)</div>
+				<div class="datagrid-content">{{ object.patient.weight }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">电话</div>
+				<div class="datagrid-content">{{ object.patient.phone }}</div>
 			</div>
 		</div>
 	</div>
@@ -307,7 +345,7 @@
         				<td>
         					{% if u.dicom_file %}
         					<a href="{{ u.dicom_file.url }}" class="btn btn-sm btn-success">下载</a>
-        					<a href="{{ u.dicom_uuid }}" class="btn btn-sm btn-info">查看</a>
+        					<a href="/orthanc/app/explorer.html#study?uuid={{ u.dicom_uuid }}" class="btn btn-sm btn-info">查看</a>
         					{% endif %}
         				</td>
         				<td>
@@ -373,7 +411,7 @@
         				<td>
         					{% if m.dicom_file %}
         					<a href="{{ m.dicom_file.url }}" class="btn btn-sm btn-success">下载</a>
-        					<a href="{{ m.dicom_uuid }}" class="btn btn-sm btn-info">查看</a>
+        					<a href="/orthanc/app/explorer.html#study?uuid={{ m.dicom_uuid }}" class="btn btn-sm btn-info">查看</a>
         					{% endif %}
         				</td>
         				<td>

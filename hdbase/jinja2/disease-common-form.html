@@ -17,6 +17,7 @@
 		</h3>
 	</div>
 	<form method="post" enctype="multipart/form-data">
+		{{ csrf_input }}
 		<div class="card-body">
 			<div class="row row-cards">
 				{% for field in form %}
@@ -38,8 +39,8 @@
 		</div>
 		<div class="card-footer">
 			<div class="d-flex">
-				{{ csrf_input }}
-				<button type="submit" class="btn btn-primary ms-auto">提交</button>
+				<div class="spinner-border text-blue d-none" role="status"></div>
+				<button type="submit" class="btn btn-primary ms-auto" id="submit-form">提交</button>
 			</div>
 		</div>
 	</form>
@@ -49,4 +50,9 @@
 {% block script %}
 {{ form.media.js }}
 <script src="{{ static('js/jquery.validate.min.js') }}"></script>
+<script>
+$('#submit-form').click(function(){
+	$('.spinner-border').removeClass('d-none');
+});
+</script>
 {% endblock %}
