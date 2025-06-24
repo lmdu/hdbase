@@ -381,6 +381,44 @@ class CardiomyopathyGeneMutation(models.Model):
 	
 
 class KawasakiDisease(models.Model):
+	CHUANQI_TYPES = {
+		0: "未知",
+		1: "完全"
+		1: "不完全"
+	}
+
+	YES_NO = {
+		0: "否",
+		1: "是",
+		2: "-"
+	}
+
+	SAMPLE_TYPES = {
+		0: "无",
+		1: "全血",
+		2: "血细胞",
+		3: "血浆",
+		4: "组织"
+	}
+
+	cqlx = models.PositiveSmallIntegerField(choices=CHUANQI_TYPES, default=0, help_text="川崎类型")
+	cznl = models.FloatField(blank=True, null=True, help_text="初诊年龄")
+	bqdk = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="丙球抵抗")
+	gmsh = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="冠脉损害")
+	cqxk = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="川崎休克")
+	fr5ksszlwx = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="发热5天以上，抗生素治疗无效")
+	jmcx = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="结膜充血")
+	yms = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="杨梅舌")
+	kcgb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="口唇改变")
+	pizhen = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="皮疹")
+	jblbjzd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="颈部淋巴结肿大")
+	zdyj = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="肢端硬结/掌趾红斑")
+	xjgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心肌梗死")
+	kjjzhz = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="卡介苗接种部位红肿硬结")
+	fufa = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="复发")
+	sfcjbb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="是否采集标本")
+	sjbb = models.PositiveSmallIntegerField(choices=SAMPLE_TYPES, default=0, help_text="已送检标本")
+	sybb = models.PositiveSmallIntegerField(choices=SAMPLE_TYPES, default=0, help_text="剩余标本")
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
 	patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
@@ -388,6 +426,308 @@ class KawasakiDisease(models.Model):
 
 	class Meta:
 		ordering = ['-created']
+
+class KawasakiBlood(models.Model):
+	xcg = models.CharField(max_length=80, blank=True, null=True, default='', help_text="血常规")
+	frsj = models.CharField(max_length=30, blank=True, null=True, default='', help_text="距离发热xx时间")
+	wbc = models.FloatField(blank=True, null=True, help_text="WBC")
+	np = models.FloatField(blank=True, null=True, help_text="N%")
+	lp = models.FloatField(blank=True, null=True, help_text="L%")
+	monop = models.FloatField(blank=True, null=True, help_text="MONO%")
+	lym = models.FloatField(blank=True, null=True, help_text="Lym")
+	mono = models.FloatField(blank=True, null=True, help_text="MONO(单核细胞绝对值)")
+	anc = models.FloatField(blank=True, null=True, help_text="ANC")
+	rbc = models.FloatField(blank=True, null=True, help_text="RBC")
+	hgb = models.FloatField(blank=True, null=True, help_text="HGB")
+	plt = models.FloatField(blank=True, null=True, help_text="PLT")
+	hct = models.FloatField(blank=True, null=True, help_text="HCT")
+	rdwc = models.FloatField(blank=True, null=True, help_text="RDWC")
+	rdwsd = models.FloatField(blank=True, null=True, help_text="RDWSD")
+	pdw = models.FloatField(blank=True, null=True, help_text="PDW")
+	mpv = models.FloatField(blank=True, null=True, help_text="MPV")
+	plcr = models.FloatField(blank=True, null=True, help_text="PLCR")
+	pctp = models.FloatField(blank=True, null=True, help_text="PCT%")
+	crp = models.FloatField(blank=True, null=True, help_text="CRP")
+	esr = models.FloatField(blank=True, null=True, help_text="ESR")
+	jgsy = models.FloatField(blank=True, null=True, help_text="降钙素原")
+	saa = models.FloatField(blank=True, null=True, help_text="SAA")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='bloods')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class KawasakiBiochemistry(models.Model):
+	alt = models.FloatField(blank=True, null=True, help_text="ALT")
+	ast = models.FloatField(blank=True, null=True, help_text="AST")
+	tb = models.FloatField(blank=True, null=True, help_text="TB")
+	dbil = models.FloatField(blank=True, null=True, help_text="DBIL")
+	idil = models.FloatField(blank=True, null=True, help_text="IDIL")
+	alb = models.FloatField(blank=True, null=True, help_text="ALB")
+	glb = models.FloatField(blank=True, null=True, help_text="GLB")
+	rgt = models.FloatField(blank=True, null=True, help_text="γ-GT")
+	ldh = models.FloatField(blank=True, null=True, help_text="LDH")
+	pa = models.FloatField(blank=True, null=True, help_text="PA")
+	alp = models.FloatField(blank=True, null=True, help_text="ALP")
+	un = models.FloatField(blank=True, null=True, help_text="UN")
+	jg = models.FloatField(blank=True, null=True, help_text="肌酐")
+	cysc = models.FloatField(blank=True, null=True, help_text="CYSC")
+	ua = models.FloatField(blank=True, null=True, help_text="UA")
+	p = models.FloatField(blank=True, null=True, help_text="P")
+	k = models.FloatField(blank=True, null=True, help_text="K+")
+	na = models.FloatField(blank=True, null=True, help_text="Na+")
+	cl = models.FloatField(blank=True, null=True, help_text="Cl-")
+	ca = models.FloatField(blank=True, null=True, help_text="Ca2+")
+	mg = models.FloatField(blank=True, null=True, help_text="Mg2+")
+	tc = models.FloatField(blank=True, null=True, help_text="TC")
+	tg = models.FloatField(blank=True, null=True, help_text="TG")
+	hdlc = models.FloatField(blank=True, null=True, help_text="HDLC")
+	ldlc = models.FloatField(blank=True, null=True, help_text="LDLC")
+	apoa = models.FloatField(blank=True, null=True, help_text="Apoa")
+	apob = models.FloatField(blank=True, null=True, help_text="Apob")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='biochems')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class KawasakiMarker(models.Model):
+	pt = models.FloatField(blank=True, null=True, help_text="PT")
+	aptt = models.FloatField(blank=True, null=True, help_text="APTT")
+	fg = models.FloatField(blank=True, null=True, help_text="Fg")
+	tt = models.FloatField(blank=True, null=True, help_text="TT")
+	ddi = models.FloatField(blank=True, null=True, help_text="DDI")
+	fdp = models.FloatField(blank=True, null=True, help_text="FDP")
+	atiii = models.FloatField(blank=True, null=True, help_text="ATIII")
+	inr = models.FloatField(blank=True, null=True, help_text="INR")
+	ctni = models.FloatField(blank=True, null=True, help_text="cTni")
+	mb = models.FloatField(blank=True, null=True, help_text="Mb")
+	ntbnp = models.FloatField(blank=True, null=True, help_text="NT-BNP")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='markers')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class KawasakiOtherExamine(models.Model):
+	NORMAL_TYPES = {
+		0: "未做",
+		1: "正常",
+		2: "不正常"
+	}
+
+	HAVE_TYPES = {
+		0: "无",
+		1: "有"
+	}
+
+	POSITIVE_NEGATIVE = {
+		0: "阴性",
+		1: "阳性"
+	}
+
+	njyjc = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=0, help_text="脑脊液检查")
+	njydbz = models.FloatField(blank=True, null=True, help_text="脑脊液蛋白质")
+	njyt = models.FloatField(blank=True, null=True, help_text="脑脊液糖")
+	njylhw = models.FloatField(blank=True, null=True, help_text="脑脊液氯化物")
+	rxjj = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=0, help_text="溶血检查")
+	krqdbss = models.PositiveSmallIntegerField(choices=POSITIVE_NEGATIVE, default=0, help_text="直接抗人球蛋白试验")
+	wzhxb = models.FloatField(blank=True, null=True, help_text="网织红细胞(%)")
+	dbcg = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=0, help_text="大便常规")
+	dbbxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="大便白细胞/hp")
+	dbhxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="大便红细胞/hp")
+	dbnxb = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="大便脓细胞/hp")
+	xbcg = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=0, help_text="小便常规")
+	xbndb = models.FloatField(blank=True, null=True, help_text="小便尿蛋白")
+	xbbxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="小便白细胞/hp")
+	xbhxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="小便红细胞/hp")
+	xbnxb = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="小便脓细胞/hp")
+	xdt = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=0, help_text="心电图")
+	xdtbx = models.CharField(max_length=255, blank=True, null=True, default='', help_text="心电图具体表现")
+	xp = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=0, help_text="胸片")
+	xpbx = models.CharField(max_length=255, blank=True, null=True, default='', help_text="胸片具体表现")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='markers')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class KawasakiTreatment(models.Model):
+	IVIG_LOCATIONS = {
+		1: "心血管科住院",
+		2: "急诊",
+		3: "门诊或其他住院部科室",
+		4: "外院"
+	}
+
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	ASPL_DOSES = {
+		0: "未使用",
+		1: "小3-10mg/kg/d",
+		2: "大30-50"
+	}
+
+	ASPL_IVIG_ORDERS = {
+		0: "未知",
+		1: "同时",
+		2: "IVIG在前",
+		3: "IVIG在后" 
+	}
+
+	KL_TREATEMENTS = {
+		0: "未知",
+		1: "阿司匹林",
+		2: "潘生丁(双嘧达莫)",
+		3: "氯吡格雷",
+		4: "华法林",
+		5: "低分子肝素"
+	}
+
+	dyivigdd = models.PositiveSmallIntegerField(choices=IVIG_LOCATIONS, default=1, help_text="第一次IVIG使用地点")
+	dyivigsj = models.CharField(max_length=20, blank=True, null=True, default='', help_text="第一次IVIG使用时间")
+	dycivig = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="第一次IVIG")
+	dycjl = models.FloatField(blank=True, null=True, help_text="第一次剂量(g/kg)")
+	ksszhtrsj = models.CharField(max_length=20, blank=True, null=True, default='', help_text="开始输注后退热时间")
+	decivig = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="第二次IVIG")
+	decjl = models.FloatField(blank=True, null=True, help_text="第二次剂量(g/kg)")
+	sfsyjs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="是否使用激素")
+	jszl = models.CharField(max_length=30, blank=True, null=True, default='', help_text="激素种类")
+	syjslfrdj = models.CharField(max_length=20, blank=True, null=True, default='', help_text="使用激素，离发热多久")
+	jsyf = models.CharField(max_length=30, blank=True, null=True, default='', help_text="激素用法")
+	jsyl = models.FloatField(blank=True, null=True, help_text="激素用量(mg/kg)")
+	sfsyaspl = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="是否使用阿司匹林")
+	syasplfrdj = models.CharField(max_length=20, blank=True, null=True, default='', help_text="使用阿司匹林，离发热多久")
+	aspljl = models.PositiveSmallIntegerField(choices=ASPL_DOSES, default=0, help_text="阿司匹林剂量")
+	aspltrsj = models.CharField(max_length=20, blank=True, null=True, default='', help_text="阿司匹林使用后退热时间")
+	asplivigsx = models.PositiveSmallIntegerField(choices=ASPL_IVIG_ORDERS, default=0, help_text="阿司匹林和IVIG使用顺序")
+	klzl = models.PositiveSmallIntegerField(choices=KL_TREATEMENTS, default=0, help_text="抗凝治疗")
+	qtzlfa = models.CharField(max_length=200, blank=True, null=True, default='', help_text="其他治疗方案")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='markers')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class KawasakiCardiacPhenotype(models.Model):
+	HAVE_TYPES = {
+		0: "无",
+		1: "有"
+	}
+
+	sfyxhxtzz = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="是否有消化系统症状")
+	outu = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="呕吐")
+	ftjzbs = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="腹痛/脐周不适")
+	gy = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="肝炎")
+	hd = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="黄疸")
+	dlzd = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="胆囊肿大")
+	yxy = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="胰腺炎")
+	xhxtqtbx = models.CharField(max_length=200, blank=True, null=True, default='', help_text="消化系统其他表现")
+	sjxtzz = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="神经系统症状")
+	jz = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="惊厥")
+	cc = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="抽搐")
+	jr = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="激惹")
+	ss = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="嗜睡")
+	tt = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="头痛")
+	pt = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="偏瘫")
+	tssjsh = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="听视神经损害")
+	qlpl = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="前囟膨隆")
+	ngs = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="脑梗塞")
+	ncx = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="脑出血")
+	sw = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="神萎")
+	sjxtqtbx = models.CharField(max_length=200, blank=True, null=True, default='', help_text="神经系统其他表现")
+	sfyhxxtbx = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="是否有呼吸系统表现")
+	ks = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="咳嗽")
+	hxxtqtbx = models.CharField(max_length=200, blank=True, null=True, default='', help_text="呼吸系统其他表现")
+	sfyjrxtbx = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="是否有肌肉系统表现")
+	gjy = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="关节炎")
+	gjtt = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="关节疼痛")
+	hzgjtw = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="寰椎关节脱位")
+	jbhdsx = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="颈部活动受限")
+	jrxtqtbx = models.CharField(max_length=200, blank=True, null=True, default='', help_text="肌肉系统其他表现")
+	sfymnxtbx = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="是否有泌尿生殖系统表现")
+	yljs = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="阴囊积水")
+	ndy = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="尿道炎")
+	ndky = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="尿道口炎")
+	ndxtqtbx = models.CharField(max_length=200, blank=True, null=True, default='', help_text="泌尿生殖系统其他表现")
+	sfyqtxtbx = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="是否有其他系统表现")
+	qtxtjtbx = models.CharField(max_length=200, blank=True, null=True, default='', help_text="其他系统具体表现")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='ultrasounds')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class KawasakiUltrasound(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	NORMAL_TYPES = {
+		0: "未知",
+		1: "正常",
+		2: "不正常"
+	}
+
+	code = models.CharField(max_length=20, blank=True, default='', help_text="超声号")
+	lfrjt = models.FloatField(blank=True, null=True, help_text="离发热几天")
+	jtzk = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=1, help_text="具体状况")
+	efp = models.FloatField(blank=True, null=True, help_text="EF(%)")
+	xbjy = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心包积液")
+	xzzd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心脏长大")
+	bmfl = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="瓣膜返流")
+	gmkz = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="冠脉扩张")
+	gmxs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="冠脉血栓")
+	gml = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="冠脉瘤")
+	lca = models.FloatField(blank=True, null=True, help_text="LCA")
+	lad = models.FloatField(blank=True, null=True, help_text="LAD")
+	lcx = models.FloatField(blank=True, null=True, help_text="LCX")
+	rca = models.FloatField(blank=True, null=True, help_text="RCA")
+	zdms = models.CharField(max_length=200, blank=True, null=True, default='', help_text="诊断描述")
+	report = models.FileField(upload_to='report/%Y/%m/', max_length=200, blank=True, null=True, help_text="报告文件")
+	dicom_file = models.FileField(upload_to='dicom/%Y/%m/', max_length=255, blank=True, null=True, help_text="影像文件")
+	dicom_uuid = models.CharField(max_length=50, blank=True, default='')
+	tested = models.DateField(blank=True, null=True, help_text="检查时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='ultrasounds')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class KawasakiMedimage(models.Model):
+	IMAGE_TYPES = {
+		1: "MRI",
+		3: "CTA",
+		2: "冠脉造影",
+		0: "其他"
+	}
+
+	yxlx = models.PositiveSmallIntegerField(choices=IMAGE_TYPES, default=1, help_text="影像类型")
+	code = models.CharField(max_length=20, blank=True, default='', help_text="影像号")
+	zd = models.CharField(max_length=200, blank=True, default='', help_text="诊断")
+	report = models.FileField(upload_to='report/%Y/%m/', max_length=200, blank=True, null=True, help_text="报告文件")
+	dicom_file = models.FileField(upload_to='dicom/%Y/%m/', max_length=255, blank=True, null=True, help_text="影像文件")
+	dicom_uuid = models.CharField(max_length=50, blank=True, default='')
+	tested = models.DateField(blank=True, null=True, help_text="检查时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='ultrasounds')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class KawasakiGeneReport(models.Model):
+	company = models.CharField(max_length=100, blank=True, default='', help_text="检测公司")
+	report = models.FileField(upload_to='report/%Y/%m/', blank=True, null=True, help_text="报告")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='reports')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+	def __str__(self):
+		return self.report.name.split('/')[-1]
+
+class KawasakiGeneMutation(models.Model):
+	gene = models.CharField(max_length=50, blank=True, default='', help_text="基因")
+	position = models.CharField(max_length=50, blank=True, default='', help_text="位置")
+	mutation = models.CharField(max_length=80, blank=True, default='', help_text="突变信息")
+	gnomad = models.CharField(max_length=30, blank=True, default='', help_text="gnomAD MAF")
+	acmg = models.CharField(max_length=30, blank=True, default='', help_text="ACMG变异评级")
+	disease = models.CharField(max_length=80, blank=True, default='', help_text="疾病名称")
+	gmode = models.CharField(max_length=20, blank=True, default='', help_text="遗传模式")
+	zygote = models.CharField(max_length=100, blank=True, default='', help_text="合子类型")
+	report = models.ForeignKey(KawasakiGeneReport, on_delete=models.CASCADE, related_name='genes')
+
 
 class CongenitalHeartDisease(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
