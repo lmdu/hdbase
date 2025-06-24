@@ -378,12 +378,15 @@ class CardiomyopathyGeneMutation(models.Model):
 	gmode = models.CharField(max_length=20, blank=True, default='', help_text="遗传模式")
 	zygote = models.CharField(max_length=100, blank=True, default='', help_text="合子类型")
 	report = models.ForeignKey(CardiomyopathyGeneReport, on_delete=models.CASCADE, related_name='genes')
-	
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='reports')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
 
 class KawasakiDisease(models.Model):
 	CHUANQI_TYPES = {
 		0: "未知",
-		1: "完全"
+		1: "完全",
 		1: "不完全"
 	}
 
@@ -544,7 +547,7 @@ class KawasakiOtherExamine(models.Model):
 	xp = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=0, help_text="胸片")
 	xpbx = models.CharField(max_length=255, blank=True, null=True, default='', help_text="胸片具体表现")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='markers')
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='examines')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class KawasakiTreatment(models.Model):
@@ -602,7 +605,7 @@ class KawasakiTreatment(models.Model):
 	klzl = models.PositiveSmallIntegerField(choices=KL_TREATEMENTS, default=0, help_text="抗凝治疗")
 	qtzlfa = models.CharField(max_length=200, blank=True, null=True, default='', help_text="其他治疗方案")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='markers')
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='treats')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class KawasakiCardiacPhenotype(models.Model):
@@ -649,7 +652,7 @@ class KawasakiCardiacPhenotype(models.Model):
 	sfyqtxtbx = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="是否有其他系统表现")
 	qtxtjtbx = models.CharField(max_length=200, blank=True, null=True, default='', help_text="其他系统具体表现")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='ultrasounds')
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='cardiacs')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class KawasakiUltrasound(models.Model):
@@ -703,7 +706,7 @@ class KawasakiMedimage(models.Model):
 	dicom_uuid = models.CharField(max_length=50, blank=True, default='')
 	tested = models.DateField(blank=True, null=True, help_text="检查时间")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='ultrasounds')
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, related_name='medimages')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class KawasakiGeneReport(models.Model):

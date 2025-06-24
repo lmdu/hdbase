@@ -103,4 +103,77 @@ class CardiomyopathyGeneReportForm(TablerModelForm):
 class CardiomyopathyGeneMutationForm(TablerModelForm):
 	class Meta:
 		model = CardiomyopathyGeneMutation
-		fields = '__all__'
+		exclude = ['created', 'disease', 'author']
+
+class KawasakiDiseaseForm(TablerModelForm):
+	class Meta:
+		model = KawasakiDisease
+		exclude = ['created', 'updated', 'author']
+
+class KawasakiBloodForm(TablerModelForm):
+	class Meta:
+		model = KawasakiBlood
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class KawasakiBiochemistryForm(TablerModelForm):
+	class Meta:
+		model = KawasakiBiochemistry
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class KawasakiMarkerForm(TablerModelForm):
+	class Meta:
+		model = KawasakiMarker
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class KawasakiOtherExamineForm(TablerModelForm):
+	class Meta:
+		model = KawasakiOtherExamine
+		exclude = ['created', 'disease', 'author']
+
+class KawasakiTreatmentForm(TablerModelForm):
+	class Meta:
+		model = KawasakiTreatment
+		exclude = ['created', 'disease', 'author']
+
+class KawasakiCardiacPhenotypeForm(TablerModelForm):
+	class Meta:
+		model = KawasakiCardiacPhenotype
+		exclude = ['created', 'disease', 'author']
+
+class KawasakiUltrasoundForm(TablerModelForm):
+	class Meta:
+		model = KawasakiUltrasound
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class KawasakiMedimageForm(TablerModelForm):
+	class Meta:
+		model = KawasakiMedimage
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class KawasakiGeneReportForm(TablerModelForm):
+	class Meta:
+		model = KawasakiGeneReport
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class KawasakiGeneMutationForm(TablerModelForm):
+	class Meta:
+		model = KawasakiGeneMutation
+		exclude = ['created', 'disease', 'author']
