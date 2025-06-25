@@ -1,0 +1,154 @@
+{% set mainmenu = 'disease' %}
+{% extends 'base.html' %}
+{% block pagetitle %}
+<img src="{{ static('img/cqb.svg') }}" width="32" height="32" class="me-2">
+川崎病病例
+{% endblock %}
+
+{% block pageaction %}
+{% if request.user.profile.is_editor %}
+<div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">添加信息</button>
+  <div class="dropdown-menu dropdown-menu-end">
+    <a class="dropdown-item" href="{{ url('add-kawasaki-blood', kwargs={'did': object.id}) }}">添加血常规</a>
+    <a class="dropdown-item" href="{{ url('add-kawasaki-biochem', kwargs={'did': object.id}) }}">添加生化检验</a>
+    <a class="dropdown-item" href="{{ url('add-kawasaki-marker', kwargs={'did': object.id}) }}">添加凝血/心肌标志物</a>
+    <a class="dropdown-item" href="{{ url('add-kawasaki-examine', kwargs={'did': object.id}) }}">添加其他检验/检查</a>
+		<a class="dropdown-item" href="{{ url('add-kawasaki-treatment', kwargs={'did': object.id}) }}">添加治疗及效果</a>
+		<a class="dropdown-item" href="{{ url('add-kawasaki-cardiac', kwargs={'did': object.id}) }}">添加心外表型</a>
+		<a class="dropdown-item" href="{{ url('add-kawasaki-ultrasound', kwargs={'did': object.id}) }}">添加超声影像</a>
+		<a class="dropdown-item" href="{{ url('add-kawasaki-ultrasound', kwargs={'did': object.id}) }}">添加特殊影像</a>
+    <a class="dropdown-item" href="{{ url('add-kawasaki-greport', kwargs={'did': object.id}) }}">添加基因报告</a>
+    <a class="dropdown-item" href="{{ url('add-kawasaki-gmutation', kwargs={'did': object.id}) }}">添加基因报告内容</a>
+  </div>
+</div>
+{% endif %}
+{% endblock%}
+
+{% block main %}
+<div class="card">
+	<div class="card-header">
+		<h3 class="card-title">
+			基本信息
+		</h3>
+	</div>
+	<div class="card-body">
+		<div class="datagrid">
+			{% for f in object._meta.fields %}
+			{% if f.help_text %}
+			<div class="datagrid-item">
+				{% if f.choices %}
+				<div class="datagrid-title">{{ f.help_text }}</div>
+				<div class="datagrid-content">{{ object | attr('get_{}_display'.format(f.name))() }}</div>
+				{% elif f.name != 'patient' %}
+				<div class="datagrid-title">{{ f.help_text }}</div>
+				<div class="datagrid-content">{{ object | attr(f.name) }}</div>
+				{% endif %}
+			</div>
+			{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+</div>
+
+<div class="card mt-5">
+	<div class="card-header">
+		<h3 class="card-title">患者信息</h3>
+	</div>
+	<div class="card-body">
+		<div class="datagrid">
+			<div class="datagrid-item">
+				<div class="datagrid-title">患者姓名</div>
+				<div class="datagrid-content">{{ object.patient.name }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">登记号</div>
+				<div class="datagrid-content">{{ object.patient.number }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">性别</div>
+				<div class="datagrid-content">{{ object.patient.get_gender_display() }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">民族</div>
+				<div class="datagrid-content">{{ object.patient.get_ethnicity_display() }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">出生日期</div>
+				<div class="datagrid-content">{{ object.patient.birthday | date("Y-m-d") }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">身高(cm)</div>
+				<div class="datagrid-content">{{ object.patient.height }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">体重(Kg)</div>
+				<div class="datagrid-content">{{ object.patient.weight }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">电话</div>
+				<div class="datagrid-content">{{ object.patient.phone }}</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="card mt-5">
+  <div class="card-header">
+    <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
+    	<li class="nav-item">
+        <a href="#tabs-blood" class="nav-link" data-bs-toggle="tab">血常规</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-biochem" class="nav-link" data-bs-toggle="tab">生化</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-marker" class="nav-link active" data-bs-toggle="tab">凝血/心肌标志物</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-other" class="nav-link" data-bs-toggle="tab">其他检验/检查</a>
+      </li>
+    </ul>
+  </div>
+  <div class="card-body">
+    <div class="tab-content">
+    	<div class="tab-pane active show" id="tabs-blood">
+        <div class="table-responsive">
+        	<table class="table card-table table-vcenter text-nowrap datatable">
+        		<thead>
+        			<tr>
+        			 	{% for f in object.bloods.model._meta.get_fields() %}
+								{% if f.help_text %}
+								<th>{{ f.help_text }}</th>
+								{% endif %}
+								{% endfor %}
+							</tr>
+        		</thead>
+        		<tbody>
+        			{% for b in object.bloods.all() %}
+        			<tr>
+        				<td>
+	        			{% for f in b._meta.fields %}
+								{% if f.help_text %}
+									{% if f.choices %}
+									<div class="datagrid-content">{{ b | attr('get_{}_display'.format(f.name))() }}</div>
+									{% else %}
+									<div class="datagrid-content">{{ b | attr(f.name) }}</div>
+									{% endif %}
+								{% endif %}
+								{% endfor %}
+								</td>
+							</tr>
+							{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+    </div>
+
+			      
+    </div>
+  </div>
+</div>
+
+{% endblock %}

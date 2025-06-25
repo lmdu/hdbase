@@ -374,20 +374,20 @@ class CardiomyopathyGeneMutation(models.Model):
 	mutation = models.CharField(max_length=80, blank=True, default='', help_text="突变信息")
 	gnomad = models.CharField(max_length=30, blank=True, default='', help_text="gnomAD MAF")
 	acmg = models.CharField(max_length=30, blank=True, default='', help_text="ACMG变异评级")
-	disease = models.CharField(max_length=80, blank=True, default='', help_text="疾病名称")
+	jbmc = models.CharField(max_length=80, blank=True, default='', help_text="疾病名称")
 	gmode = models.CharField(max_length=20, blank=True, default='', help_text="遗传模式")
 	zygote = models.CharField(max_length=100, blank=True, default='', help_text="合子类型")
-	report = models.ForeignKey(CardiomyopathyGeneReport, on_delete=models.CASCADE, related_name='genes')
+	report = models.ForeignKey(CardiomyopathyGeneReport, on_delete=models.CASCADE, related_name='genes', help_text="来源报告")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='reports')
-	author = models.ForeignKey(User, on_delete=models.CASCADE)
+	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, blank=True, null=True)
+	author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
 
 class KawasakiDisease(models.Model):
 	CHUANQI_TYPES = {
 		0: "未知",
 		1: "完全",
-		1: "不完全"
+		2: "不完全"
 	}
 
 	YES_NO = {
@@ -404,6 +404,7 @@ class KawasakiDisease(models.Model):
 		4: "组织"
 	}
 
+	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="编号或测序编号")
 	cqlx = models.PositiveSmallIntegerField(choices=CHUANQI_TYPES, default=0, help_text="川崎类型")
 	cznl = models.FloatField(blank=True, null=True, help_text="初诊年龄")
 	bqdk = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="丙球抵抗")
@@ -424,7 +425,7 @@ class KawasakiDisease(models.Model):
 	sybb = models.PositiveSmallIntegerField(choices=SAMPLE_TYPES, default=0, help_text="剩余标本")
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
-	patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+	patient = models.ForeignKey(Patient, on_delete=models.CASCADE, help_text="患者")
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 	class Meta:
@@ -729,8 +730,10 @@ class KawasakiGeneMutation(models.Model):
 	disease = models.CharField(max_length=80, blank=True, default='', help_text="疾病名称")
 	gmode = models.CharField(max_length=20, blank=True, default='', help_text="遗传模式")
 	zygote = models.CharField(max_length=100, blank=True, default='', help_text="合子类型")
-	report = models.ForeignKey(KawasakiGeneReport, on_delete=models.CASCADE, related_name='genes')
-
+	report = models.ForeignKey(KawasakiGeneReport, on_delete=models.CASCADE, related_name='genes', help_text="来源报告")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, blank=True, null=True)
+	author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
 class CongenitalHeartDisease(models.Model):
 	created = models.DateTimeField(auto_now_add=True)

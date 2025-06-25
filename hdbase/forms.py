@@ -109,6 +109,9 @@ class KawasakiDiseaseForm(TablerModelForm):
 	class Meta:
 		model = KawasakiDisease
 		exclude = ['created', 'updated', 'author']
+		widgets = {
+			'patient': PatientSelectWidget,
+		}
 
 class KawasakiBloodForm(TablerModelForm):
 	class Meta:
