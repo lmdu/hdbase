@@ -97,56 +97,172 @@
   <div class="card-header">
     <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
     	<li class="nav-item">
-        <a href="#tabs-blood" class="nav-link" data-bs-toggle="tab">血常规</a>
+        <a href="#tabs-blood" class="nav-link active" data-bs-toggle="tab">血常规</a>
       </li>
       <li class="nav-item">
         <a href="#tabs-biochem" class="nav-link" data-bs-toggle="tab">生化</a>
       </li>
       <li class="nav-item">
-        <a href="#tabs-marker" class="nav-link active" data-bs-toggle="tab">凝血/心肌标志物</a>
+        <a href="#tabs-marker" class="nav-link" data-bs-toggle="tab">凝血/心肌标志物</a>
       </li>
       <li class="nav-item">
-        <a href="#tabs-other" class="nav-link" data-bs-toggle="tab">其他检验/检查</a>
+        <a href="#tabs-examine" class="nav-link" data-bs-toggle="tab">其他检验/检查</a>
       </li>
     </ul>
   </div>
   <div class="card-body">
     <div class="tab-content">
     	<div class="tab-pane active show" id="tabs-blood">
-        <div class="table-responsive">
+    		<div class="nav nav-segmented nav-sm" role="tablist">
+    			{% for i in range(object.bloods.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#blood-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    血常规 {{ loop.index }}
+				  </button>
+				  {% endfor %}
+				</div>
+				<div class="tab-content">
+					{% for b in object.bloods.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="blood-{{ loop.index }}">
+						{% if request.user.profile.is_editor %}
+						<div class="row">
+							<div class="col-auto ms-auto d-print-none">
+								<a href="{{ url('edit-kawasaki-blood', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-kawasaki-blood', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
+							</div>
+						</div>
+						{% endif %}
+						<div class="datagrid">
+			    			{% for f in b._meta.fields %}
+								{% if f.help_text %}
+									<div class="datagrid-item">
+										<div class="datagrid-title">{{ f.help_text }}</div>
+										{% if f.choices %}
+										<div class="datagrid-content">{{ b | attr('get_{}_display'.format(f.name))() }}</div>
+										{% else %}
+										<div class="datagrid-content">{{ b | attr(f.name) }}</div>
+										{% endif %}
+								</div>
+								{% endif %}
+								{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+      </div>
+      <div class="tab-pane" id="tabs-biochem">
+    		<div class="nav nav-segmented nav-sm" role="tablist">
+    			{% for i in range(object.biochems.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#biochem-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    生化检验 {{ loop.index }}
+				  </button>
+				  {% endfor %}
+				</div>
+				<div class="tab-content">
+					{% for b in object.biochems.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="biochem-{{ loop.index }}">
+						{% if request.user.profile.is_editor %}
+						<div class="row">
+							<div class="col-auto ms-auto d-print-none">
+								<a href="{{ url('edit-kawasaki-biochem', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-kawasaki-biochem', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
+							</div>
+						</div>
+						{% endif %}
+						<div class="datagrid">
+			    			{% for f in b._meta.fields %}
+								{% if f.help_text %}
+									<div class="datagrid-item">
+										<div class="datagrid-title">{{ f.help_text }}</div>
+										{% if f.choices %}
+										<div class="datagrid-content">{{ b | attr('get_{}_display'.format(f.name))() }}</div>
+										{% else %}
+										<div class="datagrid-content">{{ b | attr(f.name) }}</div>
+										{% endif %}
+								</div>
+								{% endif %}
+								{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+      </div>
+      <div class="tab-pane" id="tabs-marker">
+      	<div class="table-responsive">
         	<table class="table card-table table-vcenter text-nowrap datatable">
         		<thead>
         			<tr>
-        			 	{% for f in object.bloods.model._meta.get_fields() %}
-								{% if f.help_text %}
-								<th>{{ f.help_text }}</th>
-								{% endif %}
-								{% endfor %}
-							</tr>
+        				{% for f in object.markers.model._meta.get_fields() %}
+        				{% if f.help_text %}
+        				<th>{{ f.help_text }}</th>
+        				{% endif %}
+        				{% endfor %}
+        				<th></th>
+        			</tr>
         		</thead>
         		<tbody>
-        			{% for b in object.bloods.all() %}
+        			{% for m in object.markers.all() %}
         			<tr>
-        				<td>
-	        			{% for f in b._meta.fields %}
+      					{% for f in m._meta.fields %}
 								{% if f.help_text %}
+								<td>
+								
 									{% if f.choices %}
-									<div class="datagrid-content">{{ b | attr('get_{}_display'.format(f.name))() }}</div>
+									{{ m | attr('get_{}_display'.format(f.name))() }}
 									{% else %}
-									<div class="datagrid-content">{{ b | attr(f.name) }}</div>
+									{{ m | attr(f.name) }}
 									{% endif %}
+								</td>
 								{% endif %}
 								{% endfor %}
-								</td>
-							</tr>
-							{% endfor %}
+        				<td class="text-end">
+        					{% if request.user.profile.is_editor %}
+	                <a href="{{ url('edit-kawasaki-marker', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-kawasaki-marker', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	              </td>
+        			</tr>
+        			{% endfor %}
         		</tbody>
         	</table>
         </div>
       </div>
-    </div>
-
-			      
+      <div class="tab-pane" id="tabs-examine">
+    		<div class="nav nav-segmented nav-sm" role="tablist">
+    			{% for i in range(object.examines.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#examine-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    其他检验/检查 {{ loop.index }}
+				  </button>
+				  {% endfor %}
+				</div>
+				<div class="tab-content">
+					{% for i in object.examines.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="other-{{ loop.index }}">
+						{% if request.user.profile.is_editor %}
+						<div class="row">
+							<div class="col-auto ms-auto d-print-none">
+								<a href="{{ url('edit-kawasaki-examine', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-kawasaki-examine', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-danger">删除</a>
+							</div>
+						</div>
+						{% endif %}
+						<div class="datagrid">
+			    			{% for f in i._meta.fields %}
+								{% if f.help_text %}
+									<div class="datagrid-item">
+										<div class="datagrid-title">{{ f.help_text }}</div>
+										{% if f.choices %}
+										<div class="datagrid-content">{{ i | attr('get_{}_display'.format(f.name))() }}</div>
+										{% else %}
+										<div class="datagrid-content">{{ i | attr(f.name) }}</div>
+										{% endif %}
+								</div>
+								{% endif %}
+								{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+      </div>
     </div>
   </div>
 </div>
