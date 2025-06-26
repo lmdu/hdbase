@@ -180,3 +180,84 @@ class KawasakiGeneMutationForm(TablerModelForm):
 	class Meta:
 		model = KawasakiGeneMutation
 		exclude = ['created', 'disease', 'author']
+
+class ArrhythmiaDiseaseForm(TablerModelForm):
+	class Meta:
+		model = ArrhythmiaDisease
+		exclude = ['created', 'updated', 'author']
+		widgets = {
+			'sssj': DatePickerInput,
+			'sfsj': DatePickerInput,
+			'patient': PatientSelectWidget,
+		}
+
+class ArrhythmiaBloodForm(TablerModelForm):
+	class Meta:
+		model = ArrhythmiaBlood
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class ArrhythmiaBiochemistryForm(TablerModelForm):
+	class Meta:
+		model = ArrhythmiaBiochemistry
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class ArrhythmiaMarkerForm(TablerModelForm):
+	class Meta:
+		model = ArrhythmiaMarker
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class ArrhythmiaOtherExamineForm(TablerModelForm):
+	class Meta:
+		model = ArrhythmiaOtherExamine
+		exclude = ['created', 'disease', 'author']
+
+class ArrhythmiaCardiogramForm(TablerModelForm):
+	class Meta:
+		model = ArrhythmiaCardiogram
+		exclude = ['created', 'disease', 'author']
+
+class ArrhythmiaSurgeryForm(TablerModelForm):
+	class Meta:
+		model = ArrhythmiaSurgery
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'operated': DatePickerInput,
+		}
+
+class ArrhythmiaUltrasoundForm(TablerModelForm):
+	class Meta:
+		model = ArrhythmiaUltrasound
+		exclude = ['created', 'disease', 'author', 'dicom_uuid']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class ArrhythmiaMRIForm(TablerModelForm):
+	class Meta:
+		model = ArrhythmiaMRI
+		exclude = ['created', 'disease', 'author', 'dicom_uuid']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class ArrhythmiaGeneReportForm(TablerModelForm):
+	class Meta:
+		model = ArrhythmiaGeneReport
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class ArrhythmiaGeneMutationForm(TablerModelForm):
+	class Meta:
+		model = ArrhythmiaGeneMutation
+		exclude = ['created', 'disease', 'author']

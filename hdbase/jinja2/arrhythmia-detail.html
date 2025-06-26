@@ -1,8 +1,8 @@
 {% set mainmenu = 'disease' %}
 {% extends 'base.html' %}
 {% block pagetitle %}
-<img src="{{ static('img/cqb.svg') }}" width="32" height="32" class="me-2">
-川崎病病例
+<img src="{{ static('img/xlsc.svg') }}" width="32" height="32" class="me-2">
+心律失常病例
 {% endblock %}
 
 {% block pageaction %}
@@ -10,16 +10,16 @@
 <div class="dropdown">
   <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">添加信息</button>
   <div class="dropdown-menu dropdown-menu-end">
-    <a class="dropdown-item" href="{{ url('add-kawasaki-blood', kwargs={'did': object.id}) }}">添加血常规</a>
-    <a class="dropdown-item" href="{{ url('add-kawasaki-biochem', kwargs={'did': object.id}) }}">添加生化检验</a>
-    <a class="dropdown-item" href="{{ url('add-kawasaki-marker', kwargs={'did': object.id}) }}">添加凝血/心肌标志物</a>
-    <a class="dropdown-item" href="{{ url('add-kawasaki-examine', kwargs={'did': object.id}) }}">添加其他检验/检查</a>
-		<a class="dropdown-item" href="{{ url('add-kawasaki-treatment', kwargs={'did': object.id}) }}">添加治疗及效果</a>
-		<a class="dropdown-item" href="{{ url('add-kawasaki-cardiac', kwargs={'did': object.id}) }}">添加心外表型</a>
-		<a class="dropdown-item" href="{{ url('add-kawasaki-ultrasound', kwargs={'did': object.id}) }}">添加超声影像</a>
-		<a class="dropdown-item" href="{{ url('add-kawasaki-medimg', kwargs={'did': object.id}) }}">添加特殊影像</a>
-    <a class="dropdown-item" href="{{ url('add-kawasaki-greport', kwargs={'did': object.id}) }}">添加基因报告</a>
-    <a class="dropdown-item" href="{{ url('add-kawasaki-gmutation', kwargs={'did': object.id}) }}">添加基因报告内容</a>
+    <a class="dropdown-item" href="{{ url('add-arrhythmia-blood', kwargs={'did': object.id}) }}">添加血常规</a>
+    <a class="dropdown-item" href="{{ url('add-arrhythmia-biochem', kwargs={'did': object.id}) }}">添加生化检验</a>
+    <a class="dropdown-item" href="{{ url('add-arrhythmia-marker', kwargs={'did': object.id}) }}">添加凝血/心肌标志物</a>
+    <a class="dropdown-item" href="{{ url('add-arrhythmia-examine', kwargs={'did': object.id}) }}">添加其他检验/检查</a>
+		<a class="dropdown-item" href="{{ url('add-arrhythmia-cardiogram', kwargs={'did': object.id}) }}">添加动态心电图</a>
+		<a class="dropdown-item" href="{{ url('add-arrhythmia-surgery', kwargs={'did': object.id}) }}">添加手术情况</a>
+		<a class="dropdown-item" href="{{ url('add-arrhythmia-ultrasound', kwargs={'did': object.id}) }}">添加超声影像</a>
+		<a class="dropdown-item" href="{{ url('add-arrhythmia-mri', kwargs={'did': object.id}) }}">添加MRI</a>
+    <a class="dropdown-item" href="{{ url('add-arrhythmia-greport', kwargs={'did': object.id}) }}">添加基因报告</a>
+    <a class="dropdown-item" href="{{ url('add-arrhythmia-gmutation', kwargs={'did': object.id}) }}">添加基因报告内容</a>
   </div>
 </div>
 {% endif %}
@@ -126,8 +126,8 @@
 						{% if request.user.profile.is_editor %}
 						<div class="row">
 							<div class="col-auto ms-auto d-print-none">
-								<a href="{{ url('edit-kawasaki-blood', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
-								<a href="{{ url('delete-kawasaki-blood', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
+								<a href="{{ url('edit-arrhythmia-blood', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-arrhythmia-blood', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
 							</div>
 						</div>
 						{% endif %}
@@ -163,8 +163,8 @@
 						{% if request.user.profile.is_editor %}
 						<div class="row">
 							<div class="col-auto ms-auto d-print-none">
-								<a href="{{ url('edit-kawasaki-biochem', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
-								<a href="{{ url('delete-kawasaki-biochem', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
+								<a href="{{ url('edit-arrhythmia-biochem', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-arrhythmia-biochem', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
 							</div>
 						</div>
 						{% endif %}
@@ -216,8 +216,8 @@
 								{% endfor %}
         				<td class="text-end">
         					{% if request.user.profile.is_editor %}
-	                <a href="{{ url('edit-kawasaki-marker', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-warning">编辑</a>
-									<a href="{{ url('delete-kawasaki-marker', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-danger">删除</a>
+	                <a href="{{ url('edit-arrhythmia-marker', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-arrhythmia-marker', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-danger">删除</a>
 									{% endif %}
 	              </td>
         			</tr>
@@ -240,8 +240,8 @@
 						{% if request.user.profile.is_editor %}
 						<div class="row">
 							<div class="col-auto ms-auto d-print-none">
-								<a href="{{ url('edit-kawasaki-examine', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-warning">编辑</a>
-								<a href="{{ url('delete-kawasaki-examine', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-danger">删除</a>
+								<a href="{{ url('edit-arrhythmia-examine', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-arrhythmia-examine', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-danger">删除</a>
 							</div>
 						</div>
 						{% endif %}
@@ -271,31 +271,31 @@
   <div class="card-header">
     <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
     	<li class="nav-item">
-        <a href="#tabs-treat" class="nav-link active" data-bs-toggle="tab">治疗及效果</a>
+        <a href="#tabs-cardiogram" class="nav-link active" data-bs-toggle="tab">动态心电图</a>
       </li>
       <li class="nav-item">
-        <a href="#tabs-cardiac" class="nav-link" data-bs-toggle="tab">心外表型</a>
+        <a href="#tabs-surgery" class="nav-link" data-bs-toggle="tab">手术情况</a>
       </li>
     </ul>
   </div>
   <div class="card-body">
   	<div class="tab-content">
-  		<div class="tab-pane active show" id="tabs-treat">
+  		<div class="tab-pane active show" id="tabs-cardiogram">
     		<div class="nav nav-segmented nav-sm" role="tablist">
-    			{% for i in range(object.treats.count()) %}
-				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#treat-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
-				    治疗及效果 {{ loop.index }}
+    			{% for i in range(object.cardiograms.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#cardiogram-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    心电图 {{ loop.index }}
 				  </button>
 				  {% endfor %}
 				</div>
 				<div class="tab-content">
-					{% for j in object.treats.all() %}
-	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="treat-{{ loop.index }}">
+					{% for j in object.cardiograms.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="cardiogram-{{ loop.index }}">
 						{% if request.user.profile.is_editor %}
 						<div class="row">
 							<div class="col-auto ms-auto d-print-none">
-								<a href="{{ url('edit-kawasaki-treatment', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-warning">编辑</a>
-								<a href="{{ url('delete-kawasaki-treatment', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-danger">删除</a>
+								<a href="{{ url('edit-arrhythmia-cardiogram', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-arrhythmia-cardiogram', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-danger">删除</a>
 							</div>
 						</div>
 						{% endif %}
@@ -317,22 +317,22 @@
 					{% endfor %}
 				</div>
       </div>
-      <div class="tab-pane" id="tabs-cardiac">
+      <div class="tab-pane" id="tabs-surgery">
     		<div class="nav nav-segmented nav-sm" role="tablist">
-    			{% for i in range(object.cardiacs.count()) %}
-				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#cardiac-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
-				    心外表型 {{ loop.index }}
+    			{% for i in range(object.surgerys.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#surgery-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    手术 {{ loop.index }}
 				  </button>
 				  {% endfor %}
 				</div>
 				<div class="tab-content">
-					{% for j in object.cardiacs.all() %}
-	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="cardiac-{{ loop.index }}">
+					{% for j in object.surgerys.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="surgery-{{ loop.index }}">
 						{% if request.user.profile.is_editor %}
 						<div class="row">
 							<div class="col-auto ms-auto d-print-none">
-								<a href="{{ url('edit-kawasaki-cardiac', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-warning">编辑</a>
-								<a href="{{ url('delete-kawasaki-cardiac', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-danger">删除</a>
+								<a href="{{ url('edit-arrhythmia-surgery', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-arrhythmia-surgery', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-danger">删除</a>
 							</div>
 						</div>
 						{% endif %}
@@ -365,7 +365,7 @@
         <a href="#tabs-ultrasound" class="nav-link active" data-bs-toggle="tab">超声影像</a>
       </li>
       <li class="nav-item">
-        <a href="#tabs-medimg" class="nav-link" data-bs-toggle="tab">特殊影像</a>
+        <a href="#tabs-mri" class="nav-link" data-bs-toggle="tab">MRI</a>
       </li>
       <li class="nav-item">
         <a href="#tabs-gene" class="nav-link" data-bs-toggle="tab">基因检测</a>
@@ -403,8 +403,8 @@
 								{% endfor %}
         				<td class="text-end">
         					{% if request.user.profile.is_editor %}
-	                <a href="{{ url('edit-kawasaki-ultrasound', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-warning">编辑</a>
-									<a href="{{ url('delete-kawasaki-ultrasound', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-danger">删除</a>
+	                <a href="{{ url('edit-arrhythmia-ultrasound', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-arrhythmia-ultrasound', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-danger">删除</a>
 									{% endif %}
 	              </td>
         			</tr>
@@ -413,12 +413,12 @@
         	</table>
         </div>
       </div>
-      <div class="tab-pane" id="tabs-medimg">
+      <div class="tab-pane" id="tabs-mri">
       	<div class="table-responsive">
         	<table class="table card-table table-vcenter text-nowrap datatable">
         		<thead>
         			<tr>
-        				{% for f in object.medimages.model._meta.get_fields() %}
+        				{% for f in object.mris.model._meta.get_fields() %}
         				{% if f.help_text %}
         				<th>{{ f.help_text }}</th>
         				{% endif %}
@@ -427,7 +427,7 @@
         			</tr>
         		</thead>
         		<tbody>
-        			{% for i in object.medimages.all() %}
+        			{% for i in object.mris.all() %}
         			<tr>
       					{% for f in i._meta.fields %}
 								{% if f.help_text %}
@@ -442,8 +442,8 @@
 								{% endfor %}
         				<td class="text-end">
         					{% if request.user.profile.is_editor %}
-	                <a href="{{ url('edit-kawasaki-medimg', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-warning">编辑</a>
-									<a href="{{ url('delete-kawasaki-medimg', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-danger">删除</a>
+	                <a href="{{ url('edit-arrhythmia-mri', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-arrhythmia-mri', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-danger">删除</a>
 									{% endif %}
 	              </td>
         			</tr>

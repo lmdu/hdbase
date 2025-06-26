@@ -725,3 +725,214 @@ class KawasakiGeneMutationUpdateView(KawasakiExtraUpdateView):
 
 class KawasakiGeneMutationDeleteView(KawasakiExtraDeleteView):
 	model = KawasakiGeneMutation
+
+#arrhythmia disease
+class ArrhythmiaListView(DiseaseListView):
+	model = ArrhythmiaDisease
+	template_name = 'arrhythmia-list.html'
+
+class ArrhythmiaCreateView(DiseaseCreateView):
+	disease_type = '川崎病'
+	model = ArrhythmiaDisease
+	form_class = ArrhythmiaDiseaseForm
+	success_url = reverse_lazy('list-arrhythmia')
+
+class ArrhythmiaUpdateView(DiseaseUpdateView):
+	disease_type = '川崎病'
+	model = ArrhythmiaDisease
+	form_class = ArrhythmiaDiseaseForm
+	success_url = reverse_lazy('list-arrhythmia')
+
+class ArrhythmiaDeleteView(DiseaseDeleteView):
+	model = CardiomyopathyDisease
+	success_url = reverse_lazy('list-arrhythmia')
+
+class ArrhythmiaDetailView(DiseaseDetailView):
+	model = ArrhythmiaDisease
+	template_name = 'arrhythmia-detail.html'
+
+class ArrhythmiaExtraCreateView(LoginRequiredMixin, CreateView):
+	sub_title = ""
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-arrhythmia', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = ArrhythmiaDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = self.sub_title
+		return context
+
+	def form_valid(self, form):
+		form.instance.author = self.request.user
+		disease = ArrhythmiaDisease.objects.get(pk=self.kwargs['did'])
+		form.instance.disease = disease
+		response = super().form_valid(form)
+
+		if 'dicom_file' in form.cleaned_data and self.object.dicom_file:
+			study_id = upload_dicoms(self.object.dicom_file.path)
+			self.object.dicom_uuid = study_id
+			self.object.save()
+
+		return response
+
+class ArrhythmiaExtraUpdateView(LoginRequiredMixin, UpdateView):
+	sub_title = ''
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-arrhythmia', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = "病例 {}".format(self.object.disease.disease_code)
+		context['subtitle'] = self.sub_title
+		return context
+
+	def form_valid(self, form):
+		response = super().form_valid(form)
+
+		if form.has_changed() and 'dicom_file' in form.changed_data:
+			study_id = upload_dicoms(self.object.dicom_file.path)
+			self.object.dicom_uuid = study_id
+			self.object.save()
+
+		return response
+
+class ArrhythmiaExtraDeleteView(LoginRequiredMixin, DeleteView):
+	template_name = 'disease-common-delete.html'
+
+	def get_success_url(self):
+		return reverse('view-arrhythmia', kwargs={'pk': self.object.disease.pk})
+
+class ArrhythmiaBloodCreateView(ArrhythmiaExtraCreateView):
+	sub_title = "添加血常规信息"
+	model = ArrhythmiaBlood
+	form_class = ArrhythmiaBloodForm
+
+class ArrhythmiaBloodUpdateView(ArrhythmiaExtraUpdateView):
+	sub_title = "修改血常规信息"
+	model = ArrhythmiaBlood
+	form_class = ArrhythmiaBloodForm
+
+class ArrhythmiaBloodDeleteView(ArrhythmiaExtraDeleteView):
+	model = ArrhythmiaBlood
+
+class ArrhythmiaBiochemistryCreateView(ArrhythmiaExtraCreateView):
+	sub_title = "添加生化检验"
+	model = ArrhythmiaBiochemistry
+	form_class = ArrhythmiaBiochemistryForm
+
+class ArrhythmiaBiochemistryUpdateView(ArrhythmiaExtraUpdateView):
+	sub_title = "修改生化检验"
+	model = ArrhythmiaBiochemistry
+	form_class = ArrhythmiaBiochemistryForm
+
+class ArrhythmiaBiochemistryDeleteView(ArrhythmiaExtraDeleteView):
+	model = ArrhythmiaBiochemistry
+
+class ArrhythmiaMarkerCreateView(ArrhythmiaExtraCreateView):
+	sub_title = "添加凝血/心肌标志物"
+	model = ArrhythmiaMarker
+	form_class = ArrhythmiaMarkerForm
+
+class ArrhythmiaMarkerUpdateView(ArrhythmiaExtraUpdateView):
+	sub_title = "修改凝血/心肌标志物"
+	model = ArrhythmiaMarker
+	form_class = ArrhythmiaMarkerForm
+
+class ArrhythmiaMarkerDeleteView(ArrhythmiaExtraDeleteView):
+	model = ArrhythmiaMarker
+
+class ArrhythmiaOtherExamineCreateView(ArrhythmiaExtraCreateView):
+	sub_title = "添加其他检验/检查"
+	model = ArrhythmiaOtherExamine
+	form_class = ArrhythmiaOtherExamineForm
+
+class ArrhythmiaOtherExamineUpdateView(ArrhythmiaExtraUpdateView):
+	sub_title = "修改其他检验/检查"
+	model = ArrhythmiaOtherExamine
+	form_class = ArrhythmiaOtherExamineForm
+
+class ArrhythmiaOtherExamineDeleteView(ArrhythmiaExtraDeleteView):
+	model = ArrhythmiaOtherExamine
+
+class ArrhythmiaCardiogramCreateView(ArrhythmiaExtraCreateView):
+	sub_title = "添加动态心电图"
+	model = ArrhythmiaCardiogram
+	form_class = ArrhythmiaCardiogramForm
+
+class ArrhythmiaCardiogramUpdateView(ArrhythmiaExtraUpdateView):
+	sub_title = "修改动态心电图"
+	model = ArrhythmiaCardiogram
+	form_class = ArrhythmiaCardiogramForm
+
+class ArrhythmiaCardiogramDeleteView(ArrhythmiaExtraDeleteView):
+	model = ArrhythmiaCardiogram
+
+class ArrhythmiaSurgeryCreateView(ArrhythmiaExtraCreateView):
+	sub_title = "添加手术情况"
+	model = ArrhythmiaSurgery
+	form_class = ArrhythmiaSurgeryForm
+
+class ArrhythmiaSurgeryUpdateView(ArrhythmiaExtraUpdateView):
+	sub_title = "修改手术情况"
+	model = ArrhythmiaSurgery
+	form_class = ArrhythmiaSurgeryForm
+
+class ArrhythmiaSurgeryDeleteView(ArrhythmiaExtraDeleteView):
+	model = ArrhythmiaSurgery
+
+class ArrhythmiaUltrasoundCreateView(ArrhythmiaExtraCreateView):
+	sub_title = "添加超声影像"
+	model = ArrhythmiaUltrasound
+	form_class = ArrhythmiaUltrasoundForm
+
+class ArrhythmiaUltrasoundUpdateView(ArrhythmiaExtraUpdateView):
+	sub_title = "修改超声影像"
+	model = ArrhythmiaUltrasound
+	form_class = ArrhythmiaUltrasoundForm
+
+class ArrhythmiaUltrasoundDeleteView(ArrhythmiaExtraDeleteView):
+	model = ArrhythmiaUltrasound
+
+class ArrhythmiaMRICreateView(ArrhythmiaExtraCreateView):
+	sub_title = "添加MRI"
+	model = ArrhythmiaMRI
+	form_class = ArrhythmiaMRIForm
+
+class ArrhythmiaMRIUpdateView(ArrhythmiaExtraUpdateView):
+	sub_title = "修改MRI"
+	model = ArrhythmiaMRI
+	form_class = ArrhythmiaMRIForm
+
+class ArrhythmiaMRIDeleteView(ArrhythmiaExtraDeleteView):
+	model = ArrhythmiaMRI
+
+class ArrhythmiaGeneReportCreateView(ArrhythmiaExtraCreateView):
+	sub_title = "添加基因检测报告"
+	model = ArrhythmiaGeneReport
+	form_class = ArrhythmiaGeneReportForm
+
+class ArrhythmiaGeneReportUpdateView(ArrhythmiaExtraUpdateView):
+	sub_title = "修改基因检测报告"
+	model = ArrhythmiaGeneReport
+	form_class = ArrhythmiaGeneReportForm
+
+class ArrhythmiaGeneReportDeleteView(ArrhythmiaExtraDeleteView):
+	model = ArrhythmiaGeneReport
+
+class ArrhythmiaGeneMutationCreateView(ArrhythmiaExtraCreateView):
+	sub_title = "添加基因检测报告内容"
+	model = ArrhythmiaGeneMutation
+	form_class = ArrhythmiaGeneMutationForm
+
+class ArrhythmiaGeneMutationUpdateView(ArrhythmiaExtraUpdateView):
+	sub_title = "修改基因检测报告内容"
+	model = ArrhythmiaGeneMutation
+	form_class = ArrhythmiaGeneMutationForm
+
+class ArrhythmiaGeneMutationDeleteView(ArrhythmiaExtraDeleteView):
+	model = ArrhythmiaGeneMutation

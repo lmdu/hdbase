@@ -3,7 +3,7 @@
 
 {% block main %}
 <div class="row row-cards">
-	<div class="col-md-6 col-xl-3">
+	<div class="col-md-6 col-lg-4 col-xl-2">
 		<a class="card card-link card-link-pop" href="{{ url('list-cardiomyopathy') }}">
 			<div class="card-body">
 				<div class="row">
@@ -12,7 +12,7 @@
 					</div>
 					<div class="col">
 						<h3 class="mb-0">心肌病</h3>
-						<div class="text-secondary">Cardiomyopathies</div>
+						<div class="text-secondary">Cardiomyopathy</div>
 					</div>
 					<div class="col-auto">
 						1234 病例
@@ -21,8 +21,8 @@
 			</div>
 		</a>
 	</div>
-	<div class="col-md-6 col-xl-3">
-		<a class="card card-link card-link-pop" href="#">
+	<div class="col-md-6 col-lg-4 col-xl-2">
+		<a class="card card-link card-link-pop" href="{{ url('list-kawasaki') }}">
 			<div class="card-body">
 				<div class="row">
 					<div class="col-auto">
@@ -39,16 +39,16 @@
 			</div>
 		</a>
 	</div>
-	<div class="col-md-6 col-xl-3">
-		<a class="card card-link card-link-pop" href="#">
+	<div class="col-md-6 col-lg-4 col-xl-2">
+		<a class="card card-link card-link-pop" href="{{ url('list-arrhythmia') }}">
 			<div class="card-body">
 				<div class="row">
 					<div class="col-auto">
-						<span class="avatar avatar-2" style="background-image: url({{ static('img/spxr.svg') }});"></span>
+						<span class="avatar avatar-2" style="background-image: url({{ static('img/xlsc.svg') }});"></span>
 					</div>
 					<div class="col">
-						<h3 class="mb-0">射频消融</h3>
-						<div class="text-secondary">Radiofrequency Ablation</div>
+						<h3 class="mb-0">心律失常</h3>
+						<div class="text-secondary">Arrhythmia</div>
 					</div>
 					<div class="col-auto">
 						1234 病例
@@ -57,7 +57,25 @@
 			</div>
 		</a>
 	</div>
-	<div class="col-md-6 col-xl-3">
+	<div class="col-md-6 col-lg-4 col-xl-3">
+		<a class="card card-link card-link-pop" href="#">
+			<div class="card-body">
+				<div class="row">
+					<div class="col-auto">
+						<span class="avatar avatar-2" style="background-image: url({{ static('img/spxr.svg') }});"></span>
+					</div>
+					<div class="col">
+						<h3 class="mb-0">先心病-外科</h3>
+						<div class="text-secondary">Congenital Heart Disease</div>
+					</div>
+					<div class="col-auto">
+						1234 病例
+					</div>
+				</div>
+			</div>
+		</a>
+	</div>
+	<div class="col-md-6 col-lg-4 col-xl-3">
 		<a class="card card-link" href="#">
 			<div class="card-body">
 				<div class="row">
@@ -65,7 +83,7 @@
 						<span class="avatar avatar-2" style="background-image: url({{ static('img/xxb.svg') }});"></span>
 					</div>
 					<div class="col">
-						<h3 class="mb-0">复杂先心</h3>
+						<h3 class="mb-0">先心病-VSD介入</h3>
 						<div class="text-secondary">Congenital Heart Disease</div>
 					</div>
 					<div class="col-auto">

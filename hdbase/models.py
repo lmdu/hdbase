@@ -732,10 +732,435 @@ class KawasakiGeneMutation(models.Model):
 	zygote = models.CharField(max_length=100, blank=True, default='', help_text="合子类型")
 	report = models.ForeignKey(KawasakiGeneReport, on_delete=models.CASCADE, related_name='genes', help_text="来源报告")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, blank=True, null=True)
+	disease = models.ForeignKey(KawasakiDisease, on_delete=models.CASCADE, blank=True, null=True)
 	author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
-class CongenitalHeartDisease(models.Model):
+class ArrhythmiaDisease(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	SAMPLE_TYPES = {
+		0: "无",
+		1: "全血",
+		2: "血细胞",
+		3: "血浆",
+		4: "组织"
+	}
+
+	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="编号或测序编号")
+	xlscbx = models.CharField(max_length=80, blank=True, default='', help_text="心律失常表型")
+	cznl = models.CharField(max_length=20, blank=True, null=True, default='', help_text="初诊年龄(岁/孕周)")
+	sqzd = models.CharField(max_length=200, blank=True, null=True, default='', help_text="术前诊断")
+	sqyy = models.CharField(max_length=100, blank=True, null=True, default='', help_text="术前用药")
+	yyjl = models.CharField(max_length=30, blank=True, null=True, default='', help_text="药物剂量")
+	shzd = models.CharField(max_length=200, blank=True, null=True, default='', help_text="术后诊断")
+	sssj = models.DateField(blank=True, null=True, help_text="手术时间")
+	ssfs = models.CharField(max_length=80, blank=True, null=True, default='', help_text="手术方式")
+	ssch = models.PositiveSmallIntegerField(choices=YES_NO, default=1, help_text="存活")
+	sfsj = models.DateField(blank=True, null=True, help_text="随访时间")
+	sfcjbb = models.PositiveSmallIntegerField(choices=YES_NO, default=1, help_text="是否采集标本")
+	sjbb = models.PositiveSmallIntegerField(choices=SAMPLE_TYPES, default=0, help_text="已送检标本")
+	sybb = models.PositiveSmallIntegerField(choices=SAMPLE_TYPES, default=0, help_text="剩余标本")
+	created = models.DateTimeField(auto_now_add=True)
+	updated = models.DateTimeField(auto_now=True)
+	patient = models.ForeignKey(Patient, on_delete=models.CASCADE, help_text="患者")
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class ArrhythmiaBlood(models.Model):
+	xcg = models.CharField(max_length=80, blank=True, null=True, default='', help_text="血常规")
+	wbc = models.FloatField(blank=True, null=True, help_text="WBC")
+	np = models.FloatField(blank=True, null=True, help_text="N%")
+	lp = models.FloatField(blank=True, null=True, help_text="L%")
+	monop = models.FloatField(blank=True, null=True, help_text="MONO%")
+	lym = models.FloatField(blank=True, null=True, help_text="Lym")
+	mono = models.FloatField(blank=True, null=True, help_text="MONO(单核细胞绝对值)")
+	anc = models.FloatField(blank=True, null=True, help_text="ANC")
+	rbc = models.FloatField(blank=True, null=True, help_text="RBC")
+	hgb = models.FloatField(blank=True, null=True, help_text="HGB")
+	plt = models.FloatField(blank=True, null=True, help_text="PLT")
+	hctp = models.FloatField(blank=True, null=True, help_text="HCT(%)")
+	rdwcv = models.FloatField(blank=True, null=True, help_text="RDW-CV%")
+	rdwsd = models.FloatField(blank=True, null=True, help_text="RDWSD")
+	pdw = models.FloatField(blank=True, null=True, help_text="PDW")
+	mpv = models.FloatField(blank=True, null=True, help_text="MPV")
+	plcr = models.FloatField(blank=True, null=True, help_text="PLCR")
+	pctp = models.FloatField(blank=True, null=True, help_text="PCT%")
+	crp = models.FloatField(blank=True, null=True, help_text="CRP")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='bloods')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class ArrhythmiaBiochemistry(models.Model):
+	alt = models.FloatField(blank=True, null=True, help_text="ALT")
+	ast = models.FloatField(blank=True, null=True, help_text="AST")
+	tb = models.FloatField(blank=True, null=True, help_text="TB")
+	dbil = models.FloatField(blank=True, null=True, help_text="DBIL")
+	idil = models.FloatField(blank=True, null=True, help_text="IDIL")
+	alb = models.FloatField(blank=True, null=True, help_text="ALB")
+	glb = models.FloatField(blank=True, null=True, help_text="GLB")
+	rgt = models.FloatField(blank=True, null=True, help_text="γ-GT")
+	ldh = models.FloatField(blank=True, null=True, help_text="LDH")
+	pa = models.FloatField(blank=True, null=True, help_text="PA")
+	alp = models.FloatField(blank=True, null=True, help_text="ALP")
+	urea = models.FloatField(blank=True, null=True, help_text="Urea")
+	jg = models.FloatField(blank=True, null=True, help_text="肌酐")
+	cysc = models.FloatField(blank=True, null=True, help_text="CYSC")
+	ua = models.FloatField(blank=True, null=True, help_text="UA")
+	p = models.FloatField(blank=True, null=True, help_text="P")
+	k = models.FloatField(blank=True, null=True, help_text="K+")
+	na = models.FloatField(blank=True, null=True, help_text="Na+")
+	cl = models.FloatField(blank=True, null=True, help_text="Cl-")
+	ca = models.FloatField(blank=True, null=True, help_text="Ca2+")
+	mg = models.FloatField(blank=True, null=True, help_text="Mg2+")
+	tc = models.FloatField(blank=True, null=True, help_text="TC")
+	tg = models.FloatField(blank=True, null=True, help_text="TG")
+	hdlc = models.FloatField(blank=True, null=True, help_text="HDLC")
+	ldlc = models.FloatField(blank=True, null=True, help_text="LDLC")
+	apoa = models.FloatField(blank=True, null=True, help_text="Apoa")
+	apob = models.FloatField(blank=True, null=True, help_text="Apob")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='biochems')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class ArrhythmiaMarker(models.Model):
+	pt = models.FloatField(blank=True, null=True, help_text="PT")
+	aptt = models.FloatField(blank=True, null=True, help_text="APTT")
+	fg = models.FloatField(blank=True, null=True, help_text="Fg")
+	tt = models.FloatField(blank=True, null=True, help_text="TT")
+	ddi = models.FloatField(blank=True, null=True, help_text="DDI")
+	fdp = models.FloatField(blank=True, null=True, help_text="FDP")
+	atiii = models.FloatField(blank=True, null=True, help_text="ATIII")
+	inr = models.FloatField(blank=True, null=True, help_text="INR")
+	ctni = models.FloatField(blank=True, null=True, help_text="cTni")
+	mb = models.FloatField(blank=True, null=True, help_text="Mb")
+	ntbnp = models.FloatField(blank=True, null=True, help_text="NT-BNP")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='markers')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class ArrhythmiaOtherExamine(models.Model):
+	NORMAL_TYPES = {
+		0: "未做",
+		1: "正常",
+		2: "不正常"
+	}
+
+	HAVE_TYPES = {
+		0: "无",
+		1: "有"
+	}
+
+	POSITIVE_NEGATIVE = {
+		0: "阴性",
+		1: "阳性"
+	}
+
+	dbcg = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=0, help_text="大便常规")
+	dbbxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="大便白细胞/hp")
+	dbhxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="大便红细胞/hp")
+	dbnxb = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="大便脓细胞/hp")
+	xbcg = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=0, help_text="小便常规")
+	xbndb = models.FloatField(blank=True, null=True, help_text="小便尿蛋白")
+	xbbxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="小便白细胞/hp")
+	xbhxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="小便红细胞/hp")
+	xbnxb = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="小便脓细胞/hp")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='examines')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class ArrhythmiaCardiogram(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	HEART_RHYTHM = {
+		1: "窦",
+		2: "室",
+		3: "房"
+	}
+
+	RHYTHM_TYPES = {
+		1: "左束支",
+		2: "右束支"
+	}
+
+	jcxl = models.PositiveSmallIntegerField(choices=HEART_RHYTHM, default=1, help_text="基础心律")
+	cdzz = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="传导阻滞")
+	xllx = models.PositiveSmallIntegerField(choices=RHYTHM_TYPES, default=0, help_text="类型")
+	sxzb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="室性早搏")
+	sxfzcs = models.FloatField(blank=True, null=True, help_text="发作次数(次/24h)")
+	sxzbp = models.FloatField(blank=True, null=True, help_text="室性占比(%)")
+	fxzb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="房性早搏")
+	fxfzcs = models.FloatField(blank=True, null=True, help_text="发作次数(次/24h)")
+	fxzbp = models.FloatField(blank=True, null=True, help_text="房性占比(%)")
+	fxxdgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="房性心动过速")
+	fxfzpc = models.CharField(max_length=100, blank=True, null=True, default='', help_text="房性发作频次")
+	sxxdgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="室性心动过速")
+	sxfzpc = models.CharField(max_length=100, blank=True, null=True, default='', help_text="室性发作频次")
+	ssxdgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="室上性心动过速")
+	ssfzpc = models.CharField(max_length=100, blank=True, null=True, default='', help_text="室上发作频次")
+	sdnn = models.FloatField(blank=True, null=True, help_text="SDNN")
+	fzsqrs = models.FloatField(blank=True, null=True, help_text="发作时QRS宽度")
+	dlsqrs = models.FloatField(blank=True, null=True, help_text="窦律时QRS宽度")
+	pbkd = models.FloatField(blank=True, null=True, help_text="P波宽度")
+	prjq = models.FloatField(blank=True, null=True, help_text="PR间期")
+	qtcjq = models.FloatField(blank=True, null=True, help_text="QTc间期")
+	pjjq = models.FloatField(blank=True, null=True, help_text="PJ间期")
+	dzpzjd = models.FloatField(blank=True, null=True, help_text="电轴偏转角度")
+	tbrpjq = models.FloatField(blank=True, null=True, help_text="体表心电图RP间期")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='cardiograms')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class ArrhythmiaSurgery(models.Model):
+	sscxsj = models.FloatField(blank=True, null=True, help_text="手术持续时间(min)")
+	xxbgl = models.FloatField(blank=True, null=True, help_text="X线曝光量(Gy)")
+	xrnlgl = models.FloatField(blank=True, null=True, help_text="消融能量及功率")
+	xrggbd = models.FloatField(blank=True, null=True, help_text="消融巩固靶点个数")
+	glwk = models.CharField(max_length=50, blank=True, null=True, default='', help_text="功率/温控")
+	scfbjsssj = models.CharField(max_length=50, blank=True, null=True, default='', help_text="首次发病距手术时间")
+	fzsplsq = models.FloatField(blank=True, null=True, help_text="发作时频率(术前)")
+	fzsplsz = models.FloatField(blank=True, null=True, help_text="发作时频率(术中)")
+	yfms = models.CharField(max_length=50, blank=True, null=True, default='', help_text="诱发模式")
+	yfsj = models.FloatField(blank=True, null=True, help_text="诱发时间")
+	dfjhfsj = models.FloatField(blank=True, null=True, help_text="窦房结恢复时间")
+	pbqdhcj = models.FloatField(blank=True, null=True, help_text="P波起点到HIS/CS近端A波间期")
+	csabjdkd = models.FloatField(blank=True, null=True, help_text="CS上A波激动跨度")
+	csvbjdkd = models.FloatField(blank=True, null=True, help_text="CS上V波激动跨度")
+	pajq = models.FloatField(blank=True, null=True, help_text="PA间期")
+	ahjq = models.FloatField(blank=True, null=True, help_text="AH间期")
+	hvjq = models.FloatField(blank=True, null=True, help_text="HV间期")
+	ahjqfz = models.FloatField(blank=True, null=True, help_text="AH间期(发作时)")
+	hvjqfz = models.FloatField(blank=True, null=True, help_text="HV间期(发作时)")
+	vajqfz = models.FloatField(blank=True, null=True, help_text="VA间期(发作时)")
+	fsjqcbyq = models.FloatField(blank=True, null=True, help_text="房室结前传不应期")
+	xfbyq = models.FloatField(blank=True, null=True, help_text="心房不应期")
+	fsjlcbyq = models.FloatField(blank=True, null=True, help_text="房室结逆传不应期")
+	xsbyq = models.FloatField(blank=True, null=True, help_text="心室不应期")
+	bddwtqcd = models.FloatField(blank=True, null=True, help_text="靶点电位提前程度")
+	bddwcxsj = models.FloatField(blank=True, null=True, help_text="靶点电位持续时间")
+	djxt = models.CharField(max_length=50, blank=True, null=True, default='', help_text="单极形态")
+	operated = models.DateField(blank=True, null=True, default='', help_text="手术时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='surgerys')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class ArrhythmiaUltrasound(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	NORMAL_TYPES = {
+		0: "未知",
+		1: "正常",
+		2: "不正常"
+	}
+
+	code = models.CharField(max_length=20, blank=True, default='', help_text="超声号")
+	csnl = models.FloatField(blank=True, null=True, help_text="年龄")
+	lvef = models.FloatField(blank=True, null=True, help_text="LVEF(%)")
+	lvfs = models.FloatField(blank=True, null=True, help_text="LVFS(%)")
+	lv = models.FloatField(blank=True, null=True, help_text="LV(mm)")
+	la = models.FloatField(blank=True, null=True, help_text="LA(mm)")
+	rv = models.FloatField(blank=True, null=True, help_text="RV(mm)")
+	ra = models.FloatField(blank=True, null=True, help_text="RA(mm)")
+	tapse = models.FloatField(blank=True, null=True, help_text="TAPSE")
+	ivs = models.FloatField(blank=True, null=True, help_text="IVS")	
+	xbjy = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心包积液")
+	xzzd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心脏长大")
+	bmfl = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="瓣膜返流")
+	gmyc = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="冠脉异常")
+	xnxs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心内血栓")
+	fdmgy = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="肺动脉高压")
+	cszd = models.CharField(max_length=200, blank=True, null=True, default='', help_text="超声诊断")
+	report = models.FileField(upload_to='report/%Y/%m/', max_length=200, blank=True, null=True, help_text="报告文件")
+	dicom_file = models.FileField(upload_to='dicom/%Y/%m/', max_length=255, blank=True, null=True, help_text="影像文件")
+	dicom_uuid = models.CharField(max_length=50, blank=True, default='')
+	tested = models.DateField(blank=True, null=True, help_text="检查时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='ultrasounds')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class ArrhythmiaMRI(models.Model):
+	code = models.CharField(max_length=20, blank=True, default='', help_text="影像号")
+	zd = models.CharField(max_length=200, blank=True, default='', help_text="诊断")
+	report = models.FileField(upload_to='report/%Y/%m/', max_length=200, blank=True, null=True, help_text="报告文件")
+	dicom_file = models.FileField(upload_to='dicom/%Y/%m/', max_length=255, blank=True, null=True, help_text="影像文件")
+	dicom_uuid = models.CharField(max_length=50, blank=True, default='')
+	tested = models.DateField(blank=True, null=True, help_text="检查时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='mris')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class ArrhythmiaGeneReport(models.Model):
+	company = models.CharField(max_length=100, blank=True, default='', help_text="检测公司")
+	report = models.FileField(upload_to='report/%Y/%m/', blank=True, null=True, help_text="报告")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='reports')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+	def __str__(self):
+		return self.report.name.split('/')[-1]
+
+class ArrhythmiaGeneMutation(models.Model):
+	gene = models.CharField(max_length=50, blank=True, default='', help_text="基因")
+	position = models.CharField(max_length=50, blank=True, default='', help_text="位置")
+	mutation = models.CharField(max_length=80, blank=True, default='', help_text="突变信息")
+	gnomad = models.CharField(max_length=30, blank=True, default='', help_text="gnomAD MAF")
+	acmg = models.CharField(max_length=30, blank=True, default='', help_text="ACMG变异评级")
+	disease = models.CharField(max_length=80, blank=True, default='', help_text="疾病名称")
+	gmode = models.CharField(max_length=20, blank=True, default='', help_text="遗传模式")
+	zygote = models.CharField(max_length=100, blank=True, default='', help_text="合子类型")
+	report = models.ForeignKey(ArrhythmiaGeneReport, on_delete=models.CASCADE, related_name='genes', help_text="来源报告")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, blank=True, null=True)
+	author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+
+class CongenitalSurgeryDisease(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	SAMPLE_TYPES = {
+		0: "无",
+		1: "全血",
+		2: "血细胞",
+		3: "血浆",
+		4: "组织"
+	}
+
+	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="编号或测序编号")
+	xxbbx = models.CharField(max_length=80, blank=True, default='', help_text="先心病表型")
+	cznl = models.FloatField(blank=True, null=True, help_text="初诊年龄")
+	sssj = models.DateField(blank=True, null=True, help_text="手术时间")
+	ssfs = models.CharField(max_length=80, blank=True, null=True, default='', help_text="手术方式")
+	ssch = models.PositiveSmallIntegerField(choices=YES_NO, default=1, help_text="存活")
+	sfsj = models.DateField(blank=True, null=True, help_text="随访时间")
+	sfcjbb = models.PositiveSmallIntegerField(choices=YES_NO, default=1, help_text="是否采集标本")
+	sjbb = models.PositiveSmallIntegerField(choices=SAMPLE_TYPES, default=0, help_text="已送检标本")
+	sybb = models.PositiveSmallIntegerField(choices=SAMPLE_TYPES, default=0, help_text="剩余标本")
+	created = models.DateTimeField(auto_now_add=True)
+	updated = models.DateTimeField(auto_now=True)
+	patient = models.ForeignKey(Patient, on_delete=models.CASCADE, help_text="患者")
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalSurgeryBlood(models.Model):
+	wbc = models.FloatField(blank=True, null=True, help_text="WBC")
+	np = models.FloatField(blank=True, null=True, help_text="N%")
+	lp = models.FloatField(blank=True, null=True, help_text="L%")
+	monop = models.FloatField(blank=True, null=True, help_text="MONO%")
+	lym = models.FloatField(blank=True, null=True, help_text="Lym")
+	mono = models.FloatField(blank=True, null=True, help_text="MONO(单核细胞绝对值)")
+	anc = models.FloatField(blank=True, null=True, help_text="ANC")
+	rbc = models.FloatField(blank=True, null=True, help_text="RBC")
+	hgb = models.FloatField(blank=True, null=True, help_text="HGB")
+	plt = models.FloatField(blank=True, null=True, help_text="PLT")
+	hctp = models.FloatField(blank=True, null=True, help_text="HCT(%)")
+	rdwcv = models.FloatField(blank=True, null=True, help_text="RDW-CV%")
+	rdwsd = models.FloatField(blank=True, null=True, help_text="RDWSD")
+	pdw = models.FloatField(blank=True, null=True, help_text="PDW")
+	mpv = models.FloatField(blank=True, null=True, help_text="MPV")
+	plcr = models.FloatField(blank=True, null=True, help_text="PLCR")
+	pctp = models.FloatField(blank=True, null=True, help_text="PCT%")
+	crp = models.FloatField(blank=True, null=True, help_text="CRP")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='bloods')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class ArrhythmiaBiochemistry(models.Model):
+	alt = models.FloatField(blank=True, null=True, help_text="ALT")
+	ast = models.FloatField(blank=True, null=True, help_text="AST")
+	tb = models.FloatField(blank=True, null=True, help_text="TB")
+	dbil = models.FloatField(blank=True, null=True, help_text="DBIL")
+	idil = models.FloatField(blank=True, null=True, help_text="IDIL")
+	alb = models.FloatField(blank=True, null=True, help_text="ALB")
+	glb = models.FloatField(blank=True, null=True, help_text="GLB")
+	rgt = models.FloatField(blank=True, null=True, help_text="γ-GT")
+	ldh = models.FloatField(blank=True, null=True, help_text="LDH")
+	pa = models.FloatField(blank=True, null=True, help_text="PA")
+	alp = models.FloatField(blank=True, null=True, help_text="ALP")
+	urea = models.FloatField(blank=True, null=True, help_text="Urea")
+	jg = models.FloatField(blank=True, null=True, help_text="肌酐")
+	cysc = models.FloatField(blank=True, null=True, help_text="CYSC")
+	ua = models.FloatField(blank=True, null=True, help_text="UA")
+	p = models.FloatField(blank=True, null=True, help_text="P")
+	k = models.FloatField(blank=True, null=True, help_text="K+")
+	na = models.FloatField(blank=True, null=True, help_text="Na+")
+	cl = models.FloatField(blank=True, null=True, help_text="Cl-")
+	ca = models.FloatField(blank=True, null=True, help_text="Ca2+")
+	mg = models.FloatField(blank=True, null=True, help_text="Mg2+")
+	tc = models.FloatField(blank=True, null=True, help_text="TC")
+	tg = models.FloatField(blank=True, null=True, help_text="TG")
+	hdlc = models.FloatField(blank=True, null=True, help_text="HDLC")
+	ldlc = models.FloatField(blank=True, null=True, help_text="LDLC")
+	apoa = models.FloatField(blank=True, null=True, help_text="Apoa")
+	apob = models.FloatField(blank=True, null=True, help_text="Apob")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='biochems')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class ArrhythmiaMarker(models.Model):
+	pt = models.FloatField(blank=True, null=True, help_text="PT")
+	aptt = models.FloatField(blank=True, null=True, help_text="APTT")
+	fg = models.FloatField(blank=True, null=True, help_text="Fg")
+	tt = models.FloatField(blank=True, null=True, help_text="TT")
+	ddi = models.FloatField(blank=True, null=True, help_text="DDI")
+	fdp = models.FloatField(blank=True, null=True, help_text="FDP")
+	atiii = models.FloatField(blank=True, null=True, help_text="ATIII")
+	inr = models.FloatField(blank=True, null=True, help_text="INR")
+	ctni = models.FloatField(blank=True, null=True, help_text="cTni")
+	mb = models.FloatField(blank=True, null=True, help_text="Mb")
+	ntbnp = models.FloatField(blank=True, null=True, help_text="NT-BNP")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='markers')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class ArrhythmiaOtherExamine(models.Model):
+	NORMAL_TYPES = {
+		0: "未做",
+		1: "正常",
+		2: "不正常"
+	}
+
+	HAVE_TYPES = {
+		0: "无",
+		1: "有"
+	}
+
+	POSITIVE_NEGATIVE = {
+		0: "阴性",
+		1: "阳性"
+	}
+
+	dbcg = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=0, help_text="大便常规")
+	dbbxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="大便白细胞/hp")
+	dbhxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="大便红细胞/hp")
+	dbnxb = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="大便脓细胞/hp")
+	xbcg = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=0, help_text="小便常规")
+	xbndb = models.FloatField(blank=True, null=True, help_text="小便尿蛋白")
+	xbbxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="小便白细胞/hp")
+	xbhxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="小便红细胞/hp")
+	xbnxb = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="小便脓细胞/hp")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='examines')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+
+
+class CongenitalHeartSurgery(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
 	patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
