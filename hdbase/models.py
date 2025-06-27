@@ -1053,7 +1053,7 @@ class CongenitalSurgeryDisease(models.Model):
 	patient = models.ForeignKey(Patient, on_delete=models.CASCADE, help_text="患者")
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
-class CongenitalSurgeryBlood(models.Model):
+class CongenitalSurgeryPreBlood(models.Model):
 	wbc = models.FloatField(blank=True, null=True, help_text="WBC")
 	np = models.FloatField(blank=True, null=True, help_text="N%")
 	lp = models.FloatField(blank=True, null=True, help_text="L%")
@@ -1074,10 +1074,10 @@ class CongenitalSurgeryBlood(models.Model):
 	crp = models.FloatField(blank=True, null=True, help_text="CRP")
 	tested = models.DateField(blank=True, null=True, help_text="检验时间")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='bloods')
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='prebloods')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
-class ArrhythmiaBiochemistry(models.Model):
+class CongenitalSurgeryPreBiochemistry(models.Model):
 	alt = models.FloatField(blank=True, null=True, help_text="ALT")
 	ast = models.FloatField(blank=True, null=True, help_text="AST")
 	tb = models.FloatField(blank=True, null=True, help_text="TB")
@@ -1107,10 +1107,10 @@ class ArrhythmiaBiochemistry(models.Model):
 	apob = models.FloatField(blank=True, null=True, help_text="Apob")
 	tested = models.DateField(blank=True, null=True, help_text="检验时间")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='biochems')
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='prebiochems')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
-class ArrhythmiaMarker(models.Model):
+class CongenitalSurgeryPreCruor(models.Model):
 	pt = models.FloatField(blank=True, null=True, help_text="PT")
 	aptt = models.FloatField(blank=True, null=True, help_text="APTT")
 	fg = models.FloatField(blank=True, null=True, help_text="Fg")
@@ -1119,15 +1119,12 @@ class ArrhythmiaMarker(models.Model):
 	fdp = models.FloatField(blank=True, null=True, help_text="FDP")
 	atiii = models.FloatField(blank=True, null=True, help_text="ATIII")
 	inr = models.FloatField(blank=True, null=True, help_text="INR")
-	ctni = models.FloatField(blank=True, null=True, help_text="cTni")
-	mb = models.FloatField(blank=True, null=True, help_text="Mb")
-	ntbnp = models.FloatField(blank=True, null=True, help_text="NT-BNP")
 	tested = models.DateField(blank=True, null=True, help_text="检验时间")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='markers')
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='precruors')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
-class ArrhythmiaOtherExamine(models.Model):
+class CongenitalSurgeryPreExamine(models.Model):
 	NORMAL_TYPES = {
 		0: "未做",
 		1: "正常",
@@ -1154,29 +1151,565 @@ class ArrhythmiaOtherExamine(models.Model):
 	xbhxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="小便红细胞/hp")
 	xbnxb = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="小便脓细胞/hp")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(ArrhythmiaDisease, on_delete=models.CASCADE, related_name='examines')
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='prexamines')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
+class CongenitalSurgeryPreLung(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
 
+	NORMAL_TYPES = {
+		0: "不正常",
+		1: "正常",
 
+	}
 
-class CongenitalHeartSurgery(models.Model):
+	fzsl = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="术前有无肺脏受累")
+	sqxp = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=1, help_text="术前胸片")
+	jtbx = models.CharField(max_length=255, blank=True, null=True, default='', help_text="具体表现")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='prelungs')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalSurgeryPreCardiogram(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	stt = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="ST-T改变")
+	cdzz = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="传导阻滞")
+	xfcd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心房颤动")
+	sxzb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="室性早搏")
+	fxzb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="房性早搏")
+	zsfd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="左室肥大")
+	zffd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="左房肥大")
+	ycqb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="异常Q波")
+	dxdgh = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="窦性心动过缓")
+	dxdgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="窦性心动过速")
+	fxdgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="房性心动过速")
+	sxdgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="室性心动过速")
+	jtbg = models.CharField(max_length=200, blank=True, null=True, default='', help_text="具体报告")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='precards')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalSurgeryPostPH(models.Model):
+	pc02 = models.FloatField(blank=True, null=True, help_text="pC02")
+	p02 = models.FloatField(blank=True, null=True, help_text="p02")
+	beecf = models.FloatField(blank=True, null=True, help_text="BE(ecf)/细胞外剩余碱")
+	beb = models.FloatField(blank=True, null=True, help_text="BE(b)/剩余碱")
+	hc03 = models.FloatField(blank=True, null=True, help_text="HCO3-act(实际碳酸氢根离子)")
+	k = models.FloatField(blank=True, null=True, help_text="K+")
+	na = models.FloatField(blank=True, null=True, help_text="Na+")
+	ca = models.FloatField(blank=True, null=True, help_text="Ca2+")
+	hct = models.FloatField(blank=True, null=True, help_text="Hct(红细胞比积)")
+	chgb = models.FloatField(blank=True, null=True, help_text="cHgb(总血红蛋白)g/dL")
+	glu = models.FloatField(blank=True, null=True, help_text="Glu(葡萄糖)mmol/L")
+	lact = models.FloatField(blank=True, null=True, help_text="Lact(乳酸)mmol/L")
+	s02 = models.FloatField(blank=True, null=True, help_text="SO2(血氧饱和度)%")
+	crea = models.FloatField(blank=True, null=True, help_text="Crea(肌酐 umol/L)")
+	cl = models.FloatField(blank=True, null=True, help_text="Cl-")
+	ag = models.FloatField(blank=True, null=True, help_text="AG(阴离子间隙)")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='postphs')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalSurgeryPostBlood(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	xysl = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="术后有无血液系统受累")
+	wbc = models.FloatField(blank=True, null=True, help_text="WBC")
+	np = models.FloatField(blank=True, null=True, help_text="N%")
+	lp = models.FloatField(blank=True, null=True, help_text="L%")
+	monop = models.FloatField(blank=True, null=True, help_text="MONO%")
+	lym = models.FloatField(blank=True, null=True, help_text="Lym")
+	mono = models.FloatField(blank=True, null=True, help_text="MONO(单核细胞绝对值)")
+	anc = models.FloatField(blank=True, null=True, help_text="ANC")
+	rbc = models.FloatField(blank=True, null=True, help_text="RBC")
+	hgb = models.FloatField(blank=True, null=True, help_text="HGB")
+	plt = models.FloatField(blank=True, null=True, help_text="PLT")
+	hctp = models.FloatField(blank=True, null=True, help_text="HCT(%)")
+	rdwcv = models.FloatField(blank=True, null=True, help_text="RDW-CV%")
+	rdwsd = models.FloatField(blank=True, null=True, help_text="RDWSD")
+	pdw = models.FloatField(blank=True, null=True, help_text="PDW")
+	mpv = models.FloatField(blank=True, null=True, help_text="MPV")
+	plcr = models.FloatField(blank=True, null=True, help_text="PLCR")
+	pctp = models.FloatField(blank=True, null=True, help_text="PCT%")
+	crp = models.FloatField(blank=True, null=True, help_text="CRP")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='postbloods')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalSurgeryPostLiver(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	liver = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="术后有无肝脏受累")
+	alt = models.FloatField(blank=True, null=True, help_text="ALT")
+	ast = models.FloatField(blank=True, null=True, help_text="AST")
+	tb = models.FloatField(blank=True, null=True, help_text="TB")
+	dbil = models.FloatField(blank=True, null=True, help_text="DBIL")
+	idil = models.FloatField(blank=True, null=True, help_text="IDIL")
+	alb = models.FloatField(blank=True, null=True, help_text="ALB")
+	glb = models.FloatField(blank=True, null=True, help_text="GLB")
+	rgt = models.FloatField(blank=True, null=True, help_text="γ-GT")
+	ldh = models.FloatField(blank=True, null=True, help_text="LDH")
+	pa = models.FloatField(blank=True, null=True, help_text="PA")
+	alp = models.FloatField(blank=True, null=True, help_text="ALP")
+	kidney = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="术后有无肾脏受累")
+	urea = models.FloatField(blank=True, null=True, help_text="Urea")
+	jg = models.FloatField(blank=True, null=True, help_text="肌酐")
+	cysc = models.FloatField(blank=True, null=True, help_text="CYSC")
+	ua = models.FloatField(blank=True, null=True, help_text="UA")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='postlivers')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalSurgeryPostCruor(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	cruor = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="术后有无凝血功能障碍")
+	pt = models.FloatField(blank=True, null=True, help_text="PT")
+	aptt = models.FloatField(blank=True, null=True, help_text="APTT")
+	fg = models.FloatField(blank=True, null=True, help_text="Fg")
+	tt = models.FloatField(blank=True, null=True, help_text="TT")
+	ddi = models.FloatField(blank=True, null=True, help_text="DDI")
+	fdp = models.FloatField(blank=True, null=True, help_text="FDP")
+	atiii = models.FloatField(blank=True, null=True, help_text="ATIII")
+	inr = models.FloatField(blank=True, null=True, help_text="INR")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='postcruors')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalSurgeryPostLung(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	NORMAL_TYPES = {
+		0: "不正常",
+		1: "正常",
+
+	}
+
+	fzsl = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="术后有无肺脏受累")
+	sqxp = models.PositiveSmallIntegerField(choices=NORMAL_TYPES, default=1, help_text="术后胸片")
+	jtbx = models.CharField(max_length=255, blank=True, null=True, default='', help_text="具体表现")
+	zssjsl = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="术后有无中枢神经系统受累")
+	zssjtbx = models.CharField(max_length=255, blank=True, null=True, default='', help_text="具体表现")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='postlungs')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalSurgeryPostCardiogram(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	stt = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="ST-T改变")
+	cdzz = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="传导阻滞")
+	xfcd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心房颤动")
+	sxzb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="室性早搏")
+	fxzb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="房性早搏")
+	zsfd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="左室肥大")
+	zffd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="左房肥大")
+	ycqb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="异常Q波")
+	dxdgh = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="窦性心动过缓")
+	dxdgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="窦性心动过速")
+	fxdgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="房性心动过速")
+	sxdgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="室性心动过速")
+	jtbg = models.CharField(max_length=200, blank=True, null=True, default='', help_text="具体报告")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='postcards')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalSurgeryOperation(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	DEATH_LIVE = {
+		0: "死亡",
+		1: "生存"
+	}
+
+	sssj = models.DateField(blank=True, null=True, help_text="手术时间")
+	ssnl = models.FloatField(blank=True, null=True, help_text="手术年龄")
+	ssfs = models.CharField(max_length=30, blank=True, null=True, default='', help_text="手术方式")
+	twxhsj = models.FloatField(blank=True, null=True, help_text="体外循环时间(min)")
+	zdmzdsj = models.FloatField(blank=True, null=True, help_text="主动脉阻断时间(min)")
+	txhsj = models.FloatField(blank=True, null=True, help_text="停循环时间(min)")
+	xzxngz = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="选择性脑灌注方式")
+	xzxngzsj = models.FloatField(blank=True, null=True, help_text="选择性脑灌注时间")
+	shzg = models.PositiveSmallIntegerField(choices=DEATH_LIVE, default=1, help_text="术后转归")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='operates')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalSurgeryVentilator(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	sqychxj = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="术前有创呼吸机")
+	sqychxjsysj = models.FloatField(blank=True, null=True, help_text="术前有创呼吸机使用时间(h)")
+	sqwchxj = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="术前无创呼吸机")
+	sqwchxjsysj = models.FloatField(blank=True, null=True, help_text="术前无创呼吸机使用时间(h)")
+	shychxj = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="术后有创呼吸机")
+	shychxjsysj = models.FloatField(blank=True, null=True, help_text="术后有创呼吸机使用时间(h)")
+	shwchxj = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="术后无创呼吸机")
+	shwchxjsysj = models.FloatField(blank=True, null=True, help_text="术后无创呼吸机使用时间(h)")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='vents')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalSurgeryTreatment(models.Model):
+	OPERATION_TYPES = {
+		1: "术前",
+		2: "术后",
+	}
+
+	sqsh = models.PositiveSmallIntegerField(choices=OPERATION_TYPES, default=0, help_text="手术期")
+	shsj = models.FloatField(blank=True, null=True, help_text="术后时间(小时)")
+	dba = models.FloatField(blank=True, null=True, help_text="多巴胺最大剂量(ug/kg/mim)")
+	dbada = models.FloatField(blank=True, null=True, help_text="多巴胺丁胺最大剂量(ug/kg/mim)")
+	ssxs = models.FloatField(blank=True, null=True, help_text="肾上腺素最大剂量(ug/kg/mim)")
+	qjssxs = models.FloatField(blank=True, null=True, help_text="去甲肾上腺素最大剂量(ug/kg/mim)")
+	bssxs = models.FloatField(blank=True, null=True, help_text="苯甲肾上腺素最大剂量(ug/kg/mim)")
+	xgsys = models.FloatField(blank=True, null=True, help_text="血管升压素最大剂量(ug/kg/mim)")
+	tljys = models.FloatField(blank=True, null=True, help_text="特利加压素最大剂量(ug/kg/mim)")
+	yjjl = models.FloatField(blank=True, null=True, help_text="亚甲基蓝最大剂量(ug/kg/mim)")
+	mln = models.FloatField(blank=True, null=True, help_text="米力农最大剂量(ug/kg/mim)")
+	apln = models.FloatField(blank=True, null=True, help_text="奥普力农最大剂量(ug/kg/mim)")
+	zxmd = models.FloatField(blank=True, null=True, help_text="左西孟旦最大剂量(ug/kg/mim)")
+	vispf = models.FloatField(blank=True, null=True, help_text="VIS评分")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='treats')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+	
+class CongenitalSurgeryUltrasound(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	NORMAL_TYPES = {
+		0: "未知",
+		1: "正常",
+		2: "不正常"
+	}
+
+	code = models.CharField(max_length=20, blank=True, default='', help_text="超声号")
+	age = models.FloatField(blank=True, null=True, help_text="年龄")
+	lvef = models.FloatField(blank=True, null=True, help_text="LVEF(%)")
+	lvfs = models.FloatField(blank=True, null=True, help_text="LVFS(%)")
+	xbjy = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心包积液")
+	xzzd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心脏长大")
+	bmfl = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="瓣膜返流")
+	gmyc = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="冠脉异常")
+	xnxs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心内血栓")
+	fdmgy = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="肺动脉高压")
+	zdms = models.CharField(max_length=200, blank=True, null=True, default='', help_text="超声诊断")
+	report = models.FileField(upload_to='report/%Y/%m/', max_length=200, blank=True, null=True, help_text="报告文件")
+	dicom_file = models.FileField(upload_to='dicom/%Y/%m/', max_length=255, blank=True, null=True, help_text="影像文件")
+	dicom_uuid = models.CharField(max_length=50, blank=True, default='')
+	tested = models.DateField(blank=True, null=True, help_text="检查时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='ultrasounds')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalSurgeryMedimage(models.Model):
+	IMAGE_TYPES = {
+		1: "MRI",
+		3: "CTA",
+		2: "冠脉造影",
+		0: "其他"
+	}
+
+	yxlx = models.PositiveSmallIntegerField(choices=IMAGE_TYPES, default=1, help_text="影像类型")
+	code = models.CharField(max_length=20, blank=True, default='', help_text="影像号")
+	zd = models.CharField(max_length=200, blank=True, default='', help_text="诊断")
+	report = models.FileField(upload_to='report/%Y/%m/', max_length=200, blank=True, null=True, help_text="报告文件")
+	dicom_file = models.FileField(upload_to='dicom/%Y/%m/', max_length=255, blank=True, null=True, help_text="影像文件")
+	dicom_uuid = models.CharField(max_length=50, blank=True, default='')
+	tested = models.DateField(blank=True, null=True, help_text="检查时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='medimages')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalSurgeryGeneReport(models.Model):
+	company = models.CharField(max_length=100, blank=True, default='', help_text="检测公司")
+	report = models.FileField(upload_to='report/%Y/%m/', blank=True, null=True, help_text="报告")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='reports')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+	def __str__(self):
+		return self.report.name.split('/')[-1]
+
+class CongenitalSurgeryGeneMutation(models.Model):
+	gene = models.CharField(max_length=50, blank=True, default='', help_text="基因")
+	position = models.CharField(max_length=50, blank=True, default='', help_text="位置")
+	mutation = models.CharField(max_length=80, blank=True, default='', help_text="突变信息")
+	gnomad = models.CharField(max_length=30, blank=True, default='', help_text="gnomAD MAF")
+	acmg = models.CharField(max_length=30, blank=True, default='', help_text="ACMG变异评级")
+	disease = models.CharField(max_length=80, blank=True, default='', help_text="疾病名称")
+	gmode = models.CharField(max_length=20, blank=True, default='', help_text="遗传模式")
+	zygote = models.CharField(max_length=100, blank=True, default='', help_text="合子类型")
+	report = models.ForeignKey(CongenitalSurgeryGeneReport, on_delete=models.CASCADE, related_name='genes', help_text="来源报告")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, blank=True, null=True)
+	author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+
+class CongenitalInterveneDisease(models.Model):
+	VSD_TYPES = {
+		1: "膜周",
+		2: "肌部",
+		3: "干下",
+		4: "其他",
+	}
+
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	SAMPLE_TYPES = {
+		0: "无",
+		1: "全血",
+		2: "血细胞",
+		3: "血浆",
+		4: "组织"
+	}
+
+	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="编号或测序编号")
+	sjgqsbx = models.PositiveSmallIntegerField(choices=VSD_TYPES, default=1, help_text="室间隔缺损表型")
+	cznl = models.FloatField(blank=True, null=True, help_text="初诊年龄")
+	ssrq = models.DateField(blank=True, null=True, help_text="手术日期")
+	wkqcfdq = models.PositiveSmallIntegerField(choices=YES_NO, default=1, help_text="外科取出封堵器")
+	zyqjcyfl = models.PositiveSmallIntegerField(choices=YES_NO, default=1, help_text="住院期间残余分流")
+	zyqjrx = models.PositiveSmallIntegerField(choices=YES_NO, default=1, help_text="住院期间溶血")
+	shxdtyc = models.PositiveSmallIntegerField(choices=YES_NO, default=1, help_text="术后心电图异常")
+	sfsj = models.DateField(blank=True, null=True, help_text="随访时间")
+	sfcjbb = models.PositiveSmallIntegerField(choices=YES_NO, default=1, help_text="是否采集标本")
+	sjbb = models.PositiveSmallIntegerField(choices=SAMPLE_TYPES, default=0, help_text="已送检标本")
+	sybb = models.PositiveSmallIntegerField(choices=SAMPLE_TYPES, default=0, help_text="剩余标本")
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
-	patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+	patient = models.ForeignKey(Patient, on_delete=models.CASCADE, help_text="患者")
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
-	class Meta:
-		ordering = ['-created']
+class CongenitalIntervenePreUltrasound(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
 
-class RadiofrequencyAblation(models.Model):
+	sjgqsbx = models.CharField(max_length=30, blank=True, null=True, default='', help_text="室间隔缺损表型")
+	rukou = models.FloatField(blank=True, null=True, help_text="入口")
+	chukou = models.FloatField(blank=True, null=True, help_text="出口")
+	ja0jl = models.FloatField(blank=True, null=True, help_text="距AO距离")
+	szw = models.FloatField(blank=True, null=True, help_text="时钟位")
+	fdmgy = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="肺动脉高压")
+	fdmyl = models.FloatField(blank=True, null=True, help_text="肺动脉压力")
+	zdmbtc = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="主动脉瓣脱垂")
+	bmfl = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="瓣膜反流")
+	bmfljtbx = models.CharField(max_length=200, blank=True, null=True, default='', help_text="瓣膜反流具体表型")
+	zszd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="左室长大")
+	zsdx = models.FloatField(blank=True, null=True, help_text="左室大小(mm)")
+	zszd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="左房长大")
+	zsdx = models.FloatField(blank=True, null=True, help_text="左房大小(mm)")
 	created = models.DateTimeField(auto_now_add=True)
-	updated = models.DateTimeField(auto_now=True)
-	patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+	disease = models.ForeignKey(CongenitalInterveneDisease, on_delete=models.CASCADE, related_name="presounds")
+	author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+
+class CongenitalInterveneCardiogram(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	OPERATION_TYPES = {
+		1: "术前",
+		2: "术后",
+	}
+
+	sqsh = models.PositiveSmallIntegerField(choices=OPERATION_TYPES, default=0, help_text="手术期")
+	sqxdtgb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心电图改变")
+	ecgzd = models.CharField(max_length=30, blank=True, null=True, default='', help_text="ECG诊断")
+	xinlv = models.FloatField(blank=True, null=True, help_text="心率")
+	pr = models.FloatField(blank=True, null=True, help_text="PR")
+	qrs = models.FloatField(blank=True, null=True, help_text="QRS")
+	pz = models.FloatField(blank=True, null=True, help_text="P轴")
+	rz = models.FloatField(blank=True, null=True, help_text="R轴")
+	tz = models.FloatField(blank=True, null=True, help_text="T轴")
+	qt = models.FloatField(blank=True, null=True, help_text="QT")
+	qtc = models.FloatField(blank=True, null=True, help_text="QTC")
+	iipk = models.FloatField(blank=True, null=True, help_text="II P宽")
+	iipg = models.FloatField(blank=True, null=True, help_text="II P高")
+	rv5 = models.FloatField(blank=True, null=True, help_text="RV5")
+	sv1 = models.FloatField(blank=True, null=True, help_text="SV1")
+	v1 = models.CharField(max_length=50, blank=True, null=True, default='', help_text="V1图形")
+	v5 = models.CharField(max_length=50, blank=True, null=True, default='', help_text="V5图形")
+	qrszddy = models.FloatField(blank=True, null=True, help_text="QRS最大电压")
+	e1 = models.FloatField(blank=True, null=True, help_text="额I")
+	e2 = models.FloatField(blank=True, null=True, help_text="额II")
+	e3 = models.FloatField(blank=True, null=True, help_text="额III")
+	e4 = models.FloatField(blank=True, null=True, help_text="额IV")
+	h1 = models.FloatField(blank=True, null=True, help_text="横I")
+	h2 = models.FloatField(blank=True, null=True, help_text="横II")
+	h3 = models.FloatField(blank=True, null=True, help_text="横III")
+	h4 = models.FloatField(blank=True, null=True, help_text="横IV")
+	ert = models.FloatField(blank=True, null=True, help_text="额R-T")
+	hrt = models.FloatField(blank=True, null=True, help_text="横R-T")
+	yrt = models.FloatField(blank=True, null=True, help_text="右R-T")
+	tested = models.DateField(blank=True, null=True, help_text="检测时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalInterveneDisease, on_delete=models.CASCADE, related_name="precards")
+	author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+
+class CongenitalInterveneOperate(models.Model):
+	QG_TYPES = {
+		1: "传送鞘",
+		2: "动脉鞘",
+		3: "静脉鞘",
+	}
+
+	FDQ_COMPANY = {
+		1: "深圳",
+		2: "上海",
+		3: "北京",
+		4: "进口",
+		5: "ADO-II",
+		6: "西安",
+	}
+
+	FDQ_TYPES = {
+		1: "对称",
+		2: "ADOII",
+		3: "偏心",
+	}
+
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	sssj = models.FloatField(blank=True, null=True, help_text="手术时间(min)")
+	qglx = models.PositiveSmallIntegerField(choices=QG_TYPES, default=0, help_text="鞘管类型")
+	qgdx = models.FloatField(blank=True, null=True, help_text="鞘管大小(F)")
+	fdqcj = models.PositiveSmallIntegerField(choices=FDQ_COMPANY, default=0, help_text="封堵器厂家")
+	fdqdx = models.FloatField(blank=True, null=True, help_text="封堵器大小")
+	fdqlx = models.PositiveSmallIntegerField(choices=FDQ_COMPANY, default=0, help_text="封堵器类型")
+	fdfs = models.CharField(max_length=200, blank=True, null=True, default='', help_text="封堵方式")
+	fdqgs = models.FloatField(blank=True, null=True, help_text="封堵器个数")
+	szdsms = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="术中额外地塞米松使用")
+	dsmssycs = models.FloatField(blank=True, null=True, help_text="地塞米松使用次数")
+	fdmssy = models.FloatField(blank=True, null=True, help_text="肺动脉收缩压")
+	fdmszy = models.FloatField(blank=True, null=True, help_text="肺动脉舒张压")
+	fdmpjy = models.FloatField(blank=True, null=True, help_text="肺动脉平均压")
+	yxsssy = models.FloatField(blank=True, null=True, help_text="右心室收缩压")
+	yxsszy = models.FloatField(blank=True, null=True, help_text="右心室舒张压")
+	yxspjy = models.FloatField(blank=True, null=True, help_text="右心室平均压")
+	tested = models.DateField(blank=True, null=True, help_text="手术时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalInterveneDisease, on_delete=models.CASCADE, related_name="operates")
+	author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+
+class CongenitalInterveneUltrasound(models.Model):
+	YES_NO = {
+		0: "否",
+		1: "是"
+	}
+
+	NORMAL_TYPES = {
+		0: "未知",
+		1: "正常",
+		2: "不正常"
+	}
+
+	code = models.CharField(max_length=20, blank=True, default='', help_text="超声号")
+	age = models.FloatField(blank=True, null=True, help_text="年龄")
+	lvef = models.FloatField(blank=True, null=True, help_text="LVEF(%)")
+	lvfs = models.FloatField(blank=True, null=True, help_text="LVFS(%)")
+	xbjy = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心包积液")
+	xzzd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心脏长大")
+	bmfl = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="瓣膜返流")
+	gmyc = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="冠脉异常")
+	xnxs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心内血栓")
+	fdmgy = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="肺动脉高压")
+	zdms = models.CharField(max_length=200, blank=True, null=True, default='', help_text="超声诊断")
+	report = models.FileField(upload_to='report/%Y/%m/', max_length=200, blank=True, null=True, help_text="报告文件")
+	dicom_file = models.FileField(upload_to='dicom/%Y/%m/', max_length=255, blank=True, null=True, help_text="影像文件")
+	dicom_uuid = models.CharField(max_length=50, blank=True, default='')
+	tested = models.DateField(blank=True, null=True, help_text="检查时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalInterveneDisease, on_delete=models.CASCADE, related_name='ultrasounds')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
-	class Meta:
-		ordering = ['-created']
+class CongenitalInterveneMedimage(models.Model):
+	IMAGE_TYPES = {
+		1: "MRI",
+		3: "CTA",
+		2: "冠脉造影",
+		0: "其他"
+	}
+
+	yxlx = models.PositiveSmallIntegerField(choices=IMAGE_TYPES, default=1, help_text="影像类型")
+	code = models.CharField(max_length=20, blank=True, default='', help_text="影像号")
+	zd = models.CharField(max_length=200, blank=True, default='', help_text="诊断")
+	report = models.FileField(upload_to='report/%Y/%m/', max_length=200, blank=True, null=True, help_text="报告文件")
+	dicom_file = models.FileField(upload_to='dicom/%Y/%m/', max_length=255, blank=True, null=True, help_text="影像文件")
+	dicom_uuid = models.CharField(max_length=50, blank=True, default='')
+	tested = models.DateField(blank=True, null=True, help_text="检查时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalInterveneDisease, on_delete=models.CASCADE, related_name='medimages')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CongenitalInterveneGeneReport(models.Model):
+	company = models.CharField(max_length=100, blank=True, default='', help_text="检测公司")
+	report = models.FileField(upload_to='report/%Y/%m/', blank=True, null=True, help_text="报告")
+	tested = models.DateField(blank=True, null=True, help_text="检验时间")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalInterveneDisease, on_delete=models.CASCADE, related_name='reports')
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+	def __str__(self):
+		return self.report.name.split('/')[-1]
+
+class CongenitalInterveneGeneMutation(models.Model):
+	gene = models.CharField(max_length=50, blank=True, default='', help_text="基因")
+	position = models.CharField(max_length=50, blank=True, default='', help_text="位置")
+	mutation = models.CharField(max_length=80, blank=True, default='', help_text="突变信息")
+	gnomad = models.CharField(max_length=30, blank=True, default='', help_text="gnomAD MAF")
+	acmg = models.CharField(max_length=30, blank=True, default='', help_text="ACMG变异评级")
+	disease = models.CharField(max_length=80, blank=True, default='', help_text="疾病名称")
+	gmode = models.CharField(max_length=20, blank=True, default='', help_text="遗传模式")
+	zygote = models.CharField(max_length=100, blank=True, default='', help_text="合子类型")
+	report = models.ForeignKey(CongenitalInterveneGeneReport, on_delete=models.CASCADE, related_name='genes', help_text="来源报告")
+	created = models.DateTimeField(auto_now_add=True)
+	disease = models.ForeignKey(CongenitalInterveneDisease, on_delete=models.CASCADE, blank=True, null=True)
+	author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+
 
 class Job(models.Model):
 	FAILURE = 0

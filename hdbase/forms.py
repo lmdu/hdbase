@@ -261,3 +261,185 @@ class ArrhythmiaGeneMutationForm(TablerModelForm):
 	class Meta:
 		model = ArrhythmiaGeneMutation
 		exclude = ['created', 'disease', 'author']
+
+class CongenitalSurgeryDiseaseForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryDisease
+		exclude = ['created', 'updated', 'author']
+		widgets = {
+			'patient': PatientSelectWidget,
+		}
+
+class CongenitalSurgeryPreBloodForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryPreBlood
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CongenitalSurgeryPreBiochemistryForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryPreBiochemistry
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CongenitalSurgeryPreCruorForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryPreCruor
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CongenitalSurgeryPreExamineForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryPreExamine
+		exclude = ['created', 'disease', 'author']
+
+class CongenitalSurgeryPreLungForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryPreLung
+		exclude = ['created', 'disease', 'author']
+
+class CongenitalSurgeryPreCardiogramForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryPreCardiogram
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CongenitalSurgeryPostPHForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryPostPH
+		exclude = ['created', 'disease', 'author']
+
+class CongenitalSurgeryPostBloodForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryPostBlood
+		exclude = ['created', 'disease', 'author']
+
+class CongenitalSurgeryPostLiverForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryPostLiver
+		exclude = ['created', 'disease', 'author']
+
+class CongenitalSurgeryPostCruorForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryPostCruor
+		exclude = ['created', 'disease', 'author']
+
+class CongenitalSurgeryPostLungForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryPostLung
+		exclude = ['created', 'disease', 'author']
+
+class CongenitalSurgeryPostCardiogramForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryPostCardiogram
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CongenitalSurgeryOperation(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryPostLung
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'sssj': DatePickerInput,
+		}
+
+class CongenitalSurgeryVentilatorForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryVentilator
+		exclude = ['created', 'disease', 'author']
+
+class CongenitalSurgeryTreatmentForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryTreatment
+		exclude = ['created', 'disease', 'author']
+
+class CongenitalSurgeryUltrasoundForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryUltrasound
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CongenitalSurgeryMedimageForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryMedimage
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CongenitalSurgeryGeneReportForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryGeneReport
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CongenitalSurgeryGeneMutationForm(TablerModelForm):
+	class Meta:
+		model = CongenitalSurgeryGeneMutation
+		exclude = ['created', 'disease', 'author']
+
+class CongenitalInterveneDiseaseForm(TablerModelForm):
+	class Meta:
+		model = CongenitalInterveneDisease
+		exclude = ['created', 'updated', 'author']
+		widgets = {
+			'patient': PatientSelectWidget,
+		}
+
+class CongenitalIntervenePreUltrasoundForm(TablerModelForm):
+	class Meta:
+		model = CongenitalIntervenePreUltrasound
+		exclude = ['created', 'disease', 'author']
+
+class CongenitalInterveneCardiogramForm(TablerModelForm):
+	class Meta:
+		model = CongenitalInterveneCardiogram
+		exclude = ['created', 'disease', 'author']
+
+class CongenitalInterveneOperateForm(TablerModelForm):
+	class Meta:
+		model = CongenitalInterveneOperate
+		exclude = ['created', 'disease', 'author']
+
+class CongenitalInterveneUltrasoundForm(TablerModelForm):
+	class Meta:
+		model = CongenitalInterveneUltrasound
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CongenitalInterveneMedimageForm(TablerModelForm):
+	class Meta:
+		model = CongenitalInterveneMedimage
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CongenitalInterveneGeneReportForm(TablerModelForm):
+	class Meta:
+		model = CongenitalInterveneGeneReport
+		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
+
+class CongenitalInterveneGeneMutationForm(TablerModelForm):
+	class Meta:
+		model = CongenitalInterveneGeneMutation
+		exclude = ['created', 'disease', 'author']
