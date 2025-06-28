@@ -1151,7 +1151,7 @@ class CongenitalSurgeryPreExamine(models.Model):
 	xbhxb = models.CharField(max_length=20, blank=True, null=True, default='', help_text="小便红细胞/hp")
 	xbnxb = models.PositiveSmallIntegerField(choices=HAVE_TYPES, default=0, help_text="小便脓细胞/hp")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='prexamines')
+	disease = models.ForeignKey(CongenitalSurgeryDisease, on_delete=models.CASCADE, related_name='preexamines')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class CongenitalSurgeryPreLung(models.Model):
@@ -1584,7 +1584,7 @@ class CongenitalInterveneCardiogram(models.Model):
 	yrt = models.FloatField(blank=True, null=True, help_text="右R-T")
 	tested = models.DateField(blank=True, null=True, help_text="检测时间")
 	created = models.DateTimeField(auto_now_add=True)
-	disease = models.ForeignKey(CongenitalInterveneDisease, on_delete=models.CASCADE, related_name="precards")
+	disease = models.ForeignKey(CongenitalInterveneDisease, on_delete=models.CASCADE, related_name="cardiograms")
 	author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
 class CongenitalInterveneOperate(models.Model):

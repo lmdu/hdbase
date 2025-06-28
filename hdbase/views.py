@@ -744,7 +744,7 @@ class ArrhythmiaUpdateView(DiseaseUpdateView):
 	success_url = reverse_lazy('list-arrhythmia')
 
 class ArrhythmiaDeleteView(DiseaseDeleteView):
-	model = CardiomyopathyDisease
+	model = ArrhythmiaDisease
 	success_url = reverse_lazy('list-arrhythmia')
 
 class ArrhythmiaDetailView(DiseaseDetailView):
@@ -936,3 +936,503 @@ class ArrhythmiaGeneMutationUpdateView(ArrhythmiaExtraUpdateView):
 
 class ArrhythmiaGeneMutationDeleteView(ArrhythmiaExtraDeleteView):
 	model = ArrhythmiaGeneMutation
+
+#congenital surgery disease
+class CongenitalSurgeryDiseaseListView(DiseaseListView):
+	model =CongenitalSurgeryDisease
+	template_name = 'surgery-list.html'
+
+class CongenitalSurgeryDiseaseCreateView(DiseaseCreateView):
+	disease_type = '先心病-外科'
+	model =CongenitalSurgeryDisease
+	form_class =CongenitalSurgeryDiseaseForm
+	success_url = reverse_lazy('list-surgery')
+
+class CongenitalSurgeryDiseaseUpdateView(DiseaseUpdateView):
+	disease_type = '先心病-外科'
+	model =CongenitalSurgeryDisease
+	form_class =CongenitalSurgeryDiseaseForm
+	success_url = reverse_lazy('list-surgery')
+
+class CongenitalSurgeryDiseaseDeleteView(DiseaseDeleteView):
+	model = CongenitalSurgeryDisease
+	success_url = reverse_lazy('list-surgery')
+
+class CongenitalSurgeryDiseaseDetailView(DiseaseDetailView):
+	model =CongenitalSurgeryDisease
+	template_name = 'surgery-detail.html'
+
+class CongenitalSurgeryExtraCreateView(LoginRequiredMixin, CreateView):
+	sub_title = ""
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-surgery', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CongenitalSurgeryDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = self.sub_title
+		return context
+
+	def form_valid(self, form):
+		form.instance.author = self.request.user
+		disease = CongenitalSurgeryDisease.objects.get(pk=self.kwargs['did'])
+		form.instance.disease = disease
+		response = super().form_valid(form)
+
+		if 'dicom_file' in form.cleaned_data and self.object.dicom_file:
+			study_id = upload_dicoms(self.object.dicom_file.path)
+			self.object.dicom_uuid = study_id
+			self.object.save()
+
+		return response
+
+class CongenitalSurgeryExtraUpdateView(LoginRequiredMixin, UpdateView):
+	sub_title = ''
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-arrhythmia', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = "病例 {}".format(self.object.disease.disease_code)
+		context['subtitle'] = self.sub_title
+		return context
+
+	def form_valid(self, form):
+		response = super().form_valid(form)
+
+		if form.has_changed() and 'dicom_file' in form.changed_data:
+			study_id = upload_dicoms(self.object.dicom_file.path)
+			self.object.dicom_uuid = study_id
+			self.object.save()
+
+		return response
+
+class CongenitalSurgeryExtraDeleteView(LoginRequiredMixin, DeleteView):
+	template_name = 'disease-common-delete.html'
+
+	def get_success_url(self):
+		return reverse('view-arrhythmia', kwargs={'pk': self.object.disease.pk})
+
+class CongenitalSurgeryPreBloodCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加术前血常规信息"
+	model = CongenitalSurgeryPreBlood
+	form_class = CongenitalSurgeryPreBloodForm
+
+class CongenitalSurgeryPreBloodUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改术前血常规信息"
+	model = CongenitalSurgeryPreBlood
+	form_class = CongenitalSurgeryPreBloodForm
+
+class CongenitalSurgeryPreBloodDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryPreBlood
+
+class CongenitalSurgeryPreBiochemistryCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加术前生化检验"
+	model = CongenitalSurgeryPreBiochemistry
+	form_class = CongenitalSurgeryPreBiochemistryForm
+
+class CongenitalSurgeryPreBiochemistryUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改术前生化检验"
+	model = CongenitalSurgeryPreBiochemistry
+	form_class = CongenitalSurgeryPreBiochemistryForm
+
+class CongenitalSurgeryPreBiochemistryDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryPreBiochemistry
+
+class CongenitalSurgeryPreCruorCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加凝血标志物"
+	model = CongenitalSurgeryPreCruor
+	form_class = CongenitalSurgeryPreCruorForm
+
+class CongenitalSurgeryPreCruorUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改凝血标志物"
+	model = CongenitalSurgeryPreCruor
+	form_class = CongenitalSurgeryPreCruorForm
+
+class CongenitalSurgeryPreCruorDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryPreCruor
+
+class CongenitalSurgeryPreExamineCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加大小便检"
+	model = CongenitalSurgeryPreExamine
+	form_class = CongenitalSurgeryPreExamineForm
+
+class CongenitalSurgeryPreExamineUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改大小便检"
+	model = CongenitalSurgeryPreExamine
+	form_class = CongenitalSurgeryPreExamineForm
+
+class CongenitalSurgeryPreExamineDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryPreExamine
+
+class CongenitalSurgeryPreLungCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加术前肺脏情况"
+	model = CongenitalSurgeryPreLung
+	form_class = CongenitalSurgeryPreLungForm
+
+class CongenitalSurgeryPreLungUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改术前肺脏情况"
+	model = CongenitalSurgeryPreLung
+	form_class = CongenitalSurgeryPreLungForm
+
+class CongenitalSurgeryPreLungDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryPreLung
+
+class CongenitalSurgeryPreCardiogramCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加术前心电图"
+	model = CongenitalSurgeryPreCardiogram
+	form_class = CongenitalSurgeryPreCardiogramForm
+
+class CongenitalSurgeryPreCardiogramUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改术前心电图"
+	model = CongenitalSurgeryPreCardiogram
+	form_class = CongenitalSurgeryPreCardiogramForm
+
+class CongenitalSurgeryPreCardiogramDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryPreCardiogram
+
+class CongenitalSurgeryPostPHCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加术后PH(酸碱度)"
+	model = CongenitalSurgeryPostPH
+	form_class = CongenitalSurgeryPostPHForm
+
+class CongenitalSurgeryPostPHUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改术后PH(酸碱度)"
+	model = CongenitalSurgeryPostPH
+	form_class = CongenitalSurgeryPostPHForm
+
+class CongenitalSurgeryPostPHDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryPostPH
+
+class CongenitalSurgeryPostBloodCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "术后血液系统情况"
+	model = CongenitalSurgeryPostBlood
+	form_class = CongenitalSurgeryPostBloodForm
+
+class CongenitalSurgeryPostBloodUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改血液系统情况"
+	model = CongenitalSurgeryPostBlood
+	form_class = CongenitalSurgeryPostBloodForm
+
+class CongenitalSurgeryPostBloodDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryPostBlood
+
+class CongenitalSurgeryPostLiverCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加术后肝脏情况"
+	model = CongenitalSurgeryPostLiver
+	form_class = CongenitalSurgeryPostLiverForm
+
+class CongenitalSurgeryPostLiverUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改术后肝脏情况"
+	model = CongenitalSurgeryPostLiver
+	form_class = CongenitalSurgeryPostLiverForm
+
+class CongenitalSurgeryPostLiverDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryPostLiver
+
+class CongenitalSurgeryPostCruorCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加术后凝血情况"
+	model = CongenitalSurgeryPostCruor
+	form_class = CongenitalSurgeryPostCruorForm
+
+class CongenitalSurgeryPostCruorUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改术后凝血情况"
+	model = CongenitalSurgeryPostCruor
+	form_class = CongenitalSurgeryPostCruorForm
+
+class CongenitalSurgeryPostCruorDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryPostCruor
+
+class CongenitalSurgeryPostLungCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加术后肺脏情况"
+	model = CongenitalSurgeryPostLung
+	form_class = CongenitalSurgeryPostLungForm
+
+class CongenitalSurgeryPostLungUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改术后肺脏情况"
+	model = CongenitalSurgeryPostLung
+	form_class = CongenitalSurgeryPostLungForm
+
+class CongenitalSurgeryPostLungDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryPostLung
+
+class CongenitalSurgeryPostCardiogramCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加术后心电图改变"
+	model = CongenitalSurgeryPostCardiogram
+	form_class = CongenitalSurgeryPostCardiogramForm
+
+class CongenitalSurgeryPostCardiogramUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改术后心电图改变"
+	model = CongenitalSurgeryPostCardiogram
+	form_class = CongenitalSurgeryPostCardiogramForm
+
+class CongenitalSurgeryPostCardiogramDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryPostCardiogram
+
+class CongenitalSurgeryOperationCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加手术情况"
+	model = CongenitalSurgeryOperation
+	form_class = CongenitalSurgeryOperationForm
+
+class CongenitalSurgeryOperationUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改手术情况"
+	model = CongenitalSurgeryOperation
+	form_class = CongenitalSurgeryOperationForm
+
+class CongenitalSurgeryOperationDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryOperation
+
+class CongenitalSurgeryVentilatorCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加呼吸机使用情况"
+	model = CongenitalSurgeryVentilator
+	form_class = CongenitalSurgeryVentilatorForm
+
+class CongenitalSurgeryVentilatorUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改呼吸机使用情况"
+	model = CongenitalSurgeryVentilator
+	form_class = CongenitalSurgeryVentilatorForm
+
+class CongenitalSurgeryVentilatorDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryVentilator
+
+class CongenitalSurgeryTreatmentCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加治疗情况"
+	model = CongenitalSurgeryTreatment
+	form_class = CongenitalSurgeryTreatmentForm
+
+class CongenitalSurgeryTreatmentUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改治疗情况"
+	model = CongenitalSurgeryTreatment
+	form_class = CongenitalSurgeryTreatmentForm
+
+class CongenitalSurgeryTreatmentDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryTreatment
+
+class CongenitalSurgeryUltrasoundCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加超声影像"
+	model = CongenitalSurgeryUltrasound
+	form_class = CongenitalSurgeryUltrasoundForm
+
+class CongenitalSurgeryUltrasoundUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改超声影像"
+	model = CongenitalSurgeryUltrasound
+	form_class = CongenitalSurgeryUltrasoundForm
+
+class CongenitalSurgeryUltrasoundDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryUltrasound
+
+class CongenitalSurgeryMedimageCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加其他影像"
+	model = CongenitalSurgeryMedimage
+	form_class = CongenitalSurgeryMedimageForm
+
+class CongenitalSurgeryMedimageUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改其他影像"
+	model = CongenitalSurgeryMedimage
+	form_class = CongenitalSurgeryMedimageForm
+
+class CongenitalSurgeryMedimageDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryMedimage
+
+class CongenitalSurgeryGeneReportCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加基因检测报告"
+	model = CongenitalSurgeryGeneReport
+	form_class = CongenitalSurgeryGeneReportForm
+
+class CongenitalSurgeryGeneReportUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改基因检测报告"
+	model = CongenitalSurgeryGeneReport
+	form_class = CongenitalSurgeryGeneReportForm
+
+class CongenitalSurgeryGeneReportDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryGeneReport
+
+class CongenitalSurgeryGeneMutationCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加基因检测报告内容"
+	model = CongenitalSurgeryGeneMutation
+	form_class = CongenitalSurgeryGeneMutationForm
+
+class CongenitalSurgeryGeneMutationUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改基因检测报告内容"
+	model = CongenitalSurgeryGeneMutation
+	form_class = CongenitalSurgeryGeneMutationForm
+
+class CongenitalSurgeryGeneMutationDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalSurgeryGeneMutation
+
+#congenital VSD disease
+class CongenitalInterveneDiseaseListView(DiseaseListView):
+	model =CongenitalInterveneDisease
+	template_name = 'intervene-list.html'
+
+class CongenitalInterveneDiseaseCreateView(DiseaseCreateView):
+	disease_type = '先心病-VSD介入'
+	model =CongenitalInterveneDisease
+	form_class =CongenitalInterveneDiseaseForm
+	success_url = reverse_lazy('list-intervene')
+
+class CongenitalInterveneDiseaseUpdateView(DiseaseUpdateView):
+	disease_type = '先心病-VSD介入'
+	model =CongenitalInterveneDisease
+	form_class =CongenitalInterveneDiseaseForm
+	success_url = reverse_lazy('list-intervene')
+
+class CongenitalInterveneDiseaseDeleteView(DiseaseDeleteView):
+	model = CongenitalInterveneDisease
+	success_url = reverse_lazy('list-intervene')
+
+class CongenitalInterveneDiseaseDetailView(DiseaseDetailView):
+	model =CongenitalInterveneDisease
+	template_name = 'intervene-detail.html'
+
+class CongenitalInterveneExtraCreateView(LoginRequiredMixin, CreateView):
+	sub_title = ""
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-intervene', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		d = CongenitalInterveneDisease.objects.get(pk=self.kwargs['did'])
+		context['title'] = "病例 {}".format(d.disease_code)
+		context['subtitle'] = self.sub_title
+		return context
+
+	def form_valid(self, form):
+		form.instance.author = self.request.user
+		disease = CongenitalInterveneDisease.objects.get(pk=self.kwargs['did'])
+		form.instance.disease = disease
+		response = super().form_valid(form)
+
+		if 'dicom_file' in form.cleaned_data and self.object.dicom_file:
+			study_id = upload_dicoms(self.object.dicom_file.path)
+			self.object.dicom_uuid = study_id
+			self.object.save()
+
+		return response
+
+class CongenitalInterveneExtraUpdateView(LoginRequiredMixin, UpdateView):
+	sub_title = ''
+	template_name = 'disease-common-form.html'
+
+	def get_success_url(self):
+		return reverse('view-intervene', kwargs={'pk': self.object.disease.pk})
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = "病例 {}".format(self.object.disease.disease_code)
+		context['subtitle'] = self.sub_title
+		return context
+
+	def form_valid(self, form):
+		response = super().form_valid(form)
+
+		if form.has_changed() and 'dicom_file' in form.changed_data:
+			study_id = upload_dicoms(self.object.dicom_file.path)
+			self.object.dicom_uuid = study_id
+			self.object.save()
+
+		return response
+
+class CongenitalInterveneExtraDeleteView(LoginRequiredMixin, DeleteView):
+	template_name = 'disease-common-delete.html'
+
+	def get_success_url(self):
+		return reverse('view-intervene', kwargs={'pk': self.object.disease.pk})
+
+class CongenitalIntervenePreUltrasoundCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加术前超声信息"
+	model = CongenitalIntervenePreUltrasound
+	form_class = CongenitalIntervenePreUltrasoundForm
+
+class CongenitalIntervenePreUltrasoundUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改术前超声信息"
+	model = CongenitalIntervenePreUltrasound
+	form_class = CongenitalIntervenePreUltrasoundForm
+
+class CongenitalIntervenePreUltrasoundDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalIntervenePreUltrasound
+
+class CongenitalInterveneCardiogramCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加心电图变化情况"
+	model = CongenitalInterveneCardiogram
+	form_class = CongenitalInterveneCardiogramForm
+
+class CongenitalInterveneCardiogramUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改心电图变化情况"
+	model = CongenitalInterveneCardiogram
+	form_class = CongenitalInterveneCardiogramForm
+
+class CongenitalInterveneCardiogramDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalInterveneCardiogram
+
+class CongenitalInterveneOperateCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加手术情况"
+	model = CongenitalInterveneOperate
+	form_class = CongenitalInterveneOperateForm
+
+class CongenitalInterveneOperateUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改手术情况"
+	model = CongenitalInterveneOperate
+	form_class = CongenitalInterveneOperateForm
+
+class CongenitalInterveneOperateDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalInterveneOperate
+
+class CongenitalInterveneUltrasoundCreateView(CongenitalSurgeryExtraCreateView):
+	sub_title = "添加超声影像"
+	model = CongenitalInterveneUltrasound
+	form_class = CongenitalInterveneUltrasoundForm
+
+class CongenitalInterveneUltrasoundUpdateView(CongenitalSurgeryExtraUpdateView):
+	sub_title = "修改超声影像"
+	model = CongenitalInterveneUltrasound
+	form_class = CongenitalInterveneUltrasoundForm
+
+class CongenitalInterveneUltrasoundDeleteView(CongenitalSurgeryExtraDeleteView):
+	model = CongenitalInterveneUltrasound
+
+class CongenitalInterveneMedimageCreateView(CongenitalInterveneExtraCreateView):
+	sub_title = "添加其他影像"
+	model = CongenitalInterveneMedimage
+	form_class = CongenitalInterveneMedimageForm
+
+class CongenitalInterveneMedimageUpdateView(CongenitalInterveneExtraUpdateView):
+	sub_title = "修改其他影像"
+	model = CongenitalInterveneMedimage
+	form_class = CongenitalInterveneMedimageForm
+
+class CongenitalInterveneMedimageDeleteView(CongenitalInterveneExtraDeleteView):
+	model = CongenitalInterveneMedimage
+
+class CongenitalInterveneGeneReportCreateView(CongenitalInterveneExtraCreateView):
+	sub_title = "添加基因检测报告"
+	model = CongenitalInterveneGeneReport
+	form_class = CongenitalInterveneGeneReportForm
+
+class CongenitalInterveneGeneReportUpdateView(CongenitalInterveneExtraUpdateView):
+	sub_title = "修改基因检测报告"
+	model = CongenitalInterveneGeneReport
+	form_class = CongenitalInterveneGeneReportForm
+
+class CongenitalInterveneGeneReportDeleteView(CongenitalInterveneExtraDeleteView):
+	model = CongenitalInterveneGeneReport
+
+class CongenitalInterveneGeneMutationCreateView(CongenitalInterveneExtraCreateView):
+	sub_title = "添加基因检测报告内容"
+	model = CongenitalInterveneGeneMutation
+	form_class = CongenitalInterveneGeneMutationForm
+
+class CongenitalInterveneGeneMutationUpdateView(CongenitalInterveneExtraUpdateView):
+	sub_title = "修改基因检测报告内容"
+	model = CongenitalInterveneGeneMutation
+	form_class = CongenitalInterveneGeneMutationForm
+
+class CongenitalInterveneGeneMutationDeleteView(CongenitalInterveneExtraDeleteView):
+	model = CongenitalInterveneGeneMutation

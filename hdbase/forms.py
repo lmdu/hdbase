@@ -268,6 +268,8 @@ class CongenitalSurgeryDiseaseForm(TablerModelForm):
 		exclude = ['created', 'updated', 'author']
 		widgets = {
 			'patient': PatientSelectWidget,
+			'sssj': DatePickerInput,
+			'sfsj': DatePickerInput,
 		}
 
 class CongenitalSurgeryPreBloodForm(TablerModelForm):
@@ -345,9 +347,9 @@ class CongenitalSurgeryPostCardiogramForm(TablerModelForm):
 			'tested': DatePickerInput,
 		}
 
-class CongenitalSurgeryOperation(TablerModelForm):
+class CongenitalSurgeryOperationForm(TablerModelForm):
 	class Meta:
-		model = CongenitalSurgeryPostLung
+		model = CongenitalSurgeryOperation
 		exclude = ['created', 'disease', 'author']
 		widgets = {
 			'sssj': DatePickerInput,
@@ -366,7 +368,7 @@ class CongenitalSurgeryTreatmentForm(TablerModelForm):
 class CongenitalSurgeryUltrasoundForm(TablerModelForm):
 	class Meta:
 		model = CongenitalSurgeryUltrasound
-		exclude = ['created', 'disease', 'author']
+		exclude = ['created', 'disease', 'author', 'dicom_uuid']
 		widgets = {
 			'tested': DatePickerInput,
 		}
@@ -374,7 +376,7 @@ class CongenitalSurgeryUltrasoundForm(TablerModelForm):
 class CongenitalSurgeryMedimageForm(TablerModelForm):
 	class Meta:
 		model = CongenitalSurgeryMedimage
-		exclude = ['created', 'disease', 'author']
+		exclude = ['created', 'disease', 'author', 'dicom_uuid']
 		widgets = {
 			'tested': DatePickerInput,
 		}
@@ -398,6 +400,7 @@ class CongenitalInterveneDiseaseForm(TablerModelForm):
 		exclude = ['created', 'updated', 'author']
 		widgets = {
 			'patient': PatientSelectWidget,
+			'sfsj': DatePickerInput,
 		}
 
 class CongenitalIntervenePreUltrasoundForm(TablerModelForm):

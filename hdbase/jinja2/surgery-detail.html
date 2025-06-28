@@ -1,0 +1,926 @@
+{% set mainmenu = 'disease' %}
+{% extends 'base.html' %}
+{% block pagetitle %}
+<img src="{{ static('img/spxr.svg') }}" width="32" height="32" class="me-2">
+先心病-外科病例
+{% endblock %}
+
+{% block pageaction %}
+{% if request.user.profile.is_editor %}
+<div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">添加信息</button>
+  <div class="dropdown-menu dropdown-menu-end">
+  	<div class="dropdown-menu-columns">
+  		<div class="dropdown-menu-column">
+  			<a class="dropdown-item" href="{{ url('add-surgery-preblood', kwargs={'did': object.id}) }}">添加术前血常规</a>
+		    <a class="dropdown-item" href="{{ url('add-surgery-prebiochem', kwargs={'did': object.id}) }}">添加术前生化检验</a>
+		    <a class="dropdown-item" href="{{ url('add-surgery-precruor', kwargs={'did': object.id}) }}">添加术前凝血标志物</a>
+		    <a class="dropdown-item" href="{{ url('add-surgery-preexamine', kwargs={'did': object.id}) }}">添加术前大小便检验</a>
+				<a class="dropdown-item" href="{{ url('add-surgery-prelung', kwargs={'did': object.id}) }}">添加术前肺脏情况</a>
+				<a class="dropdown-item" href="{{ url('add-surgery-precard', kwargs={'did': object.id}) }}">添加术前心电图变化</a>
+  		</div>
+  		<div class="dropdown-menu-column">
+  			<a class="dropdown-item" href="{{ url('add-surgery-postph', kwargs={'did': object.id}) }}">添加术后PH(酸碱度)</a>
+				<a class="dropdown-item" href="{{ url('add-surgery-postblood', kwargs={'did': object.id}) }}">添加术后血液系统情况</a>
+				<a class="dropdown-item" href="{{ url('add-surgery-postliver', kwargs={'did': object.id}) }}">添加术后肝脏情况</a>
+				<a class="dropdown-item" href="{{ url('add-surgery-postcruor', kwargs={'did': object.id}) }}">添加术后凝血情况</a>
+				<a class="dropdown-item" href="{{ url('add-surgery-postlung', kwargs={'did': object.id}) }}">添加术后肺脏情况</a>
+				<a class="dropdown-item" href="{{ url('add-surgery-postcard', kwargs={'did': object.id}) }}">添加术后心电图变化</a>
+  		</div>
+  	</div>
+		<div class="dropdown-divider"></div>
+		<div class="dropdown-menu-columns">
+			<div class="dropdown-menu-column">
+				<a class="dropdown-item" href="{{ url('add-surgery-operate', kwargs={'did': object.id}) }}">添加手术情况</a>
+				<a class="dropdown-item" href="{{ url('add-surgery-ventilator', kwargs={'did': object.id}) }}">添加呼吸机使用情况</a>
+				<a class="dropdown-item" href="{{ url('add-surgery-treatment', kwargs={'did': object.id}) }}">添加治疗情况</a>
+			</div>
+			<div class="dropdown-menu-column">
+				<a class="dropdown-item" href="{{ url('add-surgery-ultrasound', kwargs={'did': object.id}) }}">添加超声影像</a>
+				<a class="dropdown-item" href="{{ url('add-surgery-medimg', kwargs={'did': object.id}) }}">添加特殊影像</a>
+    		<a class="dropdown-item" href="{{ url('add-surgery-greport', kwargs={'did': object.id}) }}">添加基因报告</a>
+    		<a class="dropdown-item" href="{{ url('add-surgery-gmutation', kwargs={'did': object.id}) }}">添加基因报告内容</a>
+			</div>
+		</div>		
+  </div>
+</div>
+{% endif %}
+{% endblock%}
+
+{% block main %}
+<div class="card">
+	<div class="card-header">
+		<h3 class="card-title">
+			基本信息
+		</h3>
+	</div>
+	<div class="card-body">
+		<div class="datagrid">
+			{% for f in object._meta.fields %}
+			{% if f.help_text %}
+			<div class="datagrid-item">
+				{% if f.choices %}
+				<div class="datagrid-title">{{ f.help_text }}</div>
+				<div class="datagrid-content">{{ object | attr('get_{}_display'.format(f.name))() }}</div>
+				{% elif f.name != 'patient' %}
+				<div class="datagrid-title">{{ f.help_text }}</div>
+				<div class="datagrid-content">{{ object | attr(f.name) }}</div>
+				{% endif %}
+			</div>
+			{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+</div>
+
+<div class="card mt-5">
+	<div class="card-header">
+		<h3 class="card-title">患者信息</h3>
+	</div>
+	<div class="card-body">
+		<div class="datagrid">
+			<div class="datagrid-item">
+				<div class="datagrid-title">患者姓名</div>
+				<div class="datagrid-content">{{ object.patient.name }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">登记号</div>
+				<div class="datagrid-content">{{ object.patient.number }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">性别</div>
+				<div class="datagrid-content">{{ object.patient.get_gender_display() }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">民族</div>
+				<div class="datagrid-content">{{ object.patient.get_ethnicity_display() }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">出生日期</div>
+				<div class="datagrid-content">{{ object.patient.birthday | date("Y-m-d") }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">身高(cm)</div>
+				<div class="datagrid-content">{{ object.patient.height }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">体重(Kg)</div>
+				<div class="datagrid-content">{{ object.patient.weight }}</div>
+			</div>
+			<div class="datagrid-item">
+				<div class="datagrid-title">电话</div>
+				<div class="datagrid-content">{{ object.patient.phone }}</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="card mt-5">
+  <div class="card-header">
+    <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
+    	<li class="nav-item">
+        <a href="#tabs-preblood" class="nav-link active" data-bs-toggle="tab">术前血常规</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-prebiochem" class="nav-link" data-bs-toggle="tab">术前生化检验</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-precruor" class="nav-link" data-bs-toggle="tab">术前凝血标志物</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-preexamine" class="nav-link" data-bs-toggle="tab">术前大小便检验</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-prelung" class="nav-link" data-bs-toggle="tab">术前肺脏情况</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-precards" class="nav-link" data-bs-toggle="tab">术前心电图变化</a>
+      </li>
+    </ul>
+  </div>
+  <div class="card-body">
+    <div class="tab-content">
+    	<div class="tab-pane active show" id="tabs-preblood">
+    		<div class="nav nav-segmented nav-sm" role="tablist">
+    			{% for i in range(object.prebloods.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#preblood-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    血常规 {{ loop.index }}
+				  </button>
+				  {% endfor %}
+				</div>
+				<div class="tab-content">
+					{% for b in object.prebloods.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="preblood-{{ loop.index }}">
+						{% if request.user.profile.is_editor %}
+						<div class="row">
+							<div class="col-auto ms-auto d-print-none">
+								<a href="{{ url('edit-surgery-preblood', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-surgery-preblood', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
+							</div>
+						</div>
+						{% endif %}
+						<div class="datagrid">
+			    			{% for f in b._meta.fields %}
+								{% if f.help_text %}
+									<div class="datagrid-item">
+										<div class="datagrid-title">{{ f.help_text }}</div>
+										{% if f.choices %}
+										<div class="datagrid-content">{{ b | attr('get_{}_display'.format(f.name))() }}</div>
+										{% else %}
+										<div class="datagrid-content">{{ b | attr(f.name) }}</div>
+										{% endif %}
+								</div>
+								{% endif %}
+								{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+      </div>
+      <div class="tab-pane" id="tabs-prebiochem">
+    		<div class="nav nav-segmented nav-sm" role="tablist">
+    			{% for i in range(object.prebiochems.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#prebiochem-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    生化检验 {{ loop.index }}
+				  </button>
+				  {% endfor %}
+				</div>
+				<div class="tab-content">
+					{% for b in object.prebiochems.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="prebiochem-{{ loop.index }}">
+						{% if request.user.profile.is_editor %}
+						<div class="row">
+							<div class="col-auto ms-auto d-print-none">
+								<a href="{{ url('edit-surgery-prebiochem', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-surgery-prebiochem', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
+							</div>
+						</div>
+						{% endif %}
+						<div class="datagrid">
+			    			{% for f in b._meta.fields %}
+								{% if f.help_text %}
+									<div class="datagrid-item">
+										<div class="datagrid-title">{{ f.help_text }}</div>
+										{% if f.choices %}
+										<div class="datagrid-content">{{ b | attr('get_{}_display'.format(f.name))() }}</div>
+										{% else %}
+										<div class="datagrid-content">{{ b | attr(f.name) }}</div>
+										{% endif %}
+								</div>
+								{% endif %}
+								{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+      </div>
+      <div class="tab-pane" id="tabs-precruor">
+      	<div class="table-responsive">
+        	<table class="table card-table table-vcenter text-nowrap datatable">
+        		<thead>
+        			<tr>
+        				{% for f in object.precruors.model._meta.get_fields() %}
+        				{% if f.help_text %}
+        				<th>{{ f.help_text }}</th>
+        				{% endif %}
+        				{% endfor %}
+        				<th></th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for m in object.precruors.all() %}
+        			<tr>
+      					{% for f in m._meta.fields %}
+								{% if f.help_text %}
+								<td>
+								
+									{% if f.choices %}
+									{{ m | attr('get_{}_display'.format(f.name))() }}
+									{% else %}
+									{{ m | attr(f.name) }}
+									{% endif %}
+								</td>
+								{% endif %}
+								{% endfor %}
+        				<td class="text-end">
+        					{% if request.user.profile.is_editor %}
+	                <a href="{{ url('edit-surgery-precruor', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-surgery-precruor', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	              </td>
+        			</tr>
+        			{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tabs-preexamine">
+    		<div class="nav nav-segmented nav-sm" role="tablist">
+    			{% for i in range(object.preexamines.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#preexamine-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    便检{{ loop.index }}
+				  </button>
+				  {% endfor %}
+				</div>
+				<div class="tab-content">
+					{% for i in object.preexamines.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="preexamine-{{ loop.index }}">
+						{% if request.user.profile.is_editor %}
+						<div class="row">
+							<div class="col-auto ms-auto d-print-none">
+								<a href="{{ url('edit-surgery-preexamine', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-surgery-preexamine', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-danger">删除</a>
+							</div>
+						</div>
+						{% endif %}
+						<div class="datagrid">
+			    			{% for f in i._meta.fields %}
+								{% if f.help_text %}
+									<div class="datagrid-item">
+										<div class="datagrid-title">{{ f.help_text }}</div>
+										{% if f.choices %}
+										<div class="datagrid-content">{{ i | attr('get_{}_display'.format(f.name))() }}</div>
+										{% else %}
+										<div class="datagrid-content">{{ i | attr(f.name) }}</div>
+										{% endif %}
+								</div>
+								{% endif %}
+								{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+      </div>
+      <div class="tab-pane" id="tabs-prelung">
+      	<div class="table-responsive">
+        	<table class="table card-table table-vcenter text-nowrap datatable">
+        		<thead>
+        			<tr>
+        				{% for f in object.prelungs.model._meta.get_fields() %}
+        				{% if f.help_text %}
+        				<th>{{ f.help_text }}</th>
+        				{% endif %}
+        				{% endfor %}
+        				<th></th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for m in object.prelungs.all() %}
+        			<tr>
+      					{% for f in m._meta.fields %}
+								{% if f.help_text %}
+								<td>
+								
+									{% if f.choices %}
+									{{ m | attr('get_{}_display'.format(f.name))() }}
+									{% else %}
+									{{ m | attr(f.name) }}
+									{% endif %}
+								</td>
+								{% endif %}
+								{% endfor %}
+        				<td class="text-end">
+        					{% if request.user.profile.is_editor %}
+	                <a href="{{ url('edit-surgery-prelung', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-surgery-prelung', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	              </td>
+        			</tr>
+        			{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tabs-precards">
+    		<div class="nav nav-segmented nav-sm" role="tablist">
+    			{% for i in range(object.precards.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#precard-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    心电图变化 {{ loop.index }}
+				  </button>
+				  {% endfor %}
+				</div>
+				<div class="tab-content">
+					{% for i in object.precards.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="precard-{{ loop.index }}">
+						{% if request.user.profile.is_editor %}
+						<div class="row">
+							<div class="col-auto ms-auto d-print-none">
+								<a href="{{ url('edit-surgery-precard', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-surgery-precard', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-danger">删除</a>
+							</div>
+						</div>
+						{% endif %}
+						<div class="datagrid">
+			    			{% for f in i._meta.fields %}
+								{% if f.help_text %}
+									<div class="datagrid-item">
+										<div class="datagrid-title">{{ f.help_text }}</div>
+										{% if f.choices %}
+										<div class="datagrid-content">{{ i | attr('get_{}_display'.format(f.name))() }}</div>
+										{% else %}
+										<div class="datagrid-content">{{ i | attr(f.name) }}</div>
+										{% endif %}
+								</div>
+								{% endif %}
+								{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-5">
+  <div class="card-header">
+    <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
+    	<li class="nav-item">
+        <a href="#tabs-postph" class="nav-link active" data-bs-toggle="tab">术后PH(酸碱度)</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-postblood" class="nav-link" data-bs-toggle="tab">术后血液系统情况</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-postliver" class="nav-link" data-bs-toggle="tab">术后肝脏情况</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-postcruor" class="nav-link" data-bs-toggle="tab">术后凝血情况</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-postlung" class="nav-link" data-bs-toggle="tab">术后肺脏情况</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-postcards" class="nav-link" data-bs-toggle="tab">术后心电图变化</a>
+      </li>
+    </ul>
+  </div>
+  <div class="card-body">
+    <div class="tab-content">
+    	<div class="tab-pane active show" id="tabs-postph">
+    		<div class="nav nav-segmented nav-sm" role="tablist">
+    			{% for i in range(object.postphs.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#postph-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    PH {{ loop.index }}
+				  </button>
+				  {% endfor %}
+				</div>
+				<div class="tab-content">
+					{% for b in object.postphs.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="postph-{{ loop.index }}">
+						{% if request.user.profile.is_editor %}
+						<div class="row">
+							<div class="col-auto ms-auto d-print-none">
+								<a href="{{ url('edit-surgery-postph', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-surgery-postph', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
+							</div>
+						</div>
+						{% endif %}
+						<div class="datagrid">
+			    			{% for f in b._meta.fields %}
+								{% if f.help_text %}
+									<div class="datagrid-item">
+										<div class="datagrid-title">{{ f.help_text }}</div>
+										{% if f.choices %}
+										<div class="datagrid-content">{{ b | attr('get_{}_display'.format(f.name))() }}</div>
+										{% else %}
+										<div class="datagrid-content">{{ b | attr(f.name) }}</div>
+										{% endif %}
+								</div>
+								{% endif %}
+								{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+      </div>
+      <div class="tab-pane" id="tabs-postblood">
+    		<div class="nav nav-segmented nav-sm" role="tablist">
+    			{% for i in range(object.postbloods.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#postblood-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    血常规 {{ loop.index }}
+				  </button>
+				  {% endfor %}
+				</div>
+				<div class="tab-content">
+					{% for b in object.postbloods.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="postblood-{{ loop.index }}">
+						{% if request.user.profile.is_editor %}
+						<div class="row">
+							<div class="col-auto ms-auto d-print-none">
+								<a href="{{ url('edit-surgery-postblood', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-surgery-postblood', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
+							</div>
+						</div>
+						{% endif %}
+						<div class="datagrid">
+			    			{% for f in b._meta.fields %}
+								{% if f.help_text %}
+									<div class="datagrid-item">
+										<div class="datagrid-title">{{ f.help_text }}</div>
+										{% if f.choices %}
+										<div class="datagrid-content">{{ b | attr('get_{}_display'.format(f.name))() }}</div>
+										{% else %}
+										<div class="datagrid-content">{{ b | attr(f.name) }}</div>
+										{% endif %}
+								</div>
+								{% endif %}
+								{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+      </div>
+      <div class="tab-pane" id="tabs-postliver">
+    		<div class="nav nav-segmented nav-sm" role="tablist">
+    			{% for i in range(object.postlivers.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#postliver-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    肝脏情况 {{ loop.index }}
+				  </button>
+				  {% endfor %}
+				</div>
+				<div class="tab-content">
+					{% for b in object.postlivers.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="postliver-{{ loop.index }}">
+						{% if request.user.profile.is_editor %}
+						<div class="row">
+							<div class="col-auto ms-auto d-print-none">
+								<a href="{{ url('edit-surgery-postliver', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-surgery-postliver', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
+							</div>
+						</div>
+						{% endif %}
+						<div class="datagrid">
+			    			{% for f in b._meta.fields %}
+								{% if f.help_text %}
+									<div class="datagrid-item">
+										<div class="datagrid-title">{{ f.help_text }}</div>
+										{% if f.choices %}
+										<div class="datagrid-content">{{ b | attr('get_{}_display'.format(f.name))() }}</div>
+										{% else %}
+										<div class="datagrid-content">{{ b | attr(f.name) }}</div>
+										{% endif %}
+								</div>
+								{% endif %}
+								{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+      </div>
+      <div class="tab-pane" id="tabs-postcruor">
+      	<div class="table-responsive">
+        	<table class="table card-table table-vcenter text-nowrap datatable">
+        		<thead>
+        			<tr>
+        				{% for f in object.postcruors.model._meta.get_fields() %}
+        				{% if f.help_text %}
+        				<th>{{ f.help_text }}</th>
+        				{% endif %}
+        				{% endfor %}
+        				<th></th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for m in object.postcruors.all() %}
+        			<tr>
+      					{% for f in m._meta.fields %}
+								{% if f.help_text %}
+								<td>
+								
+									{% if f.choices %}
+									{{ m | attr('get_{}_display'.format(f.name))() }}
+									{% else %}
+									{{ m | attr(f.name) }}
+									{% endif %}
+								</td>
+								{% endif %}
+								{% endfor %}
+        				<td class="text-end">
+        					{% if request.user.profile.is_editor %}
+	                <a href="{{ url('edit-surgery-precruor', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-surgery-precruor', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	              </td>
+        			</tr>
+        			{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tabs-postlung">
+      	<div class="table-responsive">
+        	<table class="table card-table table-vcenter text-nowrap datatable">
+        		<thead>
+        			<tr>
+        				{% for f in object.postlungs.model._meta.get_fields() %}
+        				{% if f.help_text %}
+        				<th>{{ f.help_text }}</th>
+        				{% endif %}
+        				{% endfor %}
+        				<th></th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for m in object.postlungs.all() %}
+        			<tr>
+      					{% for f in m._meta.fields %}
+								{% if f.help_text %}
+								<td>
+								
+									{% if f.choices %}
+									{{ m | attr('get_{}_display'.format(f.name))() }}
+									{% else %}
+									{{ m | attr(f.name) }}
+									{% endif %}
+								</td>
+								{% endif %}
+								{% endfor %}
+        				<td class="text-end">
+        					{% if request.user.profile.is_editor %}
+	                <a href="{{ url('edit-surgery-prelung', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-surgery-prelung', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	              </td>
+        			</tr>
+        			{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tabs-postcards">
+    		<div class="nav nav-segmented nav-sm" role="tablist">
+    			{% for i in range(object.postcards.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#postcard-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    心电图变化 {{ loop.index }}
+				  </button>
+				  {% endfor %}
+				</div>
+				<div class="tab-content">
+					{% for i in object.postcards.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="postcard-{{ loop.index }}">
+						{% if request.user.profile.is_editor %}
+						<div class="row">
+							<div class="col-auto ms-auto d-print-none">
+								<a href="{{ url('edit-surgery-postcard', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-surgery-postcard', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-danger">删除</a>
+							</div>
+						</div>
+						{% endif %}
+						<div class="datagrid">
+			    			{% for f in i._meta.fields %}
+								{% if f.help_text %}
+									<div class="datagrid-item">
+										<div class="datagrid-title">{{ f.help_text }}</div>
+										{% if f.choices %}
+										<div class="datagrid-content">{{ i | attr('get_{}_display'.format(f.name))() }}</div>
+										{% else %}
+										<div class="datagrid-content">{{ i | attr(f.name) }}</div>
+										{% endif %}
+								</div>
+								{% endif %}
+								{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-5">
+  <div class="card-header">
+    <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
+    	<li class="nav-item">
+        <a href="#tabs-operate" class="nav-link active" data-bs-toggle="tab">手术情况</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-ventilator" class="nav-link" data-bs-toggle="tab">呼吸机使用情况</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-treatment" class="nav-link" data-bs-toggle="tab">治疗情况</a>
+      </li>
+    </ul>
+  </div>
+  <div class="card-body">
+  	<div class="tab-content">
+  		<div class="tab-pane show active" id="tabs-operate">
+      	<div class="table-responsive">
+        	<table class="table card-table table-vcenter text-nowrap datatable">
+        		<thead>
+        			<tr>
+        				{% for f in object.operates.model._meta.get_fields() %}
+        				{% if f.help_text %}
+        				<th>{{ f.help_text }}</th>
+        				{% endif %}
+        				{% endfor %}
+        				<th></th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for m in object.operates.all() %}
+        			<tr>
+      					{% for f in m._meta.fields %}
+								{% if f.help_text %}
+								<td>
+								
+									{% if f.choices %}
+									{{ m | attr('get_{}_display'.format(f.name))() }}
+									{% else %}
+									{{ m | attr(f.name) }}
+									{% endif %}
+								</td>
+								{% endif %}
+								{% endfor %}
+        				<td class="text-end">
+        					{% if request.user.profile.is_editor %}
+	                <a href="{{ url('edit-surgery-operate', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-surgery-operate', kwargs={'did': object.id, 'pk': m.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	              </td>
+        			</tr>
+        			{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tabs-ventilator">
+    		<div class="nav nav-segmented nav-sm" role="tablist">
+    			{% for i in range(object.vents.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#vent-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    使用情况 {{ loop.index }}
+				  </button>
+				  {% endfor %}
+				</div>
+				<div class="tab-content">
+					{% for j in object.vents.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="vent-{{ loop.index }}">
+						{% if request.user.profile.is_editor %}
+						<div class="row">
+							<div class="col-auto ms-auto d-print-none">
+								<a href="{{ url('edit-surgery-ventilator', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-surgery-ventilator', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-danger">删除</a>
+							</div>
+						</div>
+						{% endif %}
+						<div class="datagrid">
+			    			{% for f in j._meta.fields %}
+								{% if f.help_text %}
+									<div class="datagrid-item">
+										<div class="datagrid-title">{{ f.help_text }}</div>
+										{% if f.choices %}
+										<div class="datagrid-content">{{ j | attr('get_{}_display'.format(f.name))() }}</div>
+										{% else %}
+										<div class="datagrid-content">{{ j | attr(f.name) }}</div>
+										{% endif %}
+								</div>
+								{% endif %}
+								{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+      </div>
+  		<div class="tab-pane" id="tabs-treatment">
+    		<div class="nav nav-segmented nav-sm" role="tablist">
+    			{% for i in range(object.treats.count()) %}
+				  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#treat-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+				    治疗 {{ loop.index }}
+				  </button>
+				  {% endfor %}
+				</div>
+				<div class="tab-content">
+					{% for j in object.treats.all() %}
+	  			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="treat-{{ loop.index }}">
+						{% if request.user.profile.is_editor %}
+						<div class="row">
+							<div class="col-auto ms-auto d-print-none">
+								<a href="{{ url('edit-surgery-treatment', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-surgery-treatment', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-danger">删除</a>
+							</div>
+						</div>
+						{% endif %}
+						<div class="datagrid">
+			    			{% for f in j._meta.fields %}
+								{% if f.help_text %}
+									<div class="datagrid-item">
+										<div class="datagrid-title">{{ f.help_text }}</div>
+										{% if f.choices %}
+										<div class="datagrid-content">{{ j | attr('get_{}_display'.format(f.name))() }}</div>
+										{% else %}
+										<div class="datagrid-content">{{ j | attr(f.name) }}</div>
+										{% endif %}
+								</div>
+								{% endif %}
+								{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+      </div>
+  	</div>
+  </div>
+</div>
+
+<div class="card mt-5">
+  <div class="card-header">
+    <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
+    	<li class="nav-item">
+        <a href="#tabs-ultrasound" class="nav-link active" data-bs-toggle="tab">超声影像</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-medimg" class="nav-link" data-bs-toggle="tab">特殊影像</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tabs-gene" class="nav-link" data-bs-toggle="tab">基因检测</a>
+      </li>
+    </ul>
+  </div>
+  <div class="card-body">
+  	<div class="tab-content">
+  		<div class="tab-pane active show" id="tabs-ultrasound">
+      	<div class="table-responsive">
+        	<table class="table card-table table-vcenter text-nowrap datatable">
+        		<thead>
+        			<tr>
+        				{% for f in object.ultrasounds.model._meta.get_fields() %}
+        				{% if f.help_text %}
+        				<th>{{ f.help_text }}</th>
+        				{% endif %}
+        				{% endfor %}
+        				<th></th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for i in object.ultrasounds.all() %}
+        			<tr>
+      					{% for f in i._meta.fields %}
+								{% if f.help_text %}
+								<td>
+									{% if f.choices %}
+									{{ i | attr('get_{}_display'.format(f.name))() }}
+									{% else %}
+									{{ i | attr(f.name) }}
+									{% endif %}
+								</td>
+								{% endif %}
+								{% endfor %}
+        				<td class="text-end">
+        					{% if request.user.profile.is_editor %}
+	                <a href="{{ url('edit-surgery-ultrasound', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-surgery-ultrasound', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	              </td>
+        			</tr>
+        			{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tabs-medimg">
+      	<div class="table-responsive">
+        	<table class="table card-table table-vcenter text-nowrap datatable">
+        		<thead>
+        			<tr>
+        				{% for f in object.medimages.model._meta.get_fields() %}
+        				{% if f.help_text %}
+        				<th>{{ f.help_text }}</th>
+        				{% endif %}
+        				{% endfor %}
+        				<th></th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for i in object.medimages.all() %}
+        			<tr>
+      					{% for f in i._meta.fields %}
+								{% if f.help_text %}
+								<td>
+									{% if f.choices %}
+									{{ i | attr('get_{}_display'.format(f.name))() }}
+									{% else %}
+									{{ i | attr(f.name) }}
+									{% endif %}
+								</td>
+								{% endif %}
+								{% endfor %}
+        				<td class="text-end">
+        					{% if request.user.profile.is_editor %}
+	                <a href="{{ url('edit-surgery-medimg', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-surgery-medimg', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	              </td>
+        			</tr>
+        			{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tabs-gene">
+      	<div class="table-responsive">
+        	<table class="table card-table table-vcenter datatable">
+        		<thead>
+        			<tr>
+        				<th>检测公司</th>
+        				<th>报告文件</th>
+        				<th>检查时间</th>
+        				<th colspan="8">检测内容</th>
+        				<th>操作</th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			{% for i in object.reports.all() %}
+        			<tr>
+        				<td rowspan="{{ i.genes.count()+1 }}">{{ i.company }}</td>
+        				<td rowspan="{{ i.genes.count()+1 }}">
+        					{% if i.report %}
+        					<a href="{{i.report.url }}" class="btn btn-sm btn-success">下载</a>
+        					{% endif %}
+        				</td>
+        				<td rowspan="{{ i.genes.count()+1 }}">{{ i.tested | date("Y-m-d") }}</td>
+        				<td>基因</td>
+        				<td>染色体位置</td>
+        				<td>突变信息</td>
+        				<td>gnomAD MAF</td>
+        				<td>ACAG变异评级</td>
+        				<td>疾病名称</td>
+        				<td>遗传模式</td>
+        				<td>合子类型</td>
+	        			<td class="text-nowrap text-end">
+	        				{% if request.user.profile.is_editor %}
+	        				<a href="{{ url('edit-surgery-greport', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-surgery-greport', kwargs={'did': object.id, 'pk': i.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	        			</td>
+        			</tr>
+
+        			{% for j in i.genes.all() %}
+        			<tr>
+        				<td>{{ j.gene }}</td>
+        				<td>{{ j.position }}</td>
+        				<td>{{ j.mutation }}</td>
+        				<td>{{ j.gnomad }}</td>
+        				<td>{{ j.acmg }}</td>
+        				<td>{{ j.jbmc }}</td>
+        				<td>{{ j.gmode }}</td>
+        				<td>{{ j.zygote }}</td>
+        				<td class="text-nowrap text-end">
+	        				{% if request.user.profile.is_editor %}
+	        				<a href="{{ url('edit-surgery-gmutation', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+									<a href="{{ url('delete-surgery-gmutation', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-danger">删除</a>
+									{% endif %}
+	        			</td>
+        			</tr>
+        			{% endfor %}
+
+        			{% endfor %}
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+  	</div>
+  </div>
+</div>
+
+{% endblock %}
