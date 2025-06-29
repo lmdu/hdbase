@@ -1,8 +1,11 @@
+import datetime
 from pathlib import Path
+
 
 import psutil
 
 from django.utils import timezone
+from django.utils.timesince import timesince
 from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
@@ -24,10 +27,26 @@ from .utils import *
 from venom.celery import app as celery_app
 
 # Create your views here.
-@login_required
-def index(request):
-	#add.delay(1,2)
-	return render(request, 'index.html')
+class IndexView(LoginRequiredMixin, View):
+	def get(self, request):
+		mem = psutil.virtual_memory()
+		ttt = datetime.datetime.fromtimestamp(psutil.boot_time())
+		active_cpus = len([p for p in psutil.cpu_percent(percpu=True) if p > 0])
+
+		return render(request, 'index.html', {
+			'memory': {
+				'total': int(mem.total/1024/1024/1024),
+				'avail': round(mem.available/1024/1024/1024, 2),
+				'percent': round(mem.percent, 2),
+			},
+			'cpu': {
+				'count': psutil.cpu_count(),
+				'percent': round(psutil.cpu_percent(), 2),
+				'running': timesince(ttt),
+				'active': active_cpus,
+				'activep': round(active_cpus/psutil.cpu_count()*100, 2)
+			}
+		})
 
 @login_required
 def aboutus(request):
@@ -1346,56 +1365,56 @@ class CongenitalInterveneExtraDeleteView(LoginRequiredMixin, DeleteView):
 	def get_success_url(self):
 		return reverse('view-intervene', kwargs={'pk': self.object.disease.pk})
 
-class CongenitalIntervenePreUltrasoundCreateView(CongenitalSurgeryExtraCreateView):
+class CongenitalIntervenePreUltrasoundCreateView(CongenitalInterveneExtraCreateView):
 	sub_title = "添加术前超声信息"
 	model = CongenitalIntervenePreUltrasound
 	form_class = CongenitalIntervenePreUltrasoundForm
 
-class CongenitalIntervenePreUltrasoundUpdateView(CongenitalSurgeryExtraUpdateView):
+class CongenitalIntervenePreUltrasoundUpdateView(CongenitalInterveneExtraUpdateView):
 	sub_title = "修改术前超声信息"
 	model = CongenitalIntervenePreUltrasound
 	form_class = CongenitalIntervenePreUltrasoundForm
 
-class CongenitalIntervenePreUltrasoundDeleteView(CongenitalSurgeryExtraDeleteView):
+class CongenitalIntervenePreUltrasoundDeleteView(CongenitalInterveneExtraDeleteView):
 	model = CongenitalIntervenePreUltrasound
 
-class CongenitalInterveneCardiogramCreateView(CongenitalSurgeryExtraCreateView):
+class CongenitalInterveneCardiogramCreateView(CongenitalInterveneExtraCreateView):
 	sub_title = "添加心电图变化情况"
 	model = CongenitalInterveneCardiogram
 	form_class = CongenitalInterveneCardiogramForm
 
-class CongenitalInterveneCardiogramUpdateView(CongenitalSurgeryExtraUpdateView):
+class CongenitalInterveneCardiogramUpdateView(CongenitalInterveneExtraUpdateView):
 	sub_title = "修改心电图变化情况"
 	model = CongenitalInterveneCardiogram
 	form_class = CongenitalInterveneCardiogramForm
 
-class CongenitalInterveneCardiogramDeleteView(CongenitalSurgeryExtraDeleteView):
+class CongenitalInterveneCardiogramDeleteView(CongenitalInterveneExtraDeleteView):
 	model = CongenitalInterveneCardiogram
 
-class CongenitalInterveneOperateCreateView(CongenitalSurgeryExtraCreateView):
+class CongenitalInterveneOperateCreateView(CongenitalInterveneExtraCreateView):
 	sub_title = "添加手术情况"
 	model = CongenitalInterveneOperate
 	form_class = CongenitalInterveneOperateForm
 
-class CongenitalInterveneOperateUpdateView(CongenitalSurgeryExtraUpdateView):
+class CongenitalInterveneOperateUpdateView(CongenitalInterveneExtraUpdateView):
 	sub_title = "修改手术情况"
 	model = CongenitalInterveneOperate
 	form_class = CongenitalInterveneOperateForm
 
-class CongenitalInterveneOperateDeleteView(CongenitalSurgeryExtraDeleteView):
+class CongenitalInterveneOperateDeleteView(CongenitalInterveneExtraDeleteView):
 	model = CongenitalInterveneOperate
 
-class CongenitalInterveneUltrasoundCreateView(CongenitalSurgeryExtraCreateView):
+class CongenitalInterveneUltrasoundCreateView(CongenitalInterveneExtraCreateView):
 	sub_title = "添加超声影像"
 	model = CongenitalInterveneUltrasound
 	form_class = CongenitalInterveneUltrasoundForm
 
-class CongenitalInterveneUltrasoundUpdateView(CongenitalSurgeryExtraUpdateView):
+class CongenitalInterveneUltrasoundUpdateView(CongenitalInterveneExtraUpdateView):
 	sub_title = "修改超声影像"
 	model = CongenitalInterveneUltrasound
 	form_class = CongenitalInterveneUltrasoundForm
 
-class CongenitalInterveneUltrasoundDeleteView(CongenitalSurgeryExtraDeleteView):
+class CongenitalInterveneUltrasoundDeleteView(CongenitalInterveneExtraDeleteView):
 	model = CongenitalInterveneUltrasound
 
 class CongenitalInterveneMedimageCreateView(CongenitalInterveneExtraCreateView):

@@ -1,6 +1,8 @@
 {% set mainmenu = 'index' %}
 {% extends 'base.html' %}
-
+{% block pagetitle %}
+控制面板 <span class="text-muted ms-2">Dashboard</span>
+{% endblock %}
 {% block main %}
 <div class="row row-cards">
 	<div class="col-md-6 col-lg-4 col-xl-4">
@@ -57,7 +59,7 @@
 			</div>
 		</a>
 	</div>
-	<div class="col-md-6 col-lg-4 col-xl-6">
+	<div class="col-md-6 col-lg-4 col-xl-4">
 		<a class="card card-link card-link-pop" href="{{ url('list-surgery') }}">
 			<div class="card-body">
 				<div class="row">
@@ -75,7 +77,7 @@
 			</div>
 		</a>
 	</div>
-	<div class="col-md-6 col-lg-4 col-xl-6">
+	<div class="col-md-6 col-lg-4 col-xl-4">
 		<a class="card card-link" href="{{ url('list-intervene') }}">
 			<div class="card-body">
 				<div class="row">
@@ -93,12 +95,243 @@
 			</div>
 		</a>
 	</div>
+	<div class="col-md-6 col-lg-4 col-xl-4">
+		<a class="card card-link" href="{{ url('list-patients') }}">
+			<div class="card-body">
+				<div class="row">
+					<div class="col-auto">
+						<span class="avatar avatar-2" style="background-image: url({{ static('img/patient.svg') }});"></span>
+					</div>
+					<div class="col">
+						<h3 class="mb-0">病人管理</h3>
+						<div class="text-secondary">Patient Manage</div>
+					</div>
+					<div class="col-auto">
+						1234 病人
+					</div>
+				</div>
+			</div>
+		</a>
+	</div>
+</div>
+
+<div class="row row-deck row-cards mt-5">
+	<div class="col-md-4 col-lg-3">
+		<div class="card">
+			<div class="card-header border-0">
+				<div class="card-title">内存使用</div>
+			</div>
+			<div class="card-body pt-0">
+				<div class="d-flex align-items-baseline">
+					<div class="h4 my-0 me-2">
+						<span class="badge bg-blue-lt">总共</span>
+						<span>{{ memory.total }} GB</span>
+						<span class="badge bg-teal-lt ms-2">剩余</span>
+						<span id="memory-avail">{{ memory.avail }}</span> GB
+					</div>
+				</div>
+				<div id="chart-radia-memory" class="position-relative"></div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8 col-lg-9">
+		<div class="card">
+			<div class="card-header border-0">
+				<div class="card-title">CPU使用</div>
+				<div class="card-actions">
+					<div class="h4">
+						<span class="status-dot status-dot-animated status-green"></span>
+						<span class="ms-2">系统已运行: {{ cpu.running }}</span>
+					</div>
+				</div>
+			</div>
+			<div class="card-body pt-0">
+				<div class="row g-2">
+					<div class="col">
+						<div class="h4">
+							<span class="badge bg-purple-lt">CPU总数</span> {{ cpu.count }}
+							<span class="badge bg-orange-lt ms-2">活跃CPU数</span>
+							<span id="active-cpus">{{ cpu.active }}</span>
+						</div>
+					</div>
+					<div class="col-auto">
+						<div class="chart-sparkline chart-sparkline-square" id="chart-sparkline-cpu"></div>
+					</div>
+				</div>
+				
+			</div>
+			<div class="position-relative">
+				<div id="chart-area-cpu" class="position-relative"></div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		
+	</div>
 </div>
 
 {% endblock %}
 
 {% block script %}
+<script src="{{ static('apexcharts/apexcharts.min.js') }}"></script>
 <script type="text/javascript">
+$(document).ready(function(){
+//charts
+const memory_chart = new ApexCharts(document.querySelector("#chart-radia-memory"), {
+	chart: {
+      type: "radialBar",
+      fontFamily: "inherit",
+      height: 192,
+      sparkline: {
+        enabled: true,
+      },
+      animations: {
+        enabled: false,
+      },
+    },
+    plotOptions: {
+      radialBar: {
+        startAngle: -120,
+        endAngle: 120,
+        hollow: {
+          margin: 16,
+          size: "50%",
+        },
+        dataLabels: {
+          show: true,
+          value: {
+            offsetY: -8,
+            fontSize: "24px",
+          },
+        },
+      },
+    },
+    series: [{{ memory.percent }}],
+    labels: [""],
+    tooltip: {
+      theme: "dark",
+    },
+    grid: {
+      strokeDashArray: 4,
+    },
+    colors: ["color-mix(in srgb, transparent, var(--tblr-primary) 100%)"],
+    legend: {
+      show: false,
+    },
+});
+memory_chart.render();
+
+let cpu_percents = [];
+
+for (var i=0; i<50; i++) {
+	var ctime = Date.now();
+	var percent = Math.ceil(Math.random()*10);
+	cpu_percents.unshift([ctime-i*1000, percent]);
+}
+
+const cpu_chart = new ApexCharts(document.querySelector("#chart-area-cpu"), {
+    chart: {
+      type: "area",
+      fontFamily: "inherit",
+      height: 110,
+      sparkline: {
+        enabled: true,
+      },
+      animations: {
+        enabled: false,
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    fill: {
+      colors: ["color-mix(in srgb, transparent, var(--tblr-primary) 16%)", "color-mix(in srgb, transparent, var(--tblr-primary) 16%)"],
+      type: "solid",
+    },
+    stroke: {
+      width: 1,
+      lineCap: "round",
+      curve: "smooth",
+    },
+    series: [
+      {
+        name: "CPU Usage",
+        data: cpu_percents,
+      },
+    ],
+    tooltip: {
+      theme: "dark",
+      x: {
+      	show: true,
+      	format: "HH:mm:ss"
+      }
+    },
+    grid: {
+      strokeDashArray: 4,
+    },
+    xaxis: {
+      labels: {
+        padding: 0,
+      },
+      tooltip: {
+        enabled: false,
+      },
+      axisBorder: {
+        show: false,
+      },
+      type: "datetime",
+    },
+    yaxis: {
+      labels: {
+        padding: 4,
+      },
+    },
+    colors: ["color-mix(in srgb, transparent, var(--tblr-primary) 100%)"],
+    legend: {
+      show: false,
+    },
+    point: {
+      show: false,
+    },
+});
+cpu_chart.render();
+
+const spark_chart =  new ApexCharts(document.querySelector("#chart-sparkline-cpu"), {
+    chart: {
+      type: "radialBar",
+      fontFamily: "inherit",
+      height: 40,
+      width: 40,
+      animations: {
+        enabled: false,
+      },
+      sparkline: {
+        enabled: true,
+      },
+    },
+    tooltip: {
+      enabled: false,
+    },
+    plotOptions: {
+      radialBar: {
+        hollow: {
+          margin: 0,
+          size: "75%",
+        },
+        track: {
+          margin: 0,
+        },
+        dataLabels: {
+          show: false,
+        },
+      },
+    },
+    colors: ["var(--tblr-primary)"],
+    series: [{{ cpu.activep }}],
+})
+spark_chart.render();
+
+
 const ws_scheme = window.location.protocol == "https:" ? "wss": "ws";
 const ws_path = ws_scheme + '://' + window.location.host + '/ws/socketio/';
 
@@ -106,12 +339,22 @@ const ws_socket = new WebSocket(ws_path);
 
 ws_socket.onmessage = function(e) {
 	data = JSON.parse(e.data);
-	console.log(data);
-	document.querySelector('#content').value = data.message;
+	memory_chart.updateSeries([data.memory.percent]);
+	$("#memory-avail").text(data.memory.avail);
+	cpu_percents = cpu_percents.slice(-49);
+	cpu_percents.push([Date.now(), data.cpu.percent]);
+	cpu_chart.updateSeries([{
+		data: cpu_percents
+	}]);
+	spark_chart.updateSeries([data.cpu.activep]);
+	$("#active-cpus").text(data.cpu.activec);
 };
 
 ws_socket.onopen = function(e) {
-	console.log('ws connected!')
+	ws_socket.send(JSON.stringify({
+		'message': "tested me!"
+	}));
+	console.log('ws connected!');
 };
 
 ws_socket.onclose = function(e) {
@@ -133,6 +376,12 @@ $('#dicom-upload').click(function(){
 	.then(data => {
 		alert(data.ID);
 	});
+});
+
+
+
+
+
 });
 </script>
 {% endblock %}

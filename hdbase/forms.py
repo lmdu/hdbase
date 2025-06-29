@@ -412,16 +412,22 @@ class CongenitalInterveneCardiogramForm(TablerModelForm):
 	class Meta:
 		model = CongenitalInterveneCardiogram
 		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
 
 class CongenitalInterveneOperateForm(TablerModelForm):
 	class Meta:
 		model = CongenitalInterveneOperate
 		exclude = ['created', 'disease', 'author']
+		widgets = {
+			'tested': DatePickerInput,
+		}
 
 class CongenitalInterveneUltrasoundForm(TablerModelForm):
 	class Meta:
 		model = CongenitalInterveneUltrasound
-		exclude = ['created', 'disease', 'author']
+		exclude = ['created', 'disease', 'author', 'dicom_uuid']
 		widgets = {
 			'tested': DatePickerInput,
 		}
@@ -429,7 +435,7 @@ class CongenitalInterveneUltrasoundForm(TablerModelForm):
 class CongenitalInterveneMedimageForm(TablerModelForm):
 	class Meta:
 		model = CongenitalInterveneMedimage
-		exclude = ['created', 'disease', 'author']
+		exclude = ['created', 'disease', 'author', 'dicom_uuid']
 		widgets = {
 			'tested': DatePickerInput,
 		}

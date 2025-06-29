@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from .views import *
 
 urlpatterns = [
-	path('', index, name='index'),
+	path('', IndexView.as_view(), name='index'),
 	path('aboutus', aboutus, name='aboutus'),
 	path('changelog', changelog, name='changelog'),
 	path('validate', validate_field, name='valid-field'),

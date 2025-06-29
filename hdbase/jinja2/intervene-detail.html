@@ -210,8 +210,8 @@
 						{% if request.user.profile.is_editor %}
 						<div class="row">
 							<div class="col-auto ms-auto d-print-none">
-								<a href="{{ url('edit-kawasaki-operate', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-warning">编辑</a>
-								<a href="{{ url('delete-kawasaki-operate', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-danger">删除</a>
+								<a href="{{ url('edit-intervene-operate', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+								<a href="{{ url('delete-intervene-operate', kwargs={'did': object.id, 'pk': j.id}) }}" class="btn btn-sm btn-danger">删除</a>
 							</div>
 						</div>
 						{% endif %}
