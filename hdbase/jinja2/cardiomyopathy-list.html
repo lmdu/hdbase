@@ -50,7 +50,7 @@
 			<tbody>
 				{% for cd in cds %}
 				<tr>
-					<td><a href="{{ url('view-cardiomyopathy', kwargs={'pk': cd.id}) }}">{{ cd.disease_code }}</a></td>
+					<td><a href="{{ url('view-cardiomyopathy', kwargs={'pk': cd.id}) }}">{{ cd.code }}</a></td>
 					<td>{{ cd.patient.name }}</td>
 					<td>{{ cd.body_surface }}</td>
 					<td>{{ cd.disease_type }}</td>

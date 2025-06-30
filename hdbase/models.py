@@ -198,7 +198,8 @@ class CardiomyopathyDisease(models.Model):
 		4: "组织"
 	}
 
-	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="编号或测序编号")
+	code = models.CharField(max_length=12, blank=True, default='', help_text="编号")
+	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="测序编号")
 	body_surface = models.FloatField(blank=True, null=True, help_text="体表面积")
 	disease_type = models.CharField(max_length=100, blank=True, default='', help_text="心肌病分型")
 	mutate_gene = models.CharField(max_length=20, blank=True, default='', help_text="突变基因")
@@ -404,7 +405,8 @@ class KawasakiDisease(models.Model):
 		4: "组织"
 	}
 
-	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="编号或测序编号")
+	code = models.CharField(max_length=12, blank=True, default='', help_text="编号")
+	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="测序编号")
 	cqlx = models.PositiveSmallIntegerField(choices=CHUANQI_TYPES, default=0, help_text="川崎类型")
 	cznl = models.FloatField(blank=True, null=True, help_text="初诊年龄")
 	bqdk = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="丙球抵抗")
@@ -749,6 +751,7 @@ class ArrhythmiaDisease(models.Model):
 		4: "组织"
 	}
 
+	code = models.CharField(max_length=12, blank=True, default='', help_text="编号")
 	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="编号或测序编号")
 	xlscbx = models.CharField(max_length=80, blank=True, default='', help_text="心律失常表型")
 	cznl = models.CharField(max_length=20, blank=True, null=True, default='', help_text="初诊年龄(岁/孕周)")
@@ -1038,6 +1041,7 @@ class CongenitalSurgeryDisease(models.Model):
 		4: "组织"
 	}
 
+	code = models.CharField(max_length=12, blank=True, default='', help_text="编号")
 	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="编号或测序编号")
 	xxbbx = models.CharField(max_length=80, blank=True, default='', help_text="先心病表型")
 	cznl = models.FloatField(blank=True, null=True, help_text="初诊年龄")
@@ -1501,6 +1505,7 @@ class CongenitalInterveneDisease(models.Model):
 		4: "组织"
 	}
 
+	code = models.CharField(max_length=12, blank=True, default='', help_text="编号")
 	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="编号或测序编号")
 	sjgqsbx = models.PositiveSmallIntegerField(choices=VSD_TYPES, default=1, help_text="室间隔缺损表型")
 	cznl = models.FloatField(blank=True, null=True, help_text="初诊年龄")

@@ -35,90 +35,19 @@
 	</div>
 	<div class="card-body">
 		<div class="datagrid">
+			{% for f in object._meta.fields %}
+			{% if f.help_text %}
 			<div class="datagrid-item">
-				<div class="datagrid-title">编号或测序编号</div>
-				<div class="datagrid-content">{{ object.disease_code }}</div>
+				{% if f.choices %}
+				<div class="datagrid-title">{{ f.help_text }}</div>
+				<div class="datagrid-content">{{ object | attr('get_{}_display'.format(f.name))() }}</div>
+				{% elif f.name != 'patient' %}
+				<div class="datagrid-title">{{ f.help_text }}</div>
+				<div class="datagrid-content">{{ object | attr(f.name) }}</div>
+				{% endif %}
 			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">体表面积</div>
-				<div class="datagrid-content">{{ object.body_surface }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">心肌病分型</div>
-				<div class="datagrid-content">{{ object.disease_type }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">突变基因</div>
-				<div class="datagrid-content">{{ object.mutate_gene }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">初诊年龄</div>
-				<div class="datagrid-content">{{ object.diagnose_age }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">有无家族史</div>
-				<div class="datagrid-content">{{ object.get_has_history_display() }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">家族史情况</div>
-				<div class="datagrid-content">
-					{% if object.has_history %}
-					{{ object.family_history }}
-					{% endif %}
-				</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">合并症</div>
-				<div class="datagrid-content">{{ object.get_complication_display() }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">心衰评分</div>
-				<div class="datagrid-content">{{ object.heart_failure }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">是否存活</div>
-				<div class="datagrid-content">{{ object.get_is_survival_display() }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">死亡时间</div>
-				<div class="datagrid-content">
-					{% if not object.is_survival %}
-					{{ object.death_time }}
-					{% endif %}
-				</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">心律失常类型</div>
-				<div class="datagrid-content">{{ object.arrhythmia_type }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">特殊治疗</div>
-				<div class="datagrid-content">{{ object.get_special_treatment_display() }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">心衰再入院次数</div>
-				<div class="datagrid-content">{{ object.hospital_visits }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">随访时间</div>
-				<div class="datagrid-content">{{ object.follow_time }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">是否采集标本</div>
-				<div class="datagrid-content">{{ object.get_sample_collect_display() }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">已送检标本</div>
-				<div class="datagrid-content">{{ object.get_test_sample_display() }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">剩余标本</div>
-				<div class="datagrid-content">{{ object.get_remain_sample_display() }}</div>
-			</div>
-			<div class="datagrid-item">
-				<div class="datagrid-title">录入时间</div>
-				<div class="datagrid-content">{{ object.created | date("Y-m-d") }}</div>
-			</div>
+			{% endif %}
+			{% endfor %}
 		</div>
 	</div>
 </div>
@@ -172,36 +101,41 @@
 		</h3>
 	</div>
 	<div class="card-body">
-		{% for b in object.bloods.all() %}
-		<div class="row mb-3">
-			<div class="col">
-				<strong>检验{{ loop.index }}</strong>
-				{% if b.tested %}
-				<span>{{ b.tested | date('Y-m-d') }}</span>
-				{% endif %}
-			</div>
-			{% if request.user.profile.is_editor %}
-			<div class="col-auto ms-auto d-print-none">
-				<a href="{{ url('edit-cardiomyopathy-examine', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
-				<a href="{{ url('delete-cardiomyopathy-examine', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
-			</div>
-			{% endif %}
+		<div class="nav nav-segmented nav-sm" role="tablist">
+			{% for i in range(object.bloods.count()) %}
+		  <button class="nav-link {% if loop.index==1 %}active{% endif %}" role="tab" data-bs-toggle="tab" data-bs-target="#blood-{{ loop.index }}" aria-selected="{% if loop.index==1 %}true{% else %}false{% endif %}">
+		    血常规 {{ loop.index }}
+		  </button>
+		  {% endfor %}
 		</div>
-		<div class="datagrid">
-			{% for f in b._meta.fields %}
-			{% if f.help_text %}
-			<div class="datagrid-item">
-				<div class="datagrid-title">{{ f.help_text }}</div>
-				{% if f.choices %}
-				<div class="datagrid-content">{{ b | attr('get_{}_display'.format(f.name))() }}</div>
-				{% else %}
-				<div class="datagrid-content">{{ b | attr(f.name) }}</div>
+		<div class="tab-content">
+			{% for b in object.bloods.all() %}
+			<div class="tab-pane {% if loop.index==1 %}active show{% endif %}" id="blood-{{ loop.index }}">
+				{% if request.user.profile.is_editor %}
+				<div class="row">
+					<div class="col-auto ms-auto d-print-none">
+						<a href="{{ url('edit-cardiomyopathy-examine', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-warning">编辑</a>
+						<a href="{{ url('delete-cardiomyopathy-examine', kwargs={'did': object.id, 'pk': b.id}) }}" class="btn btn-sm btn-danger">删除</a>
+					</div>
+				</div>
 				{% endif %}
+				<div class="datagrid">
+	    			{% for f in b._meta.fields %}
+						{% if f.help_text %}
+							<div class="datagrid-item">
+								<div class="datagrid-title">{{ f.help_text }}</div>
+								{% if f.choices %}
+								<div class="datagrid-content">{{ b | attr('get_{}_display'.format(f.name))() }}</div>
+								{% else %}
+								<div class="datagrid-content">{{ b | attr(f.name) }}</div>
+								{% endif %}
+						</div>
+						{% endif %}
+						{% endfor %}
+				</div>
 			</div>
-			{% endif %}
 			{% endfor %}
 		</div>
-		{% endfor %}
 	</div>
 </div>
 

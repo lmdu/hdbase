@@ -32,7 +32,7 @@ class PatientForm(TablerModelForm):
 class CardiomyopathyDiseaseForm(TablerModelForm):
 	class Meta:
 		model = CardiomyopathyDisease
-		exclude = ['created', 'updated', 'author']
+		exclude = ['code', 'created', 'updated', 'author']
 		widgets = {
 			'patient': PatientSelectWidget,
 			'follow_time': DatePickerInput,
@@ -108,7 +108,7 @@ class CardiomyopathyGeneMutationForm(TablerModelForm):
 class KawasakiDiseaseForm(TablerModelForm):
 	class Meta:
 		model = KawasakiDisease
-		exclude = ['created', 'updated', 'author']
+		exclude = ['code', 'created', 'updated', 'author']
 		widgets = {
 			'patient': PatientSelectWidget,
 		}
@@ -184,7 +184,7 @@ class KawasakiGeneMutationForm(TablerModelForm):
 class ArrhythmiaDiseaseForm(TablerModelForm):
 	class Meta:
 		model = ArrhythmiaDisease
-		exclude = ['created', 'updated', 'author']
+		exclude = ['code', 'created', 'updated', 'author']
 		widgets = {
 			'sssj': DatePickerInput,
 			'sfsj': DatePickerInput,
@@ -265,7 +265,7 @@ class ArrhythmiaGeneMutationForm(TablerModelForm):
 class CongenitalSurgeryDiseaseForm(TablerModelForm):
 	class Meta:
 		model = CongenitalSurgeryDisease
-		exclude = ['created', 'updated', 'author']
+		exclude = ['code', 'created', 'updated', 'author']
 		widgets = {
 			'patient': PatientSelectWidget,
 			'sssj': DatePickerInput,
@@ -397,7 +397,7 @@ class CongenitalSurgeryGeneMutationForm(TablerModelForm):
 class CongenitalInterveneDiseaseForm(TablerModelForm):
 	class Meta:
 		model = CongenitalInterveneDisease
-		exclude = ['created', 'updated', 'author']
+		exclude = ['code', 'created', 'updated', 'author']
 		widgets = {
 			'patient': PatientSelectWidget,
 			'sfsj': DatePickerInput,

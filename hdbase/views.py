@@ -318,12 +318,16 @@ class DiseaseListView(LoginRequiredMixin, ListView):
 	paginate_by = 15
 
 class DiseaseCreateView(LoginRequiredMixin, CreateView):
+	disease_abbr = ''
 	disease_type = ''
 	template_name = 'disease-common-form.html'
 
 	def form_valid(self, form):
 		form.instance.author = self.request.user
-		return super().form_valid(form)
+		response = super().form_valid(form)
+		self.object.code = "{}{:0>7d}".format(self.disease_abbr, self.object.id)
+		self.object.save()
+		return response
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -354,6 +358,7 @@ class CardiomyopathyListView(DiseaseListView):
 	context_object_name = 'cds'
 
 class CardiomyopathyCreateView(DiseaseCreateView):
+	disease_abbr = 'CM'
 	disease_type = '心肌病'
 	model = CardiomyopathyDisease
 	form_class = CardiomyopathyDiseaseForm
@@ -540,6 +545,7 @@ class KawasakiListView(DiseaseListView):
 	template_name = 'kawasaki-list.html'
 
 class KawasakiCreateView(DiseaseCreateView):
+	disease_abbr = 'KD'
 	disease_type = '川崎病'
 	model = KawasakiDisease
 	form_class = KawasakiDiseaseForm
@@ -751,13 +757,14 @@ class ArrhythmiaListView(DiseaseListView):
 	template_name = 'arrhythmia-list.html'
 
 class ArrhythmiaCreateView(DiseaseCreateView):
-	disease_type = '川崎病'
+	disease_abbr = 'CA'
+	disease_type = '心律失常'
 	model = ArrhythmiaDisease
 	form_class = ArrhythmiaDiseaseForm
 	success_url = reverse_lazy('list-arrhythmia')
 
 class ArrhythmiaUpdateView(DiseaseUpdateView):
-	disease_type = '川崎病'
+	disease_type = '心律失常'
 	model = ArrhythmiaDisease
 	form_class = ArrhythmiaDiseaseForm
 	success_url = reverse_lazy('list-arrhythmia')
@@ -962,6 +969,7 @@ class CongenitalSurgeryDiseaseListView(DiseaseListView):
 	template_name = 'surgery-list.html'
 
 class CongenitalSurgeryDiseaseCreateView(DiseaseCreateView):
+	disease_abbr = 'CHS'
 	disease_type = '先心病-外科'
 	model =CongenitalSurgeryDisease
 	form_class =CongenitalSurgeryDiseaseForm
@@ -1290,6 +1298,7 @@ class CongenitalInterveneDiseaseListView(DiseaseListView):
 	template_name = 'intervene-list.html'
 
 class CongenitalInterveneDiseaseCreateView(DiseaseCreateView):
+	disease_abbr = 'VSD'
 	disease_type = '先心病-VSD介入'
 	model =CongenitalInterveneDisease
 	form_class =CongenitalInterveneDiseaseForm
