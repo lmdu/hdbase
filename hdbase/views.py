@@ -1,7 +1,6 @@
 import datetime
 from pathlib import Path
 
-
 import psutil
 
 from django.utils import timezone
@@ -19,10 +18,13 @@ from django.contrib.auth.models import User
 from django.views.generic import View, ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from django_filters.views import FilterView
+
 from .models import *
 from .tasks import *
 from .forms import *
 from .utils import *
+from .filters import *
 
 from venom.celery import app as celery_app
 
@@ -32,6 +34,10 @@ class IndexView(LoginRequiredMixin, View):
 		mem = psutil.virtual_memory()
 		ttt = datetime.datetime.fromtimestamp(psutil.boot_time())
 		active_cpus = len([p for p in psutil.cpu_percent(percpu=True) if p > 0])
+		disk = psutil.disk_usage('/')
+
+		dbdir = Path(__file__).parent.parent.resolve()
+		print(dbdir)
 
 		return render(request, 'index.html', {
 			'memory': {
@@ -44,7 +50,13 @@ class IndexView(LoginRequiredMixin, View):
 				'percent': round(psutil.cpu_percent(), 2),
 				'running': timesince(ttt),
 				'active': active_cpus,
-				'activep': round(active_cpus/psutil.cpu_count()*100, 2)
+				'activep': round(active_cpus/psutil.cpu_count()*100, 2),
+			},
+			'disk': {
+				'total': int(disk.total/1024/1024/1024),
+				'used': int(disk.used/1024/1024/1024),
+				'free': int(disk.free/1024/1024/1024),
+				'percent': disk.percent,
 			}
 		})
 
@@ -199,7 +211,7 @@ class ParameterSettingView(LoginRequiredMixin, View):
 		obj.save()
 		return redirect('setting-parameter')
 
-class DiseaseListView(LoginRequiredMixin, ListView):
+class Disease1ListView(LoginRequiredMixin, ListView):
 	model = Disease
 	template_name = 'disease-list.html'
 	context_object_name = 'diseases'
@@ -314,7 +326,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 		return response
 
 #disease classes
-class DiseaseListView(LoginRequiredMixin, ListView):
+class DiseaseListView(LoginRequiredMixin, FilterView):
 	paginate_by = 15
 
 class DiseaseCreateView(LoginRequiredMixin, CreateView):
@@ -356,6 +368,7 @@ class CardiomyopathyListView(DiseaseListView):
 	model = CardiomyopathyDisease
 	template_name = 'cardiomyopathy-list.html'
 	context_object_name = 'cds'
+	filterset_class = CardiomyopathyDiseaseFilter
 
 class CardiomyopathyCreateView(DiseaseCreateView):
 	disease_abbr = 'CM'

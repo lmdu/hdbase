@@ -119,24 +119,6 @@
 	<div class="col-md-4 col-lg-4">
 		<div class="card">
 			<div class="card-header border-0">
-				<div class="card-title">内存使用</div>
-			</div>
-			<div class="card-body pt-0">
-				<div class="d-flex align-items-baseline">
-					<div class="h4 my-0 me-2">
-						<span class="badge bg-blue-lt">总共</span>
-						<span>{{ memory.total }} GB</span>
-						<span class="badge bg-teal-lt ms-2">剩余</span>
-						<span id="memory-avail">{{ memory.avail }}</span> GB
-					</div>
-				</div>
-				<div id="chart-radia-memory" class="position-relative"></div>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-8 col-lg-8">
-		<div class="card">
-			<div class="card-header border-0">
 				<div class="card-title">CPU使用</div>
 				<div class="card-actions">
 					<div class="h4">
@@ -165,8 +147,51 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-md-6">
-		
+	<div class="col-md-4 col-lg-4">
+		<div class="card">
+			<div class="card-header border-0">
+				<div class="card-title">内存使用</div>
+			</div>
+			<div class="card-body pt-0">
+				<div class="d-flex align-items-baseline">
+					<div class="h4 my-0 me-2">
+						<span class="badge bg-blue-lt">总共</span>
+						<span>{{ memory.total }} GB</span>
+						<span class="badge bg-teal-lt ms-2">剩余</span>
+						<span id="memory-avail">{{ memory.avail }}</span> GB
+					</div>
+				</div>
+				<div id="chart-radia-memory" class="position-relative"></div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="card">
+			<div class="card-header border-0">
+				<div class="card-title">硬盘使用</div>
+			</div>
+			<div class="card-body pt-0">
+				<div class="h4">
+					<span class="badge bg-blue-lt">总存储量</span>
+					<span>{{ disk.total }} GB</span>
+					<span class="badge bg-teal-lt ms-2">已使用</span>
+					<span>{{ disk.used }}</span> GB
+				</div>
+				<div class="progress progress-separated my-5">
+          <div class="progress-bar bg-primary" role="progressbar" style="width: {{ disk.percent }}%" aria-label="已使用"></div>
+        </div>
+        <div class="row">
+          <div class="col-auto d-flex align-items-center pe-2">
+            <span class="legend me-2 bg-primary"></span>
+            <span>已使用</span>
+          </div>
+          <div class="col-auto d-flex align-items-center ps-2">
+            <span class="legend me-2"></span>
+            <span>空闲</span>
+          </div>
+        </div>
+			</div>
+		</div>
 	</div>
 </div>
 

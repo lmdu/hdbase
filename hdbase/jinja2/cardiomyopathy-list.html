@@ -27,6 +27,12 @@
 		</div>
 		{% endif %}
 	</div>
+	<div class="card-body border-bottom py-3">
+		<form>
+			{{ filter.form.as_p() }}
+			<input type="submit" name="submit">
+		</form>
+	</div>
 	<div class="table-responsive">
 		<table class="table table-selectable card-table table-vcenter text-nowrap datatable">
 			<thead>

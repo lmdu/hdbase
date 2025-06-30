@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'froala_editor',
     'django_select2',
     'django_jsonform',
+    'django_filters',
     'bootstrap_datepicker_plus',
     'common',
     'hdbase'
