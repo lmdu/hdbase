@@ -176,6 +176,8 @@ STATIC_ROOT = Path(BASE_DIR) / 'static'
 # Media files
 MEDIA_ROOT = Path(BASE_DIR) / 'media'
 MEDIA_URL = 'media/'
+#FILE_UPLOAD_MAX_MEMORY_SIZE = 0
+#DATA_UPLOAD_MAX_MEMORY_SIZE = None
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

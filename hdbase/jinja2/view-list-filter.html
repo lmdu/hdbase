@@ -1,0 +1,17 @@
+<div class="card-body border-bottom py-3">
+	<form>
+		<div class="row row-cards">
+			{% for field in filter.form %}
+			<div class="col-md-3">
+				<div class="text-secondary">
+					{{ field.label }}
+					<div class="ms-2 d-inline-block">{{ field }}</div>
+				</div>
+			</div>
+			{% endfor %}
+			<div class="col-auto ms-auto">
+				<button type="submit" class="btn btn-secondary btn-sm">筛选</button>
+			</div>
+		</div>
+	</form>
+</div>

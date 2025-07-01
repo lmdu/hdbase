@@ -1,0 +1,59 @@
+<div class="card-footer d-flex align-items-center">
+	<p class="m-0 text-secondary">
+		第 {{ page_obj.number }} 页, 共 {{ page_obj.paginator.num_pages }} 页
+	</p>
+	<ul class="pagination m-0 ms-auto">
+		
+		<li class="page-item {% if not page_obj.has_previous() %} disabled {% endif %}">
+            <a class="page-link" href="?page={% if page_obj.has_previous() %}{{ page_obj.previous_page_number() }}{% endif %}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+                <path d="M15 6l-6 6l6 6"></path>
+              </svg>
+              上一页
+            </a>
+        </li>
+
+        <li class="page-item {% if page_obj.number == 1 %}active{% endif %}">
+        	<a href="?page=1" class="page-link">1</a>
+        </li>
+
+        {% if page_obj.number - 3 > 2 %}
+        <li class="page-item">...</li>
+        {% endif %}
+
+        {% for i in range(page_obj.number-3, page_obj.number) %}
+        {% if i >= 2 %}
+        <li class="page-item {% if page_obj.number == i %}active{% endif %}">
+        	<a href="?page={{ i }}" class="page-link">{{ i }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        {% for j in range(page_obj.number, page_obj.number + 4) %}
+        {% if 1 < j < page_obj.paginator.num_pages %}
+        <li class="page-item {% if page_obj.number == j %}active{% endif %}">
+        	<a href="?page={{ j }}" class="page-link">{{ j }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        {% if page_obj.number + 4 < page_obj.paginator.num_pages %}
+        <li class="page-item">...</li>
+        {% endif %}
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <li class="page-item {% if page_obj.number == page_obj.paginator.num_pages %}active{% endif %}">
+        	<a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a>
+        </li>
+        {% endif %}
+
+		<li class="page-item {% if not page_obj.has_next() %} disabled {% endif %}">
+            <a class="page-link" href="?page={% if page_obj.has_next() %}{{ page_obj.next_page_number() }}{% endif %}">
+              下一页
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+                <path d="M9 6l6 6l-6 6"></path>
+              </svg>
+            </a>
+        </li>
+	</ul>
+</div>

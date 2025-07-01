@@ -556,6 +556,7 @@ class CardiomyopathyGeneMutationDeleteView(CardiomyopathyExtraDeleteView):
 class KawasakiListView(DiseaseListView):
 	model = KawasakiDisease
 	template_name = 'kawasaki-list.html'
+	filterset_class = KawasakiDiseaseFilter
 
 class KawasakiCreateView(DiseaseCreateView):
 	disease_abbr = 'KD'
@@ -768,6 +769,7 @@ class KawasakiGeneMutationDeleteView(KawasakiExtraDeleteView):
 class ArrhythmiaListView(DiseaseListView):
 	model = ArrhythmiaDisease
 	template_name = 'arrhythmia-list.html'
+	filterset_class = ArrhythmiaDiseaseFilter
 
 class ArrhythmiaCreateView(DiseaseCreateView):
 	disease_abbr = 'CA'
@@ -980,6 +982,7 @@ class ArrhythmiaGeneMutationDeleteView(ArrhythmiaExtraDeleteView):
 class CongenitalSurgeryDiseaseListView(DiseaseListView):
 	model =CongenitalSurgeryDisease
 	template_name = 'surgery-list.html'
+	filterset_class = CongenitalSurgeryDiseaseFilter
 
 class CongenitalSurgeryDiseaseCreateView(DiseaseCreateView):
 	disease_abbr = 'CHS'
@@ -1309,6 +1312,7 @@ class CongenitalSurgeryGeneMutationDeleteView(CongenitalSurgeryExtraDeleteView):
 class CongenitalInterveneDiseaseListView(DiseaseListView):
 	model =CongenitalInterveneDisease
 	template_name = 'intervene-list.html'
+	filterset_class = CongenitalInterveneDiseaseFilter
 
 class CongenitalInterveneDiseaseCreateView(DiseaseCreateView):
 	disease_abbr = 'VSD'
