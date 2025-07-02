@@ -1,5 +1,6 @@
 {% set mainmenu = 'index' %}
 {% extends 'base.html' %}
+{% block title %}心脏疾病数据库{% endblock %}
 {% block pagetitle %}
 控制面板 <span class="text-muted ms-2">Dashboard</span>
 {% endblock %}
@@ -17,7 +18,7 @@
 						<div class="text-secondary">Cardiomyopathy</div>
 					</div>
 					<div class="col-auto">
-						1234 病例
+						{{ stats.cm }} 病例
 					</div>
 				</div>
 			</div>
@@ -35,7 +36,7 @@
 						<div class="text-secondary">Kawasaki Disease</div>
 					</div>
 					<div class="col-auto">
-						1234 病例
+						{{ stats.kd }} 病例
 					</div>
 				</div>
 			</div>
@@ -53,7 +54,7 @@
 						<div class="text-secondary">Arrhythmia</div>
 					</div>
 					<div class="col-auto">
-						1234 病例
+						{{ stats.ad }} 病例
 					</div>
 				</div>
 			</div>
@@ -71,7 +72,7 @@
 						<div class="text-secondary">Congenital Heart Disease</div>
 					</div>
 					<div class="col-auto">
-						1234 病例
+						{{ stats.csd }} 病例
 					</div>
 				</div>
 			</div>
@@ -89,7 +90,7 @@
 						<div class="text-secondary">Congenital Heart Disease</div>
 					</div>
 					<div class="col-auto">
-						1234 病例
+						{{ stats.cid }} 病例
 					</div>
 				</div>
 			</div>
@@ -107,7 +108,7 @@
 						<div class="text-secondary">Patient Manage</div>
 					</div>
 					<div class="col-auto">
-						1234 病人
+						{{ stats.patient }} 病人
 					</div>
 				</div>
 			</div>

@@ -57,6 +57,14 @@ class IndexView(LoginRequiredMixin, View):
 				'used': int(disk.used/1024/1024/1024),
 				'free': int(disk.free/1024/1024/1024),
 				'percent': disk.percent,
+			},
+			'stats': {
+				'patient': Patient.objects.count(),
+				'cm': CardiomyopathyDisease.objects.count(),
+				'kd': KawasakiDisease.objects.count(),
+				'ad': ArrhythmiaDisease.objects.count(),
+				'csd': CongenitalSurgeryDisease.objects.count(),
+				'cid': CongenitalInterveneDisease.objects.count(),
 			}
 		})
 
