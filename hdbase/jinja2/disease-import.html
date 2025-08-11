@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% set mainmenu = 'import' %}
+{% block pagetitle %}
+批量导入疾病数据
+{% endblock %}
+
+{% block style %}
+<style>
+	label {display: none;}
+</style>
+{% endblock %}
+
+{% block main %}
+<form method="post" action="{{ url('add-import') }}" class="card" enctype="multipart/form-data">
+	<div class="card-header">
+		<div class="card-title">导入数据</div>
+	</div>
+	<div class="card-body">
+		<div class="row row-cards">
+			<div class="col-md-6">{{ form.dtype.as_field_group() }}</div>
+			<div class="col-md-6">{{ form.excel.as_field_group() }}</div>
+		</div>
+	</div>
+	<div class="card-footer text-end">
+		<button class="btn btn-primary" type="submit">提交</button>
+	</div>
+</form>
+
+<div class="card mt-5">
+	<div class="card-header">
+		<div class="card-title">
+			导入记录
+		</div>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-selectable card-table table-vcenter text-nowrap datatable">
+          <thead>
+            <tr>
+              <th>疾病类型</th>
+              <th>数据文件</th>
+              <th>导入状态</th>
+              <th>导入结果</th>
+              <th>导入时间</th>
+              <th>操作人员</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+	</div>
+	<div class="card-footer"></div>
+</div>
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

@@ -215,5 +215,7 @@ urlpatterns = [
 	path('intervene/<int:did>/genemutation/edit/<int:pk>', CongenitalInterveneGeneMutationUpdateView.as_view(), name='edit-intervene-gmutation'),
 	path('intervene/<int:did>/genemutation/delete/<int:pk>', CongenitalInterveneGeneMutationDeleteView.as_view(), name='delete-intervene-gmutation'),
 
-
+	path('disease/import/list', DiseaseImportListView.as_view(), name='list-import'),
+	path('disease/import/add', DiseaseImportCreateView.as_view(), name='add-import'),
+	path('disease/import/delete', DiseaseImportDeleteView.as_view(), name='delete-import'),
 ]

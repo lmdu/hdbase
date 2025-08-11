@@ -383,7 +383,6 @@ class CardiomyopathyGeneMutation(models.Model):
 	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, blank=True, null=True)
 	author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
-
 class KawasakiDisease(models.Model):
 	CHUANQI_TYPES = {
 		0: "未知",
@@ -1753,4 +1752,28 @@ class Job(models.Model):
 	class Meta:
 		ordering = ['-created']
 
+class DiseaseImport(models.Model):
+	DISEASE_TYPES = {
+		1: "心肌病",
+		2: "川崎病",
+		3: "心律失常",
+		4: "先心病-外科",
+		5: "先心病-VSD介入"
+	}
 
+	IMPORT_STATUS = {
+		0: "FAILURE",
+		1: "SUCCESS",
+		2: "RUNNING",
+		3: "WAITING"
+	}
+
+	dtype = models.PositiveSmallIntegerField(choices=DISEASE_TYPES, default=1, help_text="疾病类型")
+	excel = models.FileField(upload_to='excels/%Y/%m/', max_length=200, help_text="上传文件")
+	status = models.PositiveSmallIntegerField(choices=IMPORT_STATUS, default=3)
+	message = models.TextField(blank=True, default='')
+	created = models.DateTimeField(auto_now_add=True)
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+	class Meta:
+		ordering = ['-created']

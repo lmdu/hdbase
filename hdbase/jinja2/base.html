@@ -68,6 +68,12 @@
                     <a href="{{ url('list-intervene') }}" class="dropdown-item">先心病-VSD介入</a>
                   </div>
                 </li>
+                <li class="nav-item {% if mainmenu == 'import' %}active{% endif %}">
+                  <a class="nav-link" href="{{ url('list-import') }}">
+                    <img src="{{ static('img/import.svg') }}" class="nav-link-icon d-md-none d-lg-inline-block">
+                    <span class="nav-link-title">数据导入</span>
+                  </a>
+                </li>
                 <li class="nav-item {% if mainmenu == 'tasks' %}active{% endif %}">
                   <a class="nav-link" href="{{ url('list-tasks') }}">
                     <img src="{{ static('img/tasks.svg') }}" class="nav-link-icon d-md-none d-lg-inline-block">

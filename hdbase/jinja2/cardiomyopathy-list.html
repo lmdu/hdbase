@@ -17,13 +17,17 @@
 		</h3>
 		{% if request.user.profile.is_editor %}
 		<div class="card-actions">
-			<a href="{{ url('add-cardiomyopathy') }}" class="btn btn-primary">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-2">
-			        <path d="M12 5l0 14"></path>
-			        <path d="M5 12l14 0"></path>
-			    </svg>
-				添加病例
-			</a>
+			<div class="dropdown">
+			  <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
+			    导入导出
+			  </button>
+			  <div class="dropdown-menu dropdown-menu-end">
+			    <a href="{{ url('add-cardiomyopathy') }}" class="dropdown-item">添加单个病例</a>
+			    <a href="" class="dropdown-item">批量导入</a>
+			    <div class="dropdown-divider"></div>
+			    <a href="" class="dropdown-item">批量导出</a>
+			  </div>
+			</div>
 		</div>
 		{% endif %}
 	</div>

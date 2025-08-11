@@ -452,3 +452,8 @@ class CongenitalInterveneGeneMutationForm(TablerModelForm):
 	class Meta:
 		model = CongenitalInterveneGeneMutation
 		exclude = ['created', 'disease', 'author']
+
+class DiseaseImportForm(TablerModelForm):
+	class Meta:
+		model = DiseaseImport
+		exclude = ['status', 'message', 'created', 'author']
