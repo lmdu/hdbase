@@ -217,5 +217,5 @@ urlpatterns = [
 
 	path('disease/import/list', DiseaseImportListView.as_view(), name='list-import'),
 	path('disease/import/add', DiseaseImportCreateView.as_view(), name='add-import'),
-	path('disease/import/delete', DiseaseImportDeleteView.as_view(), name='delete-import'),
+	path('disease/import/delete/<int:pk>', DiseaseImportDeleteView.as_view(), name='delete-import'),
 ]

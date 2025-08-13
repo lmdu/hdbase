@@ -1,17 +1,27 @@
-<div class="card-body border-bottom py-3">
-	<form>
-		<div class="row row-cards">
-			{% for field in filter.form %}
-			<div class="col-md-3">
-				<div class="text-secondary">
-					{{ field.label }}
-					<div class="ms-2 d-inline-block">{{ field }}</div>
+<div class="modal" tabindex="-1" id="filter-dialog">
+	<div class="modal-dialog" role="document">
+		<form class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">筛选数据</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="row row-cols-2 g-4">
+					{% for field in filter.form %}
+					<div>
+						<div class="text-secondary">
+							{{ field.label }}
+							{{ field }}
+						</div>
+					</div>
+					{% endfor %}
 				</div>
 			</div>
-			{% endfor %}
-			<div class="col-auto ms-auto">
-				<button type="submit" class="btn btn-secondary btn-sm">筛选</button>
+			<div class="modal-footer">
+				<button type="button" class="btn" data-bs-dismiss="modal">关闭</button>
+				<button type="reset" class="btn ms-auto">重置</button>
+				<button type="submit" class="btn btn-primary">确定</button>
 			</div>
-		</div>
-	</form>
+		</form>
+	</div>
 </div>

@@ -1503,6 +1503,7 @@ class DiseaseImportCreateView(LoginRequiredMixin, CreateView):
 	model = DiseaseImport
 	http_method_names = ['post']
 	fields = ['dtype', 'excel']
+	success_url = reverse_lazy('list-import')
 
 	def form_valid(self, form):
 		form.instance.author = self.request.user
@@ -1511,4 +1512,4 @@ class DiseaseImportCreateView(LoginRequiredMixin, CreateView):
 class DiseaseImportDeleteView(LoginRequiredMixin, DeleteView):
 	model = DiseaseImport
 	template_name = 'disease-common-delete.html'
-	success_url = reverse_lazy('list-imports')
+	success_url = reverse_lazy('list-import')

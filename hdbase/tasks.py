@@ -47,6 +47,12 @@ class SocketTask(Task):
 		func()
 		self.update_running(progress=progress)
 
+class ImportTask(SocketTask):
+	def update_running(self, **kwargs):
+		DiseaseImport.objects.filter(pk=self.task_pk).update(**kwargs)
+		self.send_message(kwargs)
+
+
 @shared_task(base=SocketTask, bind=True)
 def call_snp_from_ges(self, task_pk, task_id, params):
 	"""
@@ -87,6 +93,18 @@ def call_snp_from_ges(self, task_pk, task_id, params):
 			stopped = timezone.now()
 		)
 		#self.temp_dir.cleanup()
+
+
+@shared_task(base=SocketTask, bind=True)
+def import_cardiomyopathy(self, task_pk, excel_file):
+	try:
+		pass
+
+	except:
+		pass
+
+	finally:
+		pass
 
 
 @shared_task(base=SocketTask, bind=True)

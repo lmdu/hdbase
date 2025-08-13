@@ -11,44 +11,87 @@
 {% endblock %}
 
 {% block main %}
-<form method="post" action="{{ url('add-import') }}" class="card" enctype="multipart/form-data">
+<div class="card">
 	<div class="card-header">
-		<div class="card-title">导入数据</div>
+		<ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
+			<li class="nav-item " role="presentation">
+				<a href="#tab-import-form" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">导入数据</a>
+			</li>
+			<li class="nav-item" role="presentation">
+				<a href="#tab-import-list" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">导入记录</a>
+			</li>
+		</ul>
 	</div>
 	<div class="card-body">
-		<div class="row row-cards">
-			<div class="col-md-6">{{ form.dtype.as_field_group() }}</div>
-			<div class="col-md-6">{{ form.excel.as_field_group() }}</div>
+		<div class="tab-content">
+			<div class="tab-pane active show" id="tab-import-form" role="tabpanel">
+				<h3>提交数据</h3>
+				<form method="post" action="{{ url('add-import') }}" class="row row-cards" enctype="multipart/form-data">
+					<div class="col-md-4">{{ form.dtype.as_field_group() }}</div>
+					<div class="col-md-7">{{ form.excel.as_field_group() }}</div>
+					<div class="col-md-1">
+						<div class="helptext">&nbsp;</div>
+						<div class="d-grid">
+							<button class="btn btn-primary" type="submit">提交</button>
+						</div>
+					</div>
+					{{ csrf_input }}
+				</form>
+				<h3 class="mt-5">模版下载</h3>
+				<p>请下载相应疾病的Excel模板文件, 填写完成后, 上传文件导入数据库</p>
+				<div class="mt-3">
+					<ul class="list-inline">
+						<li class="list-inline-item"><a href="" class="btn">心肌病模版</a></li>
+						<li class="list-inline-item"><a href="" class="btn">川崎病模版</a></li>
+						<li class="list-inline-item"><a href="" class="btn">心律失常模版</a></li>
+						<li class="list-inline-item"><a href="" class="btn">先心病-外科模版</a></li>
+						<li class="list-inline-item"><a href="" class="btn">先心病-VSD介入模版</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="tab-pane" id="tab-import-list" role="tabpanel">
+					<div class="table-responsive">
+						<table class="table table-selectable card-table table-vcenter text-nowrap datatable">
+				          <thead>
+				            <tr>
+				              <th>疾病类型</th>
+				              <th>数据文件</th>
+				              <th>导入状态</th>
+				              <th>导入结果</th>
+				              <th>导入时间</th>
+				              <th>操作人员</th>
+				              {% if request.user.profile.is_editor %}
+				              <th></th>
+				              {% endif %}
+				            </tr>
+				          </thead>
+				          <tbody>
+				          	{% for object in object_list %}
+				          	<tr>
+				          		<td>{{ object.get_dtype_display() }}</td>
+				          		<td>
+				          			<span>{{ object.excel.name.split('/')[-1] }}</span>
+				          			<a href="{{ object.excel.url }}" class="badge bg-azure text-azure-fg">下载</a>
+				          		</td>
+				          		<td>{{ object.get_status_display() }}</td>
+				          		<td>{{ object.message }}</td>
+				          		<td>{{ object.created | date("Y-m-d") }} {{ object.created | time("H:i:s") }}</td>
+				          		<td>
+				          			<a data-bs-toggle="tooltip" data-bs-placement="top" title="{{ object.author.last_name }}{{ object.author.first_name }}" class="avatar rounded-circle avatar-sm" style="background-image: url({{ object.author.profile.get_avatar }});"></a>
+											</td>
+											{% if request.user.profile.is_editor %}
+											<td>
+												<a href="{{ url('delete-import', kwargs={'pk': object.pk}) }}" class="btn btn-sm btn-danger">删除</a>
+											</td>
+											{% endif %}
+				          	</tr>
+				          	{% endfor %}
+				          </tbody>
+				        </table>
+					</div>
+			</div>
 		</div>
-	</div>
-	<div class="card-footer text-end">
-		<button class="btn btn-primary" type="submit">提交</button>
-	</div>
-</form>
-
-<div class="card mt-5">
-	<div class="card-header">
-		<div class="card-title">
-			导入记录
-		</div>
-	</div>
-	<div class="table-responsive">
-		<table class="table table-selectable card-table table-vcenter text-nowrap datatable">
-          <thead>
-            <tr>
-              <th>疾病类型</th>
-              <th>数据文件</th>
-              <th>导入状态</th>
-              <th>导入结果</th>
-              <th>导入时间</th>
-              <th>操作人员</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-	</div>
-	<div class="card-footer"></div>
+	</div>		
 </div>
 {% endblock %}
 

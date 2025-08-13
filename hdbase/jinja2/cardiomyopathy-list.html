@@ -17,21 +17,19 @@
 		</h3>
 		{% if request.user.profile.is_editor %}
 		<div class="card-actions">
-			<div class="dropdown">
-			  <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
-			    导入导出
-			  </button>
-			  <div class="dropdown-menu dropdown-menu-end">
-			    <a href="{{ url('add-cardiomyopathy') }}" class="dropdown-item">添加单个病例</a>
-			    <a href="" class="dropdown-item">批量导入</a>
-			    <div class="dropdown-divider"></div>
-			    <a href="" class="dropdown-item">批量导出</a>
-			  </div>
-			</div>
+			<a href="{{ url('add-cardiomyopathy') }}" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="添加病例">
+				<img src="{{ static('img/add.svg') }}" width="20">
+			</a>
+			<button class="btn btn-sm" data-bs-toggle="modal" data-bs-placement="top" title="筛选数据" data-bs-target="#filter-dialog">
+				<img src="{{ static('img/filter.svg') }}" width="20">
+			</button>
+			<button class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="下载数据">
+				<img src="{{ static('img/download.svg') }}" width="20">
+			</button>
 		</div>
 		{% endif %}
 	</div>
-	{% include 'view-list-filter.html' %}
+	
 	<div class="table-responsive">
 		<table class="table table-selectable card-table table-vcenter text-nowrap datatable">
 			<thead>
@@ -88,4 +86,5 @@
 
 	{% include 'view-list-page.html' %}
 </div>
+{% include 'view-list-filter.html' %}
 {% endblock %}
