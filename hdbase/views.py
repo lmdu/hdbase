@@ -1507,7 +1507,12 @@ class DiseaseImportCreateView(LoginRequiredMixin, CreateView):
 
 	def form_valid(self, form):
 		form.instance.author = self.request.user
-		return super().form_valid(form)
+		response = super().form_valid(form)
+
+		if self.object.dtype == 1:
+			import_cardiomyopathy.delay(self.object.id, self.object.excel.path, self.request.user.id)
+
+		return response
 
 class DiseaseImportDeleteView(LoginRequiredMixin, DeleteView):
 	model = DiseaseImport

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django_jsonform',
     'django_filters',
     'bootstrap_datepicker_plus',
+    'multiselectfield',
     'common',
     'hdbase'
 ]

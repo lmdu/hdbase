@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from froala_editor.fields import FroalaField
+from multiselectfield import MultiSelectField
 
 
 # Create your models here.
@@ -90,13 +91,13 @@ class Patient(models.Model):
 		0: '其他',
 	}
 
-	name = models.CharField(max_length=30, help_text="名字")
-	number = models.CharField(max_length=15, blank=True, default='', help_text="登记号")
+	number = models.CharField(max_length=15, unique=True, help_text="登记号")
+	name = models.CharField(max_length=30, help_text="姓名")
 	gender = models.PositiveSmallIntegerField(choices=GENDERS, default=0, help_text="性别")
 	ethnicity = models.PositiveSmallIntegerField(choices=ETHNIC_GROUPS, default=1, help_text="民族")
 	birthday = models.DateField(blank=True, null=True, help_text="出生日期")
 	weight = models.FloatField(blank=True, null=True, help_text='休重(Kg)')
-	height = models.PositiveSmallIntegerField(blank=True, null=True, help_text='身高(cm)')
+	height = models.FloatField(blank=True, null=True, help_text='身高(cm)')
 	phone = models.CharField(max_length=20, blank=True, default='', help_text="电话")
 	address = models.CharField(max_length=255, blank=True, default='', help_text="地址")
 	created = models.DateTimeField(auto_now_add=True)
@@ -163,6 +164,20 @@ class CardiomyopathyDisease(models.Model):
 		1: "有"
 	}
 
+	DISEASE_TYPES = {
+		'EFE': "心内膜弹力纤维增生症",
+		'DCM': "扩张型心肌病",
+		'HCM': "肥厚型心肌病",
+		'RCM': "限制型心肌病",
+		'SCM': "继发性心肌病",
+		'MDCM': "肌营养不良型心肌病",
+		'IMCM': "遗传代谢性心肌病",
+		'ARVC': "致心律失常性心肌病",
+		'NDLVC': "非扩张型心肌病",
+		'Other': "其他类型心肌病",
+		'Unknown': "未知"
+	}
+
 	COMPLICATIONS = {
 		0: "没有",
 		1: "瓣膜病变",
@@ -180,9 +195,14 @@ class CardiomyopathyDisease(models.Model):
 
 	SPECIAL_TREATMENTS = {
 		0: "无",
-		1: "起搏器",
-		2: "射频",
-		3: "心脏移植"
+		1: "PAB",
+		2: "VAD",
+		3: "CRT",
+		4: "ICD",
+		5: "起搏器",
+		6: "射频消融",
+		7: "心脏移植",
+		8: "其他"
 	}
 
 	SAMPLE_COLLECTS = {
@@ -201,18 +221,18 @@ class CardiomyopathyDisease(models.Model):
 	code = models.CharField(max_length=12, blank=True, default='', help_text="编号")
 	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="测序编号")
 	body_surface = models.FloatField(blank=True, null=True, help_text="体表面积")
-	disease_type = models.CharField(max_length=100, blank=True, default='', help_text="心肌病分型")
+	disease_type = models.CharField(max_length=10, choices=DISEASE_TYPES, blank=True, default='Unknown', help_text="心肌病分型")
 	mutate_gene = models.CharField(max_length=20, blank=True, default='', help_text="突变基因")
 	diagnose_age = models.FloatField(blank=True, null=True, help_text="初诊年龄")
 	has_history = models.PositiveSmallIntegerField(choices=FAMILY_HISTORIES, default=0, help_text="有无家族史")
 	family_history = models.CharField(max_length=100, blank=True, default='', help_text="家族史情况")
-	complication = models.PositiveSmallIntegerField(choices=COMPLICATIONS, default=0, help_text="合并症")
+	complication = models.CharField(max_length=80, blank=True, default='', help_text="合并症")
 	heart_failure = models.CharField(max_length=20, blank=True, default='', help_text="心衰评分")
 	is_survival = models.PositiveSmallIntegerField(choices=SURVIVALS, default=1, help_text="是否存活")
 	death_time = models.DateField(blank=True, null=True, help_text="死亡时间")
 	arrhythmia_type = models.CharField(max_length=100, blank=True, default='', help_text="心律失常类型")
 	special_treatment = models.PositiveSmallIntegerField(choices=SPECIAL_TREATMENTS, default=0, help_text="特殊治疗")
-	hospital_visits = models.SmallIntegerField(default=0, help_text="心衰再入院次数")
+	hospital_visits = models.SmallIntegerField(blank=True, null=True, help_text="心衰再入院次数")
 	follow_time = models.DateField(blank=True, null=True, help_text="随访时间")
 	sample_collect = models.PositiveSmallIntegerField(choices=SAMPLE_COLLECTS, default=0, help_text="是否采集标本")
 	test_sample = models.PositiveSmallIntegerField(choices=SAMPLE_TYPES, default=0, help_text="已送检标本")
@@ -224,6 +244,11 @@ class CardiomyopathyDisease(models.Model):
 
 	class Meta:
 		ordering = ['-created']
+
+	def save(self, *args, **kwargs):
+		super().save(*args, **kwargs)
+		self.code = "CM{:0>7d}".format(self.pk)
+		super().save(update_fields=['code'])
 
 class CardiomyopathyBloodRoutine(models.Model):
 	POSITIVE_NEGATIVE = {
@@ -265,7 +290,9 @@ class CardiomyopathyMarker(models.Model):
 	myo = models.FloatField(blank=True, null=True, help_text="MYo (ug/L)")
 	ldh = models.FloatField(blank=True, null=True, help_text="LDH (U/L)")
 	ast = models.FloatField(blank=True, null=True, help_text="AST (U/L)")
+	bnpjysj = models.DateField(blank=True, null=True, help_text="BNP检验时间")
 	bnp = models.FloatField(blank=True, null=True, help_text="BNP (pg/ml)")
+	ntbnpjysj = models.DateField(blank=True, null=True, help_text="NT-BNP检验时间")
 	ntbnp = models.FloatField(blank=True, null=True, help_text="NT-BNP (pg/ml)")
 	tested = models.DateField(blank=True, null=True, help_text="检验时间")
 	created = models.DateTimeField(auto_now_add=True)
@@ -273,15 +300,67 @@ class CardiomyopathyMarker(models.Model):
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class CardiomyopathyTreatment(models.Model):
-	drugs = models.JSONField(blank=True, default=dict, help_text="治疗情况")
-	treated = models.DateField(blank=True, null=True, help_text="治疗时间")
+	YES_NO = (
+		(0, "无"),
+		(1, "有")
+	)
+
+	LNJ_DRUGS = (
+		('0', "无"),
+		('1', "氢氯噻嗪"),
+		('2', "螺内酯"),
+		('3', "呋噻米"),
+		('4', "其他")
+	)
+
+	ACEIARNI_DRUGS = (
+		('0', "无"),
+		('1', "卡托普利"),
+		('2', "依那普利"),
+		('3', "诺欣妥")
+	)
+
+	BSTZDJ_DRUGS = (
+		('0', "无"),
+		('1', "美托洛尔"),
+		('2', "其他")
+	)
+
+	QTYW_DRUGS = (
+		('0', "无"),
+		('1', "地高辛"),
+		('2', "伊伐布雷定"),
+		('3', "唯立西呱"),
+		('4', "其他")
+	)
+
+	TSZL_TYPES = (
+		('0', "无"),
+		('1', "PAB"),
+		('2', "VAD"),
+		('3', "CRT"),
+		('4', "ICD"),
+		('5', "起搏器"),
+		('6', "射频消融"),
+		('7', "心脏移植"),
+		('8', "其他")
+	)
+
+	eglj = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="恩格列净")
+	lnj = MultiSelectField(choices=LNJ_DRUGS, blank=True, help_text="利尿剂")
+	aceiarni = MultiSelectField(choices=ACEIARNI_DRUGS, blank=True, help_text="ACEI或ARNI")
+	bstzdj = MultiSelectField(choices=BSTZDJ_DRUGS, blank=True, help_text="B受体阻断剂")
+	qtyw = MultiSelectField(choices=QTYW_DRUGS, blank=True, help_text="其他药物")
+	kxlsc = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="抗心律失常")
+	kbkn = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="抗板或抗凝")
+	tszl = MultiSelectField(choices=TSZL_TYPES, blank=True, help_text="特殊治疗")
 	created = models.DateTimeField(auto_now_add=True)
 	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='treatments')
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class CardiomyopathyUltrasound(models.Model):
 	code = models.CharField(max_length=20, blank=True, default='', help_text="超声号")
-	age = models.FloatField(blank=True, null=True, help_text="年龄")
+	age = models.CharField(max_length=15, blank=True, default='', help_text="做超声时年龄(岁)")
 	lvef = models.FloatField(blank=True, null=True, help_text="LVEF (%)")
 	lvfs = models.FloatField(blank=True, null=True, help_text="LVFS (%)")
 	la = models.FloatField(blank=True, null=True, help_text="LA (mm)")
@@ -289,9 +368,9 @@ class CardiomyopathyUltrasound(models.Model):
 	ra = models.FloatField(blank=True, null=True, help_text="RA (mm)")
 	rv = models.FloatField(blank=True, null=True, help_text="RV (mm)")
 	lvedd = models.FloatField(blank=True, null=True, help_text="LVEDD (mm)")
-	lvedd_z = models.FloatField(blank=True, null=True, help_text="Z值")
+	lvedd_z = models.CharField(max_length=10, blank=True, null=True, help_text="Z值")
 	lvesd = models.FloatField(blank=True, null=True, help_text="LVESD (mm)")
-	lvesd_z = models.FloatField(blank=True, null=True, help_text="Z值")
+	lvesd_z = models.CharField(max_length=10, blank=True, null=True, help_text="Z值")
 	diagnosis = models.CharField(max_length=255, blank=True, default='', help_text="超声诊断")
 	report = models.FileField(upload_to='report/%Y/%m/', max_length=200, blank=True, null=True, help_text="报告文件")
 	dicom_file = models.FileField(upload_to='dicom/%Y/%m/', max_length=255, blank=True, null=True, help_text="影像文件")
@@ -304,12 +383,8 @@ class CardiomyopathyUltrasound(models.Model):
 class CardiomyopathyMRI(models.Model):
 	POSITIVE_NEGATIVE = {
 		0: "阴性",
-		1: "阳性"
-	}
-
-	YES_NO = {
-		0: "否",
-		1: "是"
+		1: "阳性",
+		2: "可疑"
 	}
 
 	code = models.CharField(max_length=20, blank=True, default='', help_text="超声号")
@@ -322,10 +397,10 @@ class CardiomyopathyMRI(models.Model):
 	rv = models.FloatField(blank=True, null=True, help_text="RV (mm)")
 	mass = models.CharField(max_length=10, blank=True, default='', help_text="心室肌质量")
 	lge = models.PositiveSmallIntegerField(choices=POSITIVE_NEGATIVE, default=0, help_text="LGE")
-	perfusion = models.CharField(max_length=50, default='', help_text="首过灌注")
-	dema = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心肌水肿")
+	perfusion = models.PositiveSmallIntegerField(choices=POSITIVE_NEGATIVE, default=0, help_text="首过灌注")
+	dema = models.PositiveSmallIntegerField(choices=POSITIVE_NEGATIVE, default=0, help_text="心肌水肿")
 	fibrosis = models.CharField(max_length=50, blank=True, default='', help_text="心肌纤维化")
-	microcirculation = models.CharField(max_length=50, blank=True, default='', help_text="心肌微循环")
+	microcirculation = models.PositiveSmallIntegerField(choices=POSITIVE_NEGATIVE, default=0, help_text="心肌微循环")
 	report = models.FileField(upload_to='report/%Y/%m/', max_length=200, blank=True, null=True, help_text="报告文件")
 	dicom_file = models.FileField(upload_to='dicom/%Y/%m/', max_length=255, blank=True, null=True, help_text="影像文件")
 	dicom_uuid = models.CharField(max_length=50, blank=True, default='')
@@ -340,19 +415,52 @@ class CardiomyopathyECG(models.Model):
 		1: "是"
 	}
 
-	age = models.FloatField(blank=True, null=True, help_text="年龄")
-	stt = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="ST-T改变")
-	cdzz = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="传导阻滞")
-	xfcd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="心房颤动")
-	sxzb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="室性早搏")
-	fxzb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="房性早搏")
-	zsfd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="左室肥大")
-	zffd = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="左房肥大")
-	ycqb = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="异常Q波")
-	dxdgh = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="窦性心动过缓")
-	dxdgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="窦性心动过速")
-	fxdgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="房性心动过速")
-	sxdgs = models.PositiveSmallIntegerField(choices=YES_NO, default=0, help_text="室性心动过速")
+	CDZZ_TYPES = {
+		0: "无",
+		1: "窦房阻滞",
+		2: "房室阻滞",
+		3: "室内阻滞"
+	}
+
+	FXXLSC_TYPES = {
+		0: "无",
+		1: "房早",
+		2: "房速",
+		3: "房扑",
+		4: "房颤"
+	}
+
+	SXXLSC_TYPES = {
+		0: "无",
+		1: "室早",
+		2: "室速",
+		3: "室扑",
+		4: "室颤"
+	}
+
+	age = models.CharField(max_length=10, blank=True, null=True, help_text="做心电图时年龄")
+	xsl = models.FloatField(blank=True, null=True, help_text="心室率(bpm)")
+	pr = models.FloatField(blank=True, null=True, help_text="P-R(ms)")
+	rv5sv1 = models.FloatField(blank=True, null=True, help_text="Rv5+Sv1(mv)")
+	qrs = models.FloatField(blank=True, null=True, help_text="QRS(ms)")
+	pms = models.FloatField(blank=True, null=True, help_text="P(ms)")
+	rv5_sv1 = models.FloatField(blank=True, null=True, help_text="RV5/SV1(mv)")
+	qtc = models.FloatField(blank=True, null=True, help_text="QTc")
+	cdzzlx = models.PositiveSmallIntegerField(choices=CDZZ_TYPES, blank=True, null=True, help_text="传导阻滞类型")
+	fxxlsc = models.PositiveSmallIntegerField(choices=FXXLSC_TYPES, blank=True, null=True, help_text="房性心律失常类型")
+	sxxlsc = models.PositiveSmallIntegerField(choices=SXXLSC_TYPES, blank=True, null=True, help_text="室性心律失常类型")
+	stt = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="ST-T改变")
+	cdzz = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="传导阻滞")
+	xfcd = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="心房颤动")
+	sxzb = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="室性早搏")
+	fxzb = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="房性早搏")
+	zsfd = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="左室肥大")
+	zffd = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="左房肥大")
+	ycqb = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="异常Q波")
+	dxdgh = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="窦性心动过缓")
+	dxdgs = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="窦性心动过速")
+	fxdgs = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="房性心动过速")
+	sxdgs = models.PositiveSmallIntegerField(choices=YES_NO, blank=True, null=True, help_text="室性心动过速")
 	tested = models.DateField(blank=True, null=True, help_text="检验时间")
 	created = models.DateTimeField(auto_now_add=True)
 	disease = models.ForeignKey(CardiomyopathyDisease, on_delete=models.CASCADE, related_name='ecgs')

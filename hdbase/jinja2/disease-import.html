@@ -14,17 +14,17 @@
 <div class="card">
 	<div class="card-header">
 		<ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
-			<li class="nav-item " role="presentation">
-				<a href="#tab-import-form" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">导入数据</a>
+			<li class="nav-item" role="presentation">
+				<a href="#tab-import-list" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">导入记录</a>
 			</li>
 			<li class="nav-item" role="presentation">
-				<a href="#tab-import-list" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">导入记录</a>
+				<a href="#tab-import-form" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">导入数据</a>
 			</li>
 		</ul>
 	</div>
 	<div class="card-body">
 		<div class="tab-content">
-			<div class="tab-pane active show" id="tab-import-form" role="tabpanel">
+			<div class="tab-pane" id="tab-import-form" role="tabpanel">
 				<h3>提交数据</h3>
 				<form method="post" action="{{ url('add-import') }}" class="row row-cards" enctype="multipart/form-data">
 					<div class="col-md-4">{{ form.dtype.as_field_group() }}</div>
@@ -49,16 +49,16 @@
 					</ul>
 				</div>
 			</div>
-			<div class="tab-pane" id="tab-import-list" role="tabpanel">
+			<div class="tab-pane active show" id="tab-import-list" role="tabpanel">
 					<div class="table-responsive">
-						<table class="table table-selectable card-table table-vcenter text-nowrap datatable">
+						<table class="table table-selectable card-table table-vcenter datatable">
 				          <thead>
 				            <tr>
-				              <th>疾病类型</th>
-				              <th>数据文件</th>
-				              <th>导入状态</th>
+				              <th class="text-nowrap">疾病类型</th>
+				              <th class="text-nowrap">数据文件</th>
+				              <th class="text-nowrap">导入状态</th>
 				              <th>导入结果</th>
-				              <th>导入时间</th>
+				              <th class="text-nowrap">导入时间</th>
 				              <th>操作人员</th>
 				              {% if request.user.profile.is_editor %}
 				              <th></th>
@@ -67,15 +67,21 @@
 				          </thead>
 				          <tbody>
 				          	{% for object in object_list %}
-				          	<tr>
-				          		<td>{{ object.get_dtype_display() }}</td>
-				          		<td>
+				          	<tr id="import-{{ object.id }}">
+				          		<td class="text-nowrap">{{ object.get_dtype_display() }}</td>
+				          		<td class="text-nowrap">
 				          			<span>{{ object.excel.name.split('/')[-1] }}</span>
+				          			{% if request.user.profile.is_editor %}
 				          			<a href="{{ object.excel.url }}" class="badge bg-azure text-azure-fg">下载</a>
+				          			{% endif %}
 				          		</td>
-				          		<td>{{ object.get_status_display() }}</td>
-				          		<td>{{ object.message }}</td>
-				          		<td>{{ object.created | date("Y-m-d") }} {{ object.created | time("H:i:s") }}</td>
+				          		<td class="text-nowrap">
+				          			{% set states = {0: 'red', 1: 'green', 2: 'blue', 3: 'yellow'} %}
+				          			<span class="status-text">{{ object.get_status_display() }}</span>
+				          			<span class="status-dot {% if object.status in [2,3] %}status-dot-animated{% endif %} status-{{ states[object.status] }} ms-1"></span>
+				          		</td>
+				          		<td class="status-msg">{{ object.message }}</td>
+				          		<td class="text-nowrap">{{ object.created | date("Y-m-d") }} {{ object.created | time("H:i:s") }}</td>
 				          		<td>
 				          			<a data-bs-toggle="tooltip" data-bs-placement="top" title="{{ object.author.last_name }}{{ object.author.first_name }}" class="avatar rounded-circle avatar-sm" style="background-image: url({{ object.author.profile.get_avatar }});"></a>
 											</td>
@@ -96,5 +102,50 @@
 {% endblock %}
 
 {% block script %}
+<script type="text/javascript">
+$(document).ready(function(){
+const ws_scheme = window.location.protocol == "https:" ? "wss": "ws";
+const ws_path = ws_scheme + '://' + window.location.host + '/ws/socketio/';
+const ws_socket = new WebSocket(ws_path);
 
+const STATE_TEXTS = ['FAILURE', 'SUCCESS', 'RUNNING', 'WAITING']
+const STATE_COLORS = ['red', 'green', 'blue', 'yellow']
+
+ws_socket.onmessage = function(e) {
+	let data = JSON.parse(e.data);
+	let item = $('#import-' + data.task_id);
+
+	console.log(data);
+
+	if (data.task_type != 'import') {
+		return;
+	}
+
+	$.each(data, function(k, v) {
+		switch(k) {
+			case 'status':
+				item.find(".status-dot")
+					.removeClass()
+					.addClass("status-dot status-" + STATE_COLORS[v]);
+
+				if ((v === 2) || (v === 3)) {
+					item.find(".status-dot").addClass("status-dot-animated");
+				}
+
+				item.find(".status-text")
+					.text(STATE_TEXTS[v]);
+
+				break;
+
+			case 'message':
+				item.find(".status-msg")
+					.text(v);
+				break;
+
+		}
+	});
+};
+
+});
+</script>
 {% endblock %}

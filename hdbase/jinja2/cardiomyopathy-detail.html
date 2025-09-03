@@ -210,20 +210,24 @@
         	<table class="table card-table table-vcenter datatable">
         		<thead>
         			<tr>
-        				<th>治疗用药</th>
-        				<th>治疗时间</th>
+        				<th>恩格列净</th>
+        				<th>利尿剂</th>
+        				<th>ACEI或ARNI</th>
+        				<th>B受体阻断剂</th>
+        				<th>其他药物</th>
+        				<th>抗心律失常</th>
         				<th>操作</th>
         			</tr>
         		</thead>
         		<tbody>
         			{% for t in object.treatments.all() %}
         			<tr>
-	        			<td>
-	        				{% for k,v in t.drugs.items() %}
-	        				{{k}}: {{v}},
-	        				{% endfor %}
-	        			</td>
-	        			<td class="text-nowrap">{{ t.treated | date('Y-m-d') }}</td>
+	        			<td>{{ t.get_eglj_display() }}</td>
+	        			<td>{{ t.get_lnj_display() }}</td>
+	        			<td>{{ t.get_aceiarni_display() }}</td>
+	        			<td>{{ t.get_bstzdj_display() }}</td>
+	        			<td>{{ t.get_qtyw_display() }}</td>
+	        			<td>{{ t.get_kxlsc_display() }}</td>
 	        			<td class="text-nowrap text-end">
 	        				{% if request.user.profile.is_editor %}
 	        				<a href="{{ url('edit-cardiomyopathy-treatment', kwargs={'did': object.id, 'pk': t.id}) }}" class="btn btn-sm btn-warning">编辑</a>
@@ -433,7 +437,11 @@
         			{% for r in object.reports.all() %}
         			<tr>
         				<td rowspan="{{ r.genes.count()+1 }}">{{ r.company }}</td>
-        				<td rowspan="{{ r.genes.count()+1 }}"><a href="{{ r.report.url }}" class="btn btn-sm btn-success">下载</a></td>
+        				<td rowspan="{{ r.genes.count()+1 }}">
+        					{% if r.report %}
+        					<a href="{{ r.report.url }}" class="btn btn-sm btn-success">下载</a>
+        					{% endif %}
+        				</td>
         				<td rowspan="{{ r.genes.count()+1 }}">{{ r.tested | date("Y-m-d") }}</td>
         				<td>基因</td>
         				<td>染色体位置</td>

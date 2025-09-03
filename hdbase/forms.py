@@ -60,12 +60,11 @@ class CardiomyopathyTreatmentForm(TablerModelForm):
 		model = CardiomyopathyTreatment
 		exclude = ['created', 'disease', 'author']
 		widgets = {
-			'drugs': JSONFormWidget(schema={
-				'type': 'object',
-				'keys': {},
-				'additionalProperties': True,
-			}),
-			'treated': DatePickerInput,
+			'lnj': forms.SelectMultiple,
+			'aceiarni': forms.SelectMultiple,
+			'bstzdj': forms.SelectMultiple,
+			'qtyw': forms.SelectMultiple,
+			'tszl': DatePickerInput
 		}
 
 class CardiomyopathyUltrasoundForm(TablerModelForm):

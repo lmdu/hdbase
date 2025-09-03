@@ -1,3 +1,4 @@
+import pandas
 import pyorthanc
 
 def upload_dicoms(dicom_files):
