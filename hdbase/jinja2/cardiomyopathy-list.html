@@ -23,16 +23,9 @@
 			<button class="btn btn-sm" data-bs-toggle="modal" data-bs-placement="top" data-bs-target="#filter-dialog">
 				<img src="{{ static('img/filter.svg') }}" width="20" data-bs-toggle="tooltip" title="筛选数据">
 			</button>
-			<form class="d-inline">
-				{% for field in filter.form %}
-				{% if field.value() %}
-				<input type="hidden" name="{{ field.name }}" value="{{ field.value() }}">
-				{% endif %}
-				{% endfor %}
-				<button type="submit" class="btn btn-sm">
-					<img src="{{ static('img/download.svg') }}" width="20" data-bs-toggle="tooltip" title="下载数据">
-				</button>
-			</form>
+			<button class="btn btn-sm" id="download-disease-btn">
+				<img src="{{ static('img/download.svg') }}" width="20" data-bs-toggle="tooltip" title="下载数据">
+			</button>
 		</div>
 		{% endif %}
 	</div>
@@ -95,36 +88,14 @@
 </div>
 {% include 'view-list-filter.html' %}
 
-<div class="modal" tabindex="-1" id="download-dialog">
-	<div class="modal-dialog modal-lg" role="document">
-		<form class="modal-content">
-			<div class="modal-header">
-				<h4 class="modal-title">下载数据</h4>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<div class="row row-cols-5 g-4">
-					{% set obj = cds.first() %}
-					{% if obj %}
-					{% for field in obj._meta.fields %}
-					{% if field.help_text %}
-					<div>
-						<div class="text-secondary">
-							<input type="checkbox" name="" value="{{ field.name }}" checked>
-							{{ field.help_text }}
-						</div>
-					</div>
-					{% endif %}
-					{% endfor %}
-					{% endif %}
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn" data-bs-dismiss="modal">关闭</button>
-				<button type="submit" class="btn btn-primary">下载</button>
-			</div>
-		</form>
-	</div>
-</div>
+{% endblock %}
 
+{% block script %}
+<script>
+$("#download-disease-btn").click(function(){
+	$("#filter-dialog form")
+		.attr('action', "{{ url('download-cardiomyopathy') }}")
+		.submit();
+});
+</script>
 {% endblock %}

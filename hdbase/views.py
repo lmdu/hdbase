@@ -400,6 +400,9 @@ class CardiomyopathyDetailView(DiseaseDetailView):
 	template_name = 'cardiomyopathy-detail.html'
 
 class CardiomyopathyDownloadView(LoginRequiredMixin, View):
+	def get(self, request):
+		return render(request, 'disease-download.html')
+
 	def post(self, request):
 		pass
 
