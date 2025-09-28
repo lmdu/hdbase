@@ -399,6 +399,10 @@ class CardiomyopathyDetailView(DiseaseDetailView):
 	model = CardiomyopathyDisease
 	template_name = 'cardiomyopathy-detail.html'
 
+class CardiomyopathyDownloadView(LoginRequiredMixin, View):
+	def post(self, request):
+		pass
+
 class CardiomyopathyExtraCreateView(LoginRequiredMixin, CreateView):
 	sub_title = ""
 	template_name = 'disease-common-form.html'

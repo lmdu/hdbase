@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from .views import *
 
 urlpatterns = [
+
 	path('', IndexView.as_view(), name='index'),
 	path('aboutus', aboutus, name='aboutus'),
 	path('changelog', changelog, name='changelog'),
@@ -12,6 +13,7 @@ urlpatterns = [
 	path('upload', upload_process, name='upload-file'),
 	path('browser', FileBrowseView.as_view(), name='file-browser'),
 	path('select', fetch_for_select, name='fetch-select'),
+
 	path('tasks', TaskListView.as_view(), name='list-tasks'),
 	path('task/add', TaskCreateView.as_view(), name='add-task'),
 	path('patients', PatientListView.as_view(), name='list-patients'),
@@ -28,6 +30,7 @@ urlpatterns = [
 	path('cardiomyopathy/view/<int:pk>', CardiomyopathyDetailView.as_view(), name='view-cardiomyopathy'),
 	path('cardiomyopathy/edit/<int:pk>', CardiomyopathyUpdateView.as_view(), name='edit-cardiomyopathy'),
 	path('cardiomyopathy/delete/<int:pk>', CardiomyopathyDeleteView.as_view(), name='delete-cardiomyopathy'),
+	path('cardiomyopathy/download', CardiomyopathyDownloadView.as_view(), name='download-cardiomyopathy'),
 	path('cardiomyopathy/<int:did>/examine/add', CardiomyopathyBloodCreateView.as_view(), name='add-cardiomyopathy-examine'),
 	path('cardiomyopathy/<int:did>/examine/edit/<int:pk>', CardiomyopathyBloodUpdateView.as_view(), name='edit-cardiomyopathy-examine'),
 	path('cardiomyopathy/<int:did>/examine/delete/<int:pk>', CardiomyopathyBloodDeleteView.as_view(), name='delete-cardiomyopathy-examine'),
