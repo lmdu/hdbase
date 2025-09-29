@@ -91,11 +91,13 @@
 {% endblock %}
 
 {% block script %}
+<script src="{{ static('js/jquery.redirect.js') }}"></script>
 <script>
 $("#download-disease-btn").click(function(){
 	$("#filter-dialog form")
 		.attr('action', "{{ url('download-cardiomyopathy') }}")
 		.submit();
+	//$.redirect("{{ url('download-cardiomyopathy') }}", $("#filter-dialog form").serialize(), "POST");
 });
 </script>
 {% endblock %}

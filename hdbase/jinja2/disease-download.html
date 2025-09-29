@@ -1,1 +1,59 @@
 {% extends 'base.html' %}
+
+{% block pagetitle %}
+<img src="{{ static('img/xjb.svg') }}" width="32" height="32" class="me-2">
+心肌病病例
+{% endblock %}
+
+{% block main %}
+<div class="card">
+	<div class="card-header">
+		<h3 class="card-title">
+			选择导出列
+			<span class="card-subtitle">Select Columns</span>
+		</h3>
+	</div>
+	<form>
+		{% for filter in filters %}
+		{% if filters[filter] %}
+		<input type="hidden" name="{{ filter }}" value="{{ filters[filter] }}">
+		{% endif %}
+		{% endfor %}
+		<div class="card-body">
+			{% for title in titles %}
+			<h3>
+				{% if title == 'disease' %}
+				<input type="checkbox" id="{{ title }}" checked disabled>
+				{% else %}
+				<input type="checkbox" id="{{ title }}" checked>
+				{% endif %}
+				{{ titles[title] }}
+			</h3>
+			<div class="row row-cols-6 g-3 mb-4">
+				{% for field in fields[title] %}
+				<div>
+					<input type="checkbox" name="{{ title }}" value="{{ field[0] }}" checked>
+					{{ field[1] }}
+				</div>
+				{% endfor %}
+			</div>
+			{% endfor %}
+		</div>
+		<div class="card-footer">
+			<div class="d-flex">
+				{{ csrf_input }}
+				<button type="submit" class="btn btn-primary ms-auto">下载</button>
+			</div>
+		</div>
+	</form>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+$("input[id]").click(function(){
+	var id = $(this).attr('id');
+	$("input[name='" + id + "']").prop('checked', $(this).is(":checked"));
+});
+</script>
+{% endblock %}

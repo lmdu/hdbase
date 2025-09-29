@@ -397,14 +397,61 @@ class CardiomyopathyDeleteView(DiseaseDeleteView):
 
 class CardiomyopathyDetailView(DiseaseDetailView):
 	model = CardiomyopathyDisease
+	filter_model = CardiomyopathyDiseaseFilter
 	template_name = 'cardiomyopathy-detail.html'
 
 class CardiomyopathyDownloadView(LoginRequiredMixin, View):
+	model = CardiomyopathyDisease
+	titles = {
+		'disease': "心肌病病例",
+		'patient': "患者信息",
+		'bloods': "血常规",
+		'markers': "心肌(心衰)标志物",
+		'treatments': "治疗情况",
+		'ultrasounds': "心脏超声",
+		'mris': "MRI",
+		'ecgs': "心电图",
+		'reports': "基因报告"
+	}
+
 	def get(self, request):
-		return render(request, 'disease-download.html')
+		obj = self.model.objects.first()
+		fields = {}
+
+		for k in self.titles:
+			if k == 'disease':
+				fs = obj._meta.fields
+
+			elif k == 'patient':
+				fs = obj.patient._meta.fields
+			
+			else:
+				fs = getattr(obj, k).model._meta.fields
+
+			fields[k] = []
+			for f in fs:
+				if f.help_text:
+					fields[k].append((f.name, f.help_text))
+
+		return render(request, 'disease-download.html', {
+			'titles': self.titles,
+			'fields': fields,
+			'filters': self.request.GET
+		})
 
 	def post(self, request):
-		pass
+		ds = self.filter_model(request.POST, queryset=self.model.objects.all())
+
+		for k in self.titles:
+			cols = request.POST.get(k)
+
+			print(k)
+
+		return 
+
+
+
+
 
 class CardiomyopathyExtraCreateView(LoginRequiredMixin, CreateView):
 	sub_title = ""

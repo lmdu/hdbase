@@ -19,7 +19,7 @@ class Disease(models.Model):
 
 class Diagnose(models.Model):
 	pass
-	
+
 
 class Hospitalization(models.Model):
 	enter_time = models.DateField(blank=True, null=True)
