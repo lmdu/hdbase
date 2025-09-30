@@ -19,6 +19,7 @@ from django.views.generic import View, ListView, CreateView, DetailView, UpdateV
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django_filters.views import FilterView
+from tabular_export.core import export_to_excel_response
 
 from .models import *
 from .tasks import *
@@ -430,7 +431,7 @@ class CardiomyopathyDownloadView(LoginRequiredMixin, View):
 
 			fields[k] = []
 			for f in fs:
-				if f.help_text:
+				if f.help_text and not f.is_relation:
 					fields[k].append((f.name, f.help_text))
 
 		return render(request, 'disease-download.html', {
@@ -442,20 +443,85 @@ class CardiomyopathyDownloadView(LoginRequiredMixin, View):
 	def post(self, request):
 		ds = self.filter_model(request.POST, queryset=self.model.objects.all())
 
+		obj = self.model.objects.first()
+		headers = {}
+
+		for k in self.titles:
+			if k == 'disease':
+				fs = obj._meta.fields
+
+			elif k == 'patient':
+				fs = obj.patient._meta.fields
+			
+			else:
+				fs = getattr(obj, k).model._meta.fields
+
+			headers[k] = {}
+			for f in fs:
+				if f.help_text and not f.is_relation:
+					headers[k][f.name] = f.help_text
+
+		for k in self.titles:
+			cols = request.POST.getlist(k)
+			headers[k] = [headers[k][c] for c in cols]
+
+		rows = []
+		lens = {}
 		for d in ds.qs:
+			row = {}
+
 			for k in self.titles:
 				cols = request.POST.getlist(k)
 
 				if k == 'disease':
-					vals = [getattr(d, c) for c in cols]
+					row[k] = [getattr(d, c) for c in cols]
 
-					print(vals)
-			
+				elif k == 'patient':
+					row[k] = [getattr(d.patient, c) for c in cols]
 
-		return 
+				else:
+					objs = getattr(d, k).all()
+					row[k] = []
 
+					for i, obj in enumerate(objs, 1):
+						row[k].extend([getattr(obj, c) for c in cols])
 
+					if i > lens.get(k, 0):
+						lens[k] = i
 
+			rows.append(row)
+
+		for i in range(len(rows)):
+			for k in rows[i]:
+				if k in lens:
+					l = lens[k] * len(headers[k])
+
+					for j in range(l - len(rows[i][k])):
+						rows[i][k].append('')
+
+		header_row = []
+		for k in headers:
+			if k == 'disease' or k == 'patient':
+				header_row.extend(headers[k])
+
+			else:
+				if k in lens:
+					if lens[k] == 1:
+						header_row.extend(headers[k])
+					else:
+						for i in range(1, lens[k]+1):
+							header_row.extend(["{}.{}".format(i, h) for h in headers[k]])
+
+		res_rows = []
+		for row in rows:
+			res_row = []
+
+			for k in headers:
+				res_row.extend(row[k])
+
+			res_rows.append(res_row)
+		
+		return export_to_excel_response('data.xlsx', header_row, res_rows)
 
 
 class CardiomyopathyExtraCreateView(LoginRequiredMixin, CreateView):
