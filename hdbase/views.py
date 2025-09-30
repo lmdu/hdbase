@@ -397,11 +397,11 @@ class CardiomyopathyDeleteView(DiseaseDeleteView):
 
 class CardiomyopathyDetailView(DiseaseDetailView):
 	model = CardiomyopathyDisease
-	filter_model = CardiomyopathyDiseaseFilter
 	template_name = 'cardiomyopathy-detail.html'
 
 class CardiomyopathyDownloadView(LoginRequiredMixin, View):
 	model = CardiomyopathyDisease
+	filter_model = CardiomyopathyDiseaseFilter
 	titles = {
 		'disease': "心肌病病例",
 		'patient': "患者信息",
@@ -442,10 +442,15 @@ class CardiomyopathyDownloadView(LoginRequiredMixin, View):
 	def post(self, request):
 		ds = self.filter_model(request.POST, queryset=self.model.objects.all())
 
-		for k in self.titles:
-			cols = request.POST.get(k)
+		for d in ds.qs:
+			for k in self.titles:
+				cols = request.POST.getlist(k)
 
-			print(k)
+				if k == 'disease':
+					vals = [getattr(d, c) for c in cols]
+
+					print(vals)
+			
 
 		return 
 

@@ -99,7 +99,7 @@ class Patient(models.Model):
 	weight = models.FloatField(blank=True, null=True, help_text='休重(Kg)')
 	height = models.FloatField(blank=True, null=True, help_text='身高(cm)')
 	phone = models.CharField(max_length=20, blank=True, default='', help_text="电话")
-	address = models.CharField(max_length=255, blank=True, default='', help_text="地址")
+	#address = models.CharField(max_length=255, blank=True, default='', help_text="地址")
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -218,7 +218,6 @@ class CardiomyopathyDisease(models.Model):
 		4: "组织"
 	}
 
-	code = models.CharField(max_length=12, blank=True, default='', help_text="编号")
 	disease_code = models.CharField(max_length=100, blank=True, default='', help_text="测序编号")
 	body_surface = models.FloatField(blank=True, null=True, help_text="体表面积")
 	disease_type = models.CharField(max_length=10, choices=DISEASE_TYPES, blank=True, default='Unknown', help_text="心肌病分型")
@@ -244,11 +243,6 @@ class CardiomyopathyDisease(models.Model):
 
 	class Meta:
 		ordering = ['-created']
-
-	def save(self, *args, **kwargs):
-		super().save(*args, **kwargs)
-		self.code = "CM{:0>7d}".format(self.pk)
-		super().save(update_fields=['code'])
 
 class CardiomyopathyBloodRoutine(models.Model):
 	POSITIVE_NEGATIVE = {
