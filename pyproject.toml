@@ -26,4 +26,5 @@ dependencies = [
     "psutil>=7.0.0",
     "pyorthanc>=1.21.0",
     "redis==5.2.1",
+    "uvicorn>=0.37.0",
 ]
