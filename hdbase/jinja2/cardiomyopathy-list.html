@@ -56,7 +56,7 @@
 					<td><a href="{{ url('view-cardiomyopathy', kwargs={'pk': cd.id}) }}">{{ "CM{:0>7d}".format(cd.pk) }}</a></td>
 					<td>{{ cd.patient.name }}</td>
 					<td>{{ cd.body_surface }}</td>
-					<td>{{ cd.disease_type }}</td>
+					<td>{{ cd.get_disease_type_display() }}</td>
 					<td>{{ cd.mutate_gene }}</td>
 					<td>{{ cd.diagnose_age }}</td>
 					<td>{{ cd.get_has_history_display() }}</td>

@@ -1,5 +1,6 @@
 from django import forms
 from django_filters import *
+from django_filters.widgets import RangeWidget
 
 from .models import *
 
@@ -32,12 +33,12 @@ class CardiomyopathyDiseaseFilter(FilterSet):
 			attrs={'class': 'form-control form-control-sm'}
 		)
 	)
-	disease_type = CharFilter(
+	disease_type = ChoiceFilter(
 		label = "心肌病分型",
-		lookup_expr='icontains',
-		widget = forms.TextInput(
-			attrs={'class': 'form-control form-control-sm'}
-		)
+		widget = forms.Select(
+			attrs={'class': 'form-select form-select-sm'}
+		),
+		choices = CardiomyopathyDisease.DISEASE_TYPES
 	)
 
 	mutate_gene = CharFilter(
@@ -71,12 +72,20 @@ class CardiomyopathyDiseaseFilter(FilterSet):
 		)
 	)
 
+	follow_time = DateFromToRangeFilter(
+		label = "随访时间区间",
+		widget = RangeWidget(
+			attrs = {'class': 'form-control form-control-sm'}
+		)
+	)
+
+
 	class Meta:
 		model = CardiomyopathyDisease
 		fields = [
 			'code', 'disease_code', 'patient__name',
 			'patient__number', 'disease_type', 'mutate_gene',
-			'arrhythmia_type'
+			'arrhythmia_type', 'special_treatment', 'follow_time'
 		]
 
 class KawasakiDiseaseFilter(FilterSet):
